@@ -9,11 +9,17 @@ runs in the browser tab: no account, no watermark, no trial and no upload. Engli
   utilities, a background remover, a 3D model viewer and printing calculators.
 - **A 40-lesson academy**: original diagrams, sources, a glossary and progress saved on your device.
 - **A static site**: `npm run build` writes plain HTML, JavaScript and files. Any static host works.
+- **Works on a phone**: the editors switch to a controls/preview layout at narrow widths.
 - **Apache-2.0**, with every dependency's licence listed in [`THIRD-PARTY-LICENSES.md`](THIRD-PARTY-LICENSES.md).
 
 The tools are made by [3D3D](https://3d3d.ca), who also print, model and build things to order.
 They run on 3d3d.ca at [/tools](https://3d3d.ca/tools); this repository is the same code, buildable
 and runnable on its own.
+
+<p>
+  <img src="docs/screenshots/phone-tools-hub.jpg" width="200" alt="The tools hub on a phone">
+  <img src="docs/screenshots/phone-qr-code.jpg" width="200" alt="The QR code tool on a phone">
+</p>
 
 ## The tools
 
