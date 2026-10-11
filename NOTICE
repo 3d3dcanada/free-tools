@@ -1,0 +1,10 @@
+3D3D Free Tools
+Copyright 2026 3D3D
+
+This product includes software and data developed by third parties. Their licences are listed
+in THIRD-PARTY-LICENSES.md. In particular:
+
+  - U²-Net-P model (public/models): Apache-2.0, Xuebin Qin and the U-2-Net contributors.
+  - PDF.js assets (public/pdf-assets): Apache-2.0, Mozilla and contributors; the Liberation
+    Sans fonts there are under the SIL Open Font License 1.1.
+  - Geist and Geist Mono typefaces: SIL Open Font License 1.1, Vercel.

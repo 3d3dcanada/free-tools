@@ -1,0 +1,303 @@
+/* Design studios: the flyer, poster, social image and business card
+   pages on the Deck Studio canvas. Deck Studio's sheet does the heavy lifting;
+   this adds the template rail, the page-size picker and the print guides. */
+
+/* ------------------------------------------------ toolbar */
+.ps-template-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr));
+  gap: 1rem;
+}
+.ps-template-grid .ps-tpl { padding: 1rem !important; background: #efede8 !important; }
+.ps-template-grid .ps-tpl > span:last-child { font-size: 12px; }
+.ps-photo-row { display: flex !important; justify-content: space-between; width: 100%; min-height: 44px; gap: 0.5rem; }
+.ps-content-note { margin: 0 0 0.8rem; }
+@media (max-width: 900px) { .ps-root .ps-browse { display: none; } }
+.ps-size-btn {
+  gap: 0.5rem;
+  min-width: 118px;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+}
+.ps-size-glyph {
+  display: inline-block;
+  height: 18px;
+  max-width: 26px;
+  border: 1.5px solid currentColor;
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--ds-accent) 22%, transparent);
+}
+.ds-root .ps-export-btn {
+  min-width: 96px;
+  font-weight: 800;
+}
+
+/* ------------------------------------------------ template rail */
+.ps-rail {
+  width: auto;
+}
+.ps-rail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+  padding: 0.8rem 0.9rem 0.2rem;
+  font-family: var(--ds-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.ps-rail-head span {
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ds-accent) 18%, #fff);
+  color: #00796e;
+  letter-spacing: 0.04em;
+}
+.ps-rail li {
+  margin-bottom: 0.85rem;
+}
+.ps-tpl {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 0.4rem !important;
+  width: 100%;
+  padding: 0.35rem !important;
+  border-color: transparent !important;
+  border-radius: 10px !important;
+  background: transparent !important;
+  text-align: left;
+}
+.ps-tpl-art {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+}
+.ps-tpl .ds-thumb {
+  border-radius: 4px;
+  box-shadow:
+    0 0 0 1px var(--ds-line),
+    0 12px 26px -18px rgba(0, 0, 0, 0.45);
+  transition: box-shadow 160ms ease, transform 160ms ease;
+}
+.ps-tpl:hover .ds-thumb {
+  box-shadow:
+    0 0 0 2px #b8b2a7,
+    0 16px 30px -18px rgba(0, 0, 0, 0.5);
+}
+.ps-tpl[aria-pressed="true"] .ds-thumb {
+  box-shadow:
+    0 0 0 2px var(--ds-accent),
+    0 0 26px -6px var(--ds-accent);
+}
+.ps-tpl-name {
+  padding: 0 0.15rem;
+  font-family: var(--ds-mono);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.ps-tpl[aria-pressed="true"] .ps-tpl-name {
+  color: #00796e;
+}
+
+/* ------------------------------------------------ print guides */
+.ps-bleed {
+  position: absolute;
+  z-index: 0;
+  border: 1px dashed rgba(255, 45, 146, 0.75);
+  border-radius: 2px;
+  pointer-events: none;
+}
+.ps-safe {
+  position: absolute;
+  z-index: 4;
+  outline: calc(1px * var(--inv, 1)) dashed rgba(4, 217, 196, 0.85);
+  pointer-events: none;
+}
+.ps-legend {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.ps-legend i {
+  flex: none;
+  width: 22px;
+  height: 0;
+  border-top: 2px dashed;
+}
+.ps-legend-bleed {
+  color: #ff2d92;
+}
+.ps-legend-safe {
+  color: #04b8a6;
+}
+
+/* ------------------------------------------------ stage foot */
+.ps-faces {
+  gap: 0.2rem !important;
+  padding: 0.25rem !important;
+}
+.ps-faces button {
+  min-width: 64px;
+  border-radius: 999px !important;
+  font-family: var(--ds-mono) !important;
+  font-size: 10.5px !important;
+  letter-spacing: 0.12em !important;
+  text-transform: uppercase;
+}
+.ps-faces button[aria-pressed="true"] {
+  background: var(--ds-accent) !important;
+  color: #0a0a0a !important;
+}
+.ds-root .ps-size-foot {
+  min-height: 0;
+  padding: 0.45rem 0.9rem;
+  cursor: pointer;
+  font-family: var(--ds-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  /* Centred from left: 50%, so it would wrap at half the stage's width. */
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------ page size rows */
+.ps-formats {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.ps-format {
+  display: grid !important;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem !important;
+  width: 100%;
+  min-height: 48px !important;
+  padding: 0.45rem 0.75rem !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+  text-align: left;
+}
+.ps-format:hover {
+  border-color: var(--ds-accent, #04d9c4) !important;
+}
+.ps-format[aria-pressed="true"] {
+  border-color: var(--ds-accent, #04d9c4) !important;
+  box-shadow: 0 0 0 1px var(--ds-accent, #04d9c4), 0 0 24px -12px var(--ds-accent, #04d9c4) !important;
+}
+.ps-format-glyph {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 30px;
+}
+.ps-format-glyph i {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  border: 1.5px solid #0a0a0a;
+  border-radius: 2px;
+  background: color-mix(in srgb, #04d9c4 20%, #fff);
+}
+.ps-format strong {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-transform: none;
+}
+.ps-format em {
+  color: #5c5c5c;
+  font-family: "Geist Mono Variable", ui-monospace, monospace;
+  font-size: 11px;
+  font-style: normal;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+.ps-modal-note {
+  margin-top: 0.9rem !important;
+}
+
+/* ------------------------------------------------ inspector extras */
+.ps-problem {
+  margin: 0;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid #ff2d9266;
+  border-radius: 8px;
+  background: #fff1f7;
+  color: #8a0f4a;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+/* ------------------------------------------------ export */
+.ps-preflight {
+  display: grid;
+  gap: 0.4rem;
+  margin: 0 0 0.9rem;
+  padding: 0.75rem 0.9rem 0.75rem 1.9rem;
+  border: 1px solid #ff6a0066;
+  border-radius: 10px;
+  background: #fff6ef;
+  color: #5a2a06;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+/* ------------------------------------------------ cuts and patterns in the shape picker */
+.ds-picker-head {
+  margin: 1.1rem 0 0.6rem;
+  font-family: "Geist Mono Variable", ui-monospace, monospace;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.ds-pattern-picker {
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+
+/* ------------------------------------------------ phone */
+@media (max-width: 900px) {
+  /* As wide as the drawn thumbnail (172 px), so the templates sit side by side. */
+  .ps-rail li {
+    width: auto !important;
+  }
+  .ps-mobile-bar {
+    grid-template-columns: 1fr 1fr 1fr 1fr !important;
+  }
+  .ps-size-btn {
+    min-width: 0;
+  }
+  .ds-pattern-picker {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* ------------------------------------------------ host list styles and modal buttons */
+/* The tool pages give every list bullets and an indent; these lists are rows. */
+.ds-modal .ps-formats,
+.ds-modal .ds-export,
+.ds-inspector .ps-formats {
+  padding: 0;
+  list-style: none;
+}
+.ds-modal .ds-primary {
+  border-color: #04d9c4;
+  background: #04d9c4;
+  color: #0a0a0a;
+  box-shadow: 0 0 22px -8px #04d9c4;
+}
+/* Geist has no italic face; let the page slant it the way the files do. */
+.ps-root .ds-canvas,
+.ps-root .ds-thumb {
+  font-synthesis: style;
+}
+
+.ps-decoration-preview { display: block; width: 100%; }
+.ps-decoration-preview svg { width: 100%; height: 60px; }

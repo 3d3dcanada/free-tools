@@ -1,0 +1,564 @@
+.growth-lab .academy {
+  max-width: none;
+  margin: auto;
+  .academy-nav {
+    padding: 1.1rem 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 0.86rem;
+  }
+  .academy-nav [aria-current] {
+    font-weight: 800;
+    text-decoration-thickness: 3px;
+    text-decoration-color: var(--accent);
+  }
+  .progress-strip {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    padding: 0.85rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .progress-strip label {
+    margin: 0;
+    font-size: 0.8rem;
+  }
+  .progress-strip progress {
+    width: 150px;
+    height: 9px;
+    accent-color: #00a493;
+  }
+  .progress-strip .fine {
+    margin-left: auto;
+    font-size: 0.72rem;
+  }
+  .academy-heading {
+    padding: 3rem 0 1.5rem;
+    max-width: 960px;
+  }
+  .academy-heading h1 {
+    font-size: clamp(2.4rem, 5vw, 4.5rem);
+    max-width: 20ch;
+  }
+  .academy-heading .lede {
+    font-size: 1.15rem;
+    max-width: 65ch;
+    line-height: 1.65;
+  }
+  .course-hero h1 {
+    font-size: clamp(3rem, 6vw, 5.5rem);
+  }
+  .course-promise {
+    font-family: var(--mono);
+    font-size: 0.8rem;
+  }
+  .start-link {
+    display: inline-flex;
+    gap: 3rem;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--accent);
+    padding: 1rem 0;
+    font-weight: 750;
+    font-size: 1.1rem;
+    text-decoration: none;
+  }
+  .start-link span {
+    font-size: 1.5rem;
+  }
+  .course-intro {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    border-top: 1px solid var(--line);
+    padding: 1rem 0 1.5rem;
+    font-size: 0.94rem;
+  }
+  .unit-jump {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.6rem 2rem;
+    padding: 1rem 0 2rem;
+    font-size: 0.87rem;
+  }
+  .unit-jump a {
+    padding: 0.3rem 0;
+    min-height: 32px;
+  }
+  .course-unit {
+    display: grid;
+    grid-template-columns: 1fr 1.7fr;
+    gap: 3rem;
+    padding: 2rem 0;
+    border-top: 1px solid var(--line-strong);
+    scroll-margin-top: 1rem;
+  }
+  .course-unit h2 {
+    font-size: 2rem;
+    line-height: 1.15;
+  }
+  .course-unit > div > p:last-child {
+    max-width: 32ch;
+    color: var(--soft);
+  }
+  .course-unit ol {
+    padding-left: 1.8rem;
+    margin-top: 0;
+  }
+  .course-unit li {
+    padding: 0.8rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .course-unit li::marker {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+  }
+  .course-unit li a {
+    display: flex;
+    gap: 1rem;
+    justify-content: space-between;
+    text-decoration: none;
+    padding-left: 0.4rem;
+  }
+  .course-unit li a:hover span:first-child {
+    text-decoration: underline;
+  }
+  .lesson-state {
+    font-size: 0.72rem;
+    font-family: var(--mono);
+    white-space: nowrap;
+    align-self: center;
+  }
+  .reading {
+    max-width: 72ch;
+  }
+  .reading p,
+  .reading li {
+    line-height: 1.8;
+  }
+  .reading h2 {
+    margin-top: 2.2rem;
+  }
+  .outcome {
+    padding: 1rem;
+    border-left: 3px solid var(--accent);
+    background: var(--accent-wash);
+    max-width: 72ch;
+  }
+  .concept {
+    /* Same width as the diagram, so it centres under the centred lesson text (2026-10-09). */
+    max-width: 640px;
+    margin: 0 0 2rem;
+  }
+  .concept img {
+    display: block;
+    width: 100%;
+    max-width: 640px;
+    height: auto;
+    border: 1px solid var(--line);
+    margin-bottom: 0.75rem;
+  }
+  .concept figcaption {
+    font-size: 0.78rem;
+    color: var(--soft);
+  }
+  .correction {
+    border-top: 1px solid var(--accent-line);
+    padding-top: 1.5rem;
+    margin-top: 2.5rem;
+  }
+  .correction form {
+    display: grid;
+    gap: 1rem;
+  }
+  .correction code {
+    overflow-wrap: anywhere;
+  }
+  .lesson-steps {
+    padding-left: 2rem;
+    counter-reset: lesson;
+  }
+  .lesson-steps li {
+    padding: 0.5rem 0 0.8rem 0.6rem;
+  }
+  .lesson-steps li::marker {
+    font-weight: 800;
+  }
+  .practice {
+    border-left: 3px solid #ff6a00;
+    background: color-mix(in srgb, #ff6a00 7%, #fff);
+    padding: 1rem 1.4rem;
+    margin: 2rem 0;
+  }
+  .practice h2 {
+    margin-top: 0.5rem;
+  }
+  .choice {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.7rem;
+    font-size: 1rem;
+    font-weight: 450;
+    padding: 0.6rem 0.2rem;
+    margin: 0;
+    cursor: pointer;
+    min-height: 44px;
+  }
+  .choice input {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    display: inline-block;
+    margin: 0.18rem 0 0;
+    padding: 0;
+    accent-color: #00a493;
+  }
+  .quiz fieldset {
+    min-width: 0;
+    border: 0;
+    border-top: 1px solid var(--line);
+    padding: 1.2rem 0;
+    margin: 1.5rem 0;
+  }
+  .quiz legend {
+    font-weight: 700;
+    max-width: 100%;
+    padding: 0 0.5rem 0 0;
+  }
+  .answer {
+    padding: 0.8rem 1rem;
+    border-left: 3px solid #00a493;
+    background: var(--accent-wash);
+    font-size: 0.92rem;
+  }
+  .answer.retry {
+    border-color: #d34b00;
+    background: color-mix(in srgb, #ff6a00 7%, #fff);
+  }
+  .quiz-status {
+    min-height: 2rem;
+  }
+  .source-links {
+    padding-left: 1.2rem;
+    font-size: 0.9rem;
+  }
+  .source-links li {
+    margin: 0.4rem 0;
+    overflow-wrap: anywhere;
+  }
+  .lesson-navigation {
+    margin-top: 2rem;
+    border-top: 1px solid var(--line-strong);
+    padding: 1.5rem 0;
+    justify-content: space-between;
+  }
+  .glossary > div {
+    border-top: 1px solid var(--line);
+    padding: 1.2rem 0;
+  }
+  .glossary dt {
+    font-size: 1.2rem;
+    font-weight: 750;
+  }
+  .glossary dd {
+    margin: 0.5rem 0 0;
+    line-height: 1.8;
+  }
+  .symptom summary {
+    padding: 0.6rem 0;
+    line-height: 1.6;
+  }
+  .symptom li {
+    margin: 0.6rem 0;
+  }
+  .progress-tools {
+    margin-top: 3rem;
+    max-width: 72ch;
+    border-top: 1px solid var(--line);
+  }
+  .progress-tools p[role="status"] {
+    font-size: 0.85rem;
+  }
+  .academy-footnote {
+    font-size: 0.82rem;
+    padding-top: 1rem;
+  }
+  .certificate-controls {
+    max-width: 500px;
+    margin-bottom: 2rem;
+  }
+  .certificate {
+    background: white;
+    border: 1px solid var(--accent-line);
+    border-top: 8px solid var(--accent);
+    max-width: 950px;
+    padding: 3rem;
+  }
+  .certificate h2 {
+    font-size: 1.8rem;
+  }
+  .certificate .recipient {
+    font-size: 2.4rem;
+    font-weight: 750;
+    border-bottom: 1px solid var(--line);
+    overflow-wrap: anywhere;
+    padding-bottom: 1rem;
+  }
+  .certificate-subject {
+    font-size: 1.7rem;
+    font-weight: 700;
+  }
+  .certificate > .fine {
+    margin-top: 2rem;
+    max-width: 65ch;
+  }
+  @media (max-width: 650px) {
+    .academy-nav {
+      gap: 0.8rem 1.2rem;
+    }
+    .academy-heading {
+      padding: 2rem 0 1rem;
+    }
+    .academy-heading h1 {
+      font-size: 2.5rem;
+    }
+    .academy-heading .lede {
+      font-size: 1.05rem;
+    }
+    .progress-strip {
+      gap: 0.5rem;
+    }
+    .progress-strip .fine {
+      margin-left: 0;
+      width: 100%;
+    }
+    .course-intro {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+    .unit-jump {
+      grid-template-columns: 1fr;
+    }
+    .course-unit {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+    .course-unit h2 {
+      margin: 0.5rem 0;
+    }
+    .course-unit li a {
+      gap: 0.6rem;
+    }
+    .lesson-state {
+      font-size: 0.65rem;
+    }
+    .concept figcaption {
+      font-size: 0.72rem;
+    }
+    .practice {
+      padding: 0.6rem 0.8rem;
+    }
+    .lesson-navigation {
+      font-size: 0.85rem;
+      gap: 0.75rem;
+    }
+    .certificate {
+      padding: 1.3rem;
+    }
+    .certificate .recipient {
+      font-size: 1.8rem;
+    }
+    .certificate-subject {
+      font-size: 1.3rem;
+    }
+  }
+  @media print {
+    .no-print,
+    .academy-nav,
+    .progress-strip {
+      display: none;
+    }
+    .certificate {
+      max-width: none;
+      width: 100%;
+      break-inside: avoid;
+      padding: 2rem;
+    }
+    .certificate-page {
+      margin: 0;
+    }
+    .certificate .recipient {
+      font-size: 2rem;
+    }
+    .academy-heading {
+      padding: 0;
+    }
+    .reading {
+      max-width: none;
+    }
+  }
+}
+
+.growth-lab .academy {
+  padding-bottom: 1rem;
+  .academy-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem 1.4rem;
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .academy-nav a {
+    text-decoration-color: transparent;
+  }
+  .academy-nav a:hover,
+  .academy-nav [aria-current] {
+    text-decoration-color: var(--accent);
+    color: var(--ink);
+  }
+  .progress-strip {
+    justify-content: center;
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  .academy-heading {
+    margin: 0 auto;
+    text-align: center;
+  }
+  .academy-heading h1 {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .academy-heading .lede {
+    margin-left: auto;
+    margin-right: auto;
+    color: var(--body);
+  }
+  .course-hero {
+    background-image: url("/media/ground/prusa-running.webp");
+    max-width: none;
+    margin: 0 -1.25rem;
+    padding: 6.5rem 1.25rem 3.4rem;
+  }
+  .outcome {
+    text-align: left;
+  }
+  .course-hero .lede,
+  .course-hero p {
+    color: #e5e5e5;
+  }
+  .course-hero .start-link {
+    color: #fff;
+    border-bottom-color: var(--accent);
+  }
+  .course-promise {
+    color: var(--accent) !important;
+    letter-spacing: 0.06em;
+  }
+  .start-link {
+    margin-top: 0.6rem;
+  }
+  .course-intro,
+  .unit-jump,
+  .course-unit,
+  .reading,
+  .outcome,
+  .concept,
+  .progress-tools,
+  .certificate,
+  .certificate-controls {
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .course-intro,
+  .unit-jump,
+  .course-unit {
+    max-width: 72rem;
+  }
+  .course-unit h2 {
+    font-weight: 900;
+    letter-spacing: -0.035em;
+  }
+  .course-unit h2::before {
+    content: "";
+    display: block;
+    width: 2rem;
+    height: 3px;
+    margin-bottom: 0.8rem;
+    background: var(--accent);
+    box-shadow: 0 0 12px var(--accent);
+  }
+  .course-unit li a {
+    color: var(--ink);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .lesson-state {
+    color: var(--accent-ink);
+    font-weight: 500;
+  }
+  .outcome,
+  .answer,
+  .practice {
+    border-radius: 0 8px 8px 0;
+  }
+  .concept img {
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 0 50px -28px var(--accent);
+  }
+  .concept figcaption {
+    font-family: var(--mono);
+  }
+  .quiz,
+  .correction {
+    padding: 1.2rem clamp(1rem, 3vw, 1.8rem);
+    border: 1px solid var(--accent-line);
+    border-radius: 12px;
+    background: var(--glass);
+  }
+  .choice {
+    color: var(--body);
+    font-weight: 450;
+  }
+  .lesson-navigation {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 72ch;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+  }
+  .glossary dt {
+    color: var(--ink);
+  }
+  .certificate {
+    border-radius: 12px;
+    box-shadow: 0 0 60px -28px var(--accent);
+  }
+  .certificate .recipient,
+  .certificate-subject {
+    color: var(--ink);
+  }
+  @media (max-width: 650px) {
+    .course-hero {
+      margin: 0 -1rem;
+      padding: 4.5rem 1rem 2.6rem;
+    }
+    .course-hero h1 {
+      font-size: 2.6rem;
+    }
+  }
+}
+
+/* Share (2026-10-09). The same menu as the tool pages. */
+.growth-lab .lesson-share { display: flex; justify-content: center; margin: 0.5rem 0 1rem; }
+.growth-lab .share-box { position: relative; }
+.growth-lab .share-box > button { min-height: 40px; padding: 0.45rem 1rem; border: 1px solid var(--line, #d4d4d4); border-radius: 6px; background: #fff; font: 600 12px/1 var(--mono, monospace); letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; }
+.growth-lab .share-menu { position: absolute; left: 50%; transform: translateX(-50%); top: calc(100% + 6px); z-index: 60; display: grid; min-width: 11rem; padding: 0.35rem; border: 1px solid var(--line, #d4d4d4); border-radius: 10px; background: #fff; box-shadow: 0 18px 40px -24px rgba(0,0,0,0.45); }
+.growth-lab .share-menu a, .growth-lab .share-menu button { display: block; min-height: 40px; padding: 0.55rem 0.75rem; border: 0; border-radius: 6px; background: none; color: #141717; font: 600 14px/1.2 inherit; text-align: left; text-decoration: none; cursor: pointer; }
+.growth-lab .share-menu a:hover, .growth-lab .share-menu button:hover { background: #eefcf9; }

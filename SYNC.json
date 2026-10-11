@@ -1,0 +1,35 @@
+{
+  "source": "3d3d-site app/growth-lab",
+  "sourceCommit": "42f042d",
+  "sourceHadUncommittedChanges": true,
+  "files": 699,
+  "treeSha256": "5b3c5819e59c70eb68118ca62428a7a4124e1a43497f0f0bae9ea12ffdc75557",
+  "syncedTests": [
+    "tests/design-studio.test.mts",
+    "tests/draft-language.test.mts",
+    "tests/import-safety.test.mts",
+    "tests/tools-hub.test.mts",
+    "tests/tools-usability.test.mts"
+  ],
+  "packages": [
+    "@fontsource-variable/geist",
+    "@fontsource-variable/geist-mono",
+    "@jsquash/avif",
+    "@jsquash/oxipng",
+    "@pdf-lib/fontkit",
+    "@react-router/dev",
+    "jspdf",
+    "jsqr",
+    "jszip",
+    "lucide",
+    "onnxruntime-web",
+    "pdf-lib",
+    "pdfjs-dist",
+    "pptxgenjs",
+    "qrcode",
+    "react",
+    "react-dom",
+    "react-router",
+    "three"
+  ]
+}
