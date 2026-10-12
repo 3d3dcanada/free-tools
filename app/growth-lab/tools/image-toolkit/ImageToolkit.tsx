@@ -408,7 +408,7 @@ export default function ImageToolkit({ mode, preset }: { mode: ImageMode; preset
         <p className="fine">
           {files.length
             ? `${files.length} ${tr(one ? "image" : "images")} · ${formatBytes(total, locale)}`
-            : tr("Drop one image or a batch. Up to 20 files / 100 MB total; 24 megapixels per image.")}
+            : tr("Add one image or a batch. Up to 20 files / 100 MB total; 24 megapixels per image.")}
         </p>
         {!!files.length && <div className="batch-controls">
           <label>{tr("Apply Changes To")}<select value={scope} onChange={e => setScope(e.target.value as typeof scope)}>
@@ -592,8 +592,8 @@ export default function ImageToolkit({ mode, preset }: { mode: ImageMode; preset
             <span className="ws-empty-icon" aria-hidden="true">
               <Icon name="add" />
             </span>
-            <strong>{tr("Drop images here")}</strong>
-            <span>{tr("or choose files from your device. Nothing leaves this browser.")}</span>
+            <strong>{tr("Add Images")}</strong>
+            <span>{tr("Choose files from your device, or drop them here. Nothing leaves this browser.")}</span>
           </label>
         ) : (
           <>

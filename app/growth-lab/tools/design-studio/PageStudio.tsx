@@ -8,7 +8,8 @@ import { BackgroundSection, BrandSection, ElementPanel, FontsSection, ThemeSecti
 import { FONTS, fontStack, icon, image, paint, shape, type El, type TextEl } from "../deck-studio/model";
 import ProjectLibrary from "../../shared/ProjectLibrary";
 import BrandProfile from "../../shared/BrandProfile";
-import { DraftRecovery } from "../../shared/kit";
+import { DraftRecovery, History } from "../../shared/kit";
+import { ToolSlot } from "../../shared/chrome";
 import Layers from "../deck-studio/Layers";
 import { layoutText } from "../deck-studio/export";
 import { EmptyFrame, SlideThumb, isPattern, shapeSvg } from "../deck-studio/render";
@@ -205,10 +206,7 @@ export default function PageStudio({ studio }: { studio: StudioId }) {
             {!cardStudio && <ToolBtn label={tt("Table")} d="M3 5h18v14H3zM3 10h18M3 15h18M9 5v14M15 5v14" onClick={ed.insert.table} />}
             {!cardStudio && <ToolBtn label={tt("Chart")} d="M4 20V10M10 20V4M16 20v-7M22 20H2" onClick={ed.insert.chart} />}
           </div>
-          <div className="ds-tool-group">
-            <button type="button" onClick={ed.undo} disabled={!ed.canUndo} title={tt("Undo (Ctrl Z)")} aria-label={tt("Undo")}>↶</button>
-            <button type="button" onClick={ed.redo} disabled={!ed.canRedo} title={tt("Redo (Ctrl Y)")} aria-label={tt("Redo")}>↷</button>
-          </div>
+          <History editor={{ undo: ed.undo, redo: ed.redo, canUndo: ed.canUndo, canRedo: ed.canRedo }} />
           <div className="ds-tool-group ds-zoom">
             <button type="button" aria-label={tt("Zoom out")} onClick={() => ed.setZoom(Math.max(0.05, scale - 0.1))}>−</button>
             <button type="button" onClick={() => ed.setZoom("fit")} aria-pressed={ed.zoom === "fit"}>{Math.round(scale * 100)}%</button>
@@ -218,7 +216,9 @@ export default function PageStudio({ studio }: { studio: StudioId }) {
           <span className="ds-status" role="status">{ed.status}</span>
           <ProjectLibrary value={deck} valid={(v): v is Design => isDesign(v, studio)} name={`${studio}-designs`} defaultName={deck.title} onLoad={d => { ed.commit(d); ed.setCur(0); ed.setSel([]); }} />
           {cardStudio && <button type="button" className="ps-decoration-btn" onClick={() => setDecorations(true)}>{tt("Decorations")}</button>}
-          <button type="button" className="ds-export-btn ds-primary ps-export-btn" onClick={() => ed.setModal("export")}>{tt("Export")}</button>
+          <ToolSlot name="primary">
+            <button type="button" className="ds-export-btn ps-export-btn" onClick={() => ed.setModal("export")}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19h14" /></svg>{tt("Download")}</button>
+          </ToolSlot>
         </div>
 
         <div className="ds-main">
@@ -382,7 +382,6 @@ export default function PageStudio({ studio }: { studio: StudioId }) {
           <button type="button" onClick={() => ed.setModal("templates")}>{tt("Templates")}</button>
           <button type="button" aria-pressed={sheet === "inspector" && tab === "page"} onClick={() => { setTab("page"); setSheet(sheet === "inspector" && tab === "page" ? null : "inspector"); }}>{tt("Content")}</button>
           <button type="button" aria-pressed={sheet === "inspector" && tab !== "page"} onClick={() => { setTab(selected.length ? "element" : "design"); setSheet(sheet === "inspector" && tab !== "page" ? null : "inspector"); }}>{tt("Style")}</button>
-          <button type="button" className="ds-primary" onClick={() => ed.setModal("export")}>{tt("Export")}</button>
         </div>
 
         <input

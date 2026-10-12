@@ -16,28 +16,30 @@ const TOOLS = [
   ["invoice-generator", "Invoice", "Facture"],
 ] as const;
 
-export default function QuickTools({ locale, current }: { locale: Locale; current?: string }) {
-  const tr = useT();
-  const [open, setOpen] = useState(false);
-  const [query, setQuery] = useState("");
-  const results = catalogFor(locale).filter((t) => matchesSearch(`${t.name} ${t.slug} ${t.summary}`, query));
+/** The common tools as plain links (the hub strip, and the desktop tool bar). */
+export function QuickLinks({ locale, current, className = "tool-quick" }: { locale: Locale; current?: string; className?: string }) {
   return (
-    <>
-    <nav className="tool-quick" aria-label={locale === "fr" ? "Accès rapide aux outils" : "Quick tools"}>
-      <button type="button" className="tool-finder-trigger" aria-haspopup="dialog" onClick={() => setOpen(true)}>
-        {tr("Find a Tool")} <span aria-hidden="true">⌕</span>
-      </button>
+    <nav className={className} aria-label={locale === "fr" ? "Accès rapide aux outils" : "Quick tools"}>
       {TOOLS.map(([slug, en, fr]) => (
         <a key={slug} href={localizedPath("/tools/" + slug, locale)} aria-current={current === slug ? "page" : undefined}>
           {locale === "fr" ? fr : en}
         </a>
       ))}
     </nav>
-    <Dialog open={open} title={tr("Find a Tool")} className="tool-guide-layer tool-finder" onClose={() => setOpen(false)}>
+  );
+}
+
+/** Search every tool by name or job, grouped by family. */
+export function ToolFinder({ locale, current, open, onClose }: { locale: Locale; current?: string; open: boolean; onClose: () => void }) {
+  const tr = useT();
+  const [query, setQuery] = useState("");
+  const results = catalogFor(locale).filter((t) => matchesSearch(`${t.name} ${t.slug} ${t.summary}`, query));
+  return (
+    <Dialog open={open} title={tr("Find a Tool")} className="tool-guide-layer tool-finder" onClose={onClose}>
       <div className="tool-guide-panel">
         <div className="tool-guide-head">
           <h2>{tr("Find a Tool")}</h2>
-          <button type="button" className="tool-guide-close" aria-label={locale === "fr" ? "Fermer" : "Close"} onClick={() => setOpen(false)}>×</button>
+          <button type="button" className="tool-guide-close" aria-label={locale === "fr" ? "Fermer" : "Close"} onClick={onClose}>×</button>
         </div>
         <div className="tool-finder-search">
           <label>{tr("Search tools")}<input type="search" value={query} placeholder={tr("Try Wi-Fi, image, invoice or STL")} onChange={(e) => setQuery(e.target.value)} /></label>
@@ -58,6 +60,22 @@ export default function QuickTools({ locale, current }: { locale: Locale; curren
         </div>
       </div>
     </Dialog>
+  );
+}
+
+/** The hub strip: the finder button and the common tools. */
+export default function QuickTools({ locale, current }: { locale: Locale; current?: string }) {
+  const tr = useT();
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <div className="tool-quick">
+        <button type="button" className="tool-finder-trigger" aria-haspopup="dialog" onClick={() => setOpen(true)}>
+          {tr("Find a Tool")} <span aria-hidden="true">⌕</span>
+        </button>
+        <QuickLinks locale={locale} current={current} className="tool-quick-links" />
+      </div>
+      <ToolFinder locale={locale} current={current} open={open} onClose={() => setOpen(false)} />
     </>
   );
 }

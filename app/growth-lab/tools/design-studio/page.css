@@ -269,7 +269,7 @@
     width: auto !important;
   }
   .ps-mobile-bar {
-    grid-template-columns: 1fr 1fr 1fr 1fr !important;
+    grid-template-columns: 1fr 1fr 1fr !important;
   }
   .ps-size-btn {
     min-width: 0;

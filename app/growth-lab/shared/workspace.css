@@ -1864,15 +1864,6 @@
 
   /* ---------- Phone ---------- */
   @media (max-width: 650px) {
-    .tool-app[data-view="edit"] .two-column > .output.ws-stage {
-      display: none;
-    }
-    /* The stage needs the height more than the undo hint does. */
-    .iw .history .fine,
-    .pdfw .history .fine,
-    .pw .history .fine {
-      display: none;
-    }
     .pdfw-result li {
       width: 32px;
     }
@@ -2055,7 +2046,6 @@
     width: var(--panel);
     background: #faf8f5;
   }
-  .tool-content:has(.pw) .tool-panel-close { z-index: 11; }
   .pw[data-report="closed"] .pw-result { display: none; }
   /* Open controls sit over the stage: keep the readout and model chip clear of them. */
   @media (min-width: 651px) {
@@ -2102,10 +2092,6 @@
   .pw:fullscreen { background: #0e1213; height: 100dvh; }
   .pw:fullscreen .two-column > .controls { display: none; }
   @media (max-width: 650px) {
-    .tool-content .pw .two-column > .controls { inset: auto 0 0; width: auto; padding-top: 4rem; }
-    .tool-app[data-view] .tool-content .two-column > .output.ws-stage { display: flex; }
-    .tool-app[data-view] .tool-content .two-column > .controls.iw-panel,
-    .tool-app[data-view] .tool-content .two-column > .controls.pdfw-panel { padding-top: 4rem; }
     .pw-top { flex-wrap: wrap; }
     .pw-chip { flex-basis: 100%; }
     .pw-views { margin-left: 0; }

@@ -21,6 +21,7 @@ import {
   qrWarnings,
   tagSvg,
   type QrKind,
+  type Tag,
   type QrStyle,
 } from "./model";
 import { saveQr, scanQr } from "./exports";
@@ -49,6 +50,17 @@ const shapeNames: Record<string, string> = {
   leaf: "Leaf",
   dot: "Dot Centre",
 };
+function localizeSample(tag: Tag, locale: "en" | "fr", kind: QrKind): Tag {
+  const own = sampleTag(locale, kind), other = sampleTag(locale === "en" ? "fr" : "en", kind);
+  const swap = (v: string, a: string, b: string) => (v === b && a !== b ? a : v);
+  const label = swap(tag.label, own.label, other.label), caption = swap(tag.caption, own.caption, other.caption);
+  const fields = { ...tag.fields };
+  for (const k of ["ssid", "subject", "title"] as const) fields[k] = swap(tag.fields[k], own.fields[k], other.fields[k]);
+  return label === tag.label && caption === tag.caption && (["ssid", "subject", "title"] as const).every((k) => fields[k] === tag.fields[k])
+    ? tag
+    : { ...tag, label, caption, fields };
+}
+
 export default function QrCode({ intent }: { intent?: QrKind }) {
   const tr = useT(),
     locale = useLocale();
@@ -60,7 +72,10 @@ export default function QrCode({ intent }: { intent?: QrKind }) {
     isTag,
     [sampleTag("en", intent || "url"), sampleTag("fr", intent || "url")],
   );
-  const { value: tag, setValue: setTag } = editor;
+  const { setValue: setTag } = editor;
+  // A saved draft keeps the sample wording of the language it was edited in; show
+  // the sample text in this page's language (an English page showed a French caption).
+  const tag = localizeSample(editor.value, locale, intent || "url");
   const [scan, setScan] = useState("Checking…");
   let svg = "",
     issue = "";
@@ -108,12 +123,12 @@ export default function QrCode({ intent }: { intent?: QrKind }) {
       <History editor={editor} />
       <div className="two-column qr-workspace">
         <div className="controls">
-          <div className="library-actions"><DraftFiles value={tag} valid={isTag} onLoad={setTag} name="qr-draft" title={tag.label} />
+          <DraftFiles value={tag} valid={isTag} onLoad={setTag} name="qr-draft" title={tag.label} />
             <BrandProfile applyLabel="Apply Contact & Brand" onApply={b => {
               const [first = "", ...last] = b.name.trim().split(/\s+/);
               setTag({ ...tag, fields: { ...tag.fields, first, last: last.join(" "), company: b.company, phone: b.phone, email: b.email, url: b.website, address: b.address },
                 ...(tag.kind === "url" && b.website ? { value: b.website } : {}), style: { ...tag.style, logo: b.logo, frameColor: b.accent } });
-            }} /></div>
+            }} />
           <label>{tr("Start With a Use Case")}<select value="" onChange={e => {
             if (e.target.value && window.confirm(tr("Apply this use case? It updates the heading and style. Undo restores your design."))) setTag(qrUseCase(tag, e.target.value as (typeof useCases)[number]["id"], locale));
           }}><option value="" disabled>{tr("Choose a Starting Point")}</option>{useCases.filter(c => !intent || c.kind === intent).map(c => <option key={c.id} value={c.id}>{tr(c.label)}</option>)}</select></label>
@@ -529,17 +544,14 @@ export default function QrCode({ intent }: { intent?: QrKind }) {
           </div>
           <div className="output-actions">
             <ExportBar
-              disabled={!!issue || !scan.startsWith("PASS")}
-              actions={Object.fromEntries(
-                ["svg", "png", "pdf", "eps"].map((k) => [
-                  `Download ${k.toUpperCase()}`,
-                  () => saveQr(tag, k, locale),
-                ]),
-              )}
-            />
-            <ExportBar
               disabled={!!issue}
               actions={{
+                ...Object.fromEntries(
+                  ["svg", "png", "pdf", "eps"].map((k) => [
+                    `Download ${k.toUpperCase()}`,
+                    { run: () => saveQr(tag, k, locale), disabled: !scan.startsWith("PASS") },
+                  ]),
+                ),
                 "Download NFC Content": () => download("nfc-payload.txt", payload(tag), "text/plain"),
                 "Download NDEF": () => download("nfc-payload.ndef", ndef(tag), "application/octet-stream"),
               }}

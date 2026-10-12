@@ -85,7 +85,6 @@ function Hub({ guide }: { guide: Guide }) {
       <div className="hero hub-hero">
         <p className="eyebrow">{tr("A workshop in your browser")}</p>
         <h1>{guide.headline}</h1>
-        <p className="answer">{guide.answer}</p>
         <Pledge />
       </div>
       <div className="hub-search">
@@ -110,6 +109,8 @@ function Hub({ guide }: { guide: Guide }) {
           </select>
         </label>
       </div>
+      {/* The search comes first on a phone; the long answer reads below it (2026-10-11). */}
+      <p className="answer hub-intro">{guide.answer}</p>
       {!query && category === categories[0] && (
         <section className="hub-design" aria-label={tr("What Are You Making?")}>
           <div><p className="eyebrow">{tr("Design and Download")}</p><h2>{tr("What Are You Making?")}</h2><p>{tr("Choose a format, make it yours, and export a real file.")}</p></div>

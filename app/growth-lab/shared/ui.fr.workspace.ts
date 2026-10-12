@@ -168,7 +168,8 @@ export const workspaceUi: Record<string, string> = {
   Measurements: "Mesures",
   "No model open": "Aucun modèle ouvert",
   "Close the model": "Fermer le modèle",
-  "Drop an STL, 3MF or OBJ": "Déposez un STL, 3MF ou OBJ",
+  "Open an STL, 3MF or OBJ":
+    "Ouvrez un STL, 3MF ou OBJ",
   "Measured on this device, on the printer you pick. Nothing is uploaded.":
     "Mesuré sur cet appareil, sur l’imprimante choisie. Rien n’est téléversé.",
   "Open a model to measure it and check it against the bed.": "Ouvrez un modèle pour le mesurer et le comparer au plateau.",

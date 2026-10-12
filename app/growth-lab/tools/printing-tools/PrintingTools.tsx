@@ -540,7 +540,7 @@ export default function PrintingTools({ mode }: { mode: PrintingMode }) {
           </button>
         </div>
       ) : (
-        <p className="fine">{tr("Drop a model or open the sample cube.")}</p>
+        <p className="fine">{tr("Open a model or the sample cube.")}</p>
       )}
       <div className="ws-files">
         <AddFiles
@@ -914,7 +914,7 @@ export default function PrintingTools({ mode }: { mode: PrintingMode }) {
           {viewError && <p className="pw-view-error" role="status">{viewError}</p>}
           {!m.model && (
             <div className="pw-empty">
-              <strong>{tr("Drop an STL, 3MF or OBJ")}</strong>
+              <strong>{tr("Open an STL, 3MF or OBJ")}</strong>
               <span>{tr("Measured on this device, on the printer you pick. Nothing is uploaded.")}</span>
               <span className="pw-empty-actions">
                 <AddFiles primary label={tr("Open 3D Model")} accept=".stl,.obj,.3mf" onFiles={([file]) => void m.load(file)} />

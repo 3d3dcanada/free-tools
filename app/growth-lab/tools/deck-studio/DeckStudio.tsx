@@ -20,7 +20,8 @@ import Presenter from "./Presenter";
 import { matchesSearch } from "../navigation";
 import ProjectLibrary from "../../shared/ProjectLibrary";
 import BrandProfile from "../../shared/BrandProfile";
-import { DraftRecovery } from "../../shared/kit";
+import { DraftRecovery, History } from "../../shared/kit";
+import { ToolSlot } from "../../shared/chrome";
 import Layers from "./Layers";
 import { image, dims } from "./model";
 import { deckPurposes, matchesDeckTemplate } from "./template-filters";
@@ -141,10 +142,7 @@ export default function DeckStudio() {
           <ToolBtn label={tt("Table")} d="M3 5h18v14H3zM3 10h18M3 15h18M9 5v14M15 5v14" onClick={insert.table} />
           <ToolBtn label={tt("QR")} d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM14 18h2M18 14h2" onClick={insert.qr} />
         </div>
-        <div className="ds-tool-group">
-          <button type="button" onClick={undo} disabled={!ed.canUndo} title={tt("Undo (Ctrl Z)")} aria-label={tt("Undo")}>↶</button>
-          <button type="button" onClick={redo} disabled={!ed.canRedo} title={tt("Redo (Ctrl Y)")} aria-label={tt("Redo")}>↷</button>
-        </div>
+        <History editor={{ undo, redo, canUndo: ed.canUndo, canRedo: ed.canRedo }} />
         <div className="ds-tool-group ds-zoom">
           <button type="button" aria-label={tt("Zoom out")} onClick={() => setZoom(Math.max(0.15, scale - 0.1))}>−</button>
           <button type="button" onClick={() => setZoom("fit")} aria-pressed={zoom === "fit"}>{Math.round(scale * 100)}%</button>
@@ -153,7 +151,9 @@ export default function DeckStudio() {
         <span className="ds-spacer" />
         <span className="ds-status" role="status">{status}</span>
         <ProjectLibrary value={deck} valid={isDeck} name="slide-decks" defaultName={deck.title} onLoad={d => { commit(d); setCur(0); setSel([]); }} />
-        <button type="button" className="ds-export-btn" onClick={() => setModal("export")}>{tt("Export")}</button>
+        <ToolSlot name="primary">
+          <button type="button" className="ds-export-btn" onClick={() => setModal("export")}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19h14" /></svg>{tt("Download")}</button>
+        </ToolSlot>
         <button type="button" className="ds-present-btn" onClick={() => setPresenting(cur)} title={tt("Present (F5)")}>
           ▶ {tt("Present")}
         </button>

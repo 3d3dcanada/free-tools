@@ -825,7 +825,7 @@ export default function PdfToolkit({
               </span>
               <strong>{tr(photos ? "A document from your pictures." : "Your pages, in order.")}</strong>
               <span>
-                {tr(loading ? "Opening files locally…" : photos ? "Drop images to choose their order and paper size." : "Drop PDFs to preview, arrange and export.")}
+                {tr(loading ? "Opening files locally…" : photos ? "Add images to choose their order and paper size." : "Add PDFs to preview, arrange and export.")}
               </span>
             </label>
           ) : (

@@ -1,0 +1,650 @@
+/*
+ * The tool page shell, rebuilt 2026-10-11 phone first.
+ *
+ * One bar, then the work. The site header is not drawn on a tool page and the
+ * site's bottom bar is, at every width, so the app is exactly the screen above
+ * that bar. Desktop (901 px and up): settings panel on the left, result on the
+ * right. Up to 900 px: the result owns the screen and the settings open as a
+ * sheet from the Edit Settings button at the foot, with the result kept in view
+ * above them. Every action that is not the work itself lives in the bar's menu.
+ */
+.growth-lab.tool-page {
+  --bar-h: 56px;
+  --panel: 380px;
+  --site-bar: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+  --glass: rgba(255, 255, 255, 0.86);
+  --hit: 44px;
+}
+
+/* The header spacer ContentPage keeps for the site header, which is not drawn here. */
+.ground-paper:has(.tool-page) .content-header-spacer {
+  display: none;
+}
+
+.growth-lab.tool-page {
+  .tool-app {
+    position: relative;
+    display: grid;
+    grid-template-rows: var(--bar-h) minmax(0, 1fr);
+    height: calc(100svh - var(--site-bar));
+    min-height: 420px;
+    margin: 0 -1.25rem;
+    background: #f6f4f0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  /* ---------- The bar ---------- */
+  .tool-bar {
+    position: relative;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-width: 0;
+    padding: 0 0.6rem;
+    border-bottom: 1px solid var(--line);
+    background: var(--glass);
+    backdrop-filter: blur(16px) saturate(1.2);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    box-shadow: 0 10px 30px -26px var(--accent);
+  }
+  .tool-bar::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 2px;
+    background: var(--accent);
+    box-shadow: 0 0 14px var(--accent);
+  }
+  .tool-bar button,
+  .tool-bar a.tool-back {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    min-width: var(--hit);
+    min-height: var(--hit);
+    padding: 0 0.6rem;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--ink);
+    font: 600 11px/1 var(--mono);
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    text-transform: uppercase;
+    box-shadow: none;
+    cursor: pointer;
+  }
+  .tool-bar button:hover:not(:disabled),
+  .tool-bar a.tool-back:hover {
+    border-color: var(--line-strong);
+    background: #fff;
+  }
+  .tool-bar button:disabled {
+    opacity: 0.32;
+    cursor: default;
+  }
+  .tool-bar svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.9;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .tool-bar .tool-more-button svg circle {
+    fill: currentColor;
+    stroke: none;
+  }
+  .tool-back > span:first-child {
+    font: 600 18px/1 var(--sans, inherit);
+  }
+  .tool-back-label {
+    display: none;
+  }
+  .tool-bar > .tool-icon {
+    display: none;
+    flex: none;
+  }
+  .tool-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    color: var(--ink);
+    font-size: 1.02rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .tool-bar .tool-bar-quick,
+  .tool-bar .tool-find,
+  .tool-bar .tool-panel-toggle {
+    display: none;
+  }
+  .tool-history,
+  .tool-primary {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: 0.15rem;
+  }
+  .tool-history:empty,
+  .tool-primary:empty {
+    display: none;
+  }
+  .tool-history .history {
+    display: flex;
+    gap: 0.1rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+  .tool-history .history button {
+    min-width: 40px;
+    padding: 0;
+  }
+  .tool-primary button {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--ink);
+    box-shadow: 0 0 24px -10px var(--accent);
+  }
+  .tool-primary button:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: var(--accent);
+    filter: brightness(1.07);
+  }
+
+  /* The one menu. */
+  .tool-more {
+    position: relative;
+    flex: none;
+  }
+  .tool-more-button[aria-expanded="true"] {
+    border-color: var(--accent) !important;
+    background: #fff !important;
+  }
+  .tool-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    z-index: 70;
+    display: grid;
+    width: min(290px, calc(100vw - 1.2rem));
+    max-height: calc(100svh - var(--bar-h) - var(--site-bar) - 1.5rem);
+    overflow: auto;
+    padding: 0.4rem;
+    border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line-strong));
+    border-radius: 14px;
+    background: rgba(250, 248, 245, 0.97);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    box-shadow:
+      0 24px 60px -28px rgba(0, 0, 0, 0.55),
+      0 0 40px -22px var(--accent),
+      inset 0 1px 0 #fff;
+  }
+  .tool-menu[hidden] {
+    display: none;
+  }
+  .tool-menu-slot {
+    display: contents;
+  }
+  .tool-menu > button,
+  .tool-menu > a,
+  .tool-menu-slot > button,
+  .tool-menu .share-box > button {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    width: 100%;
+    min-height: 48px;
+    padding: 0.55rem 0.8rem;
+    border: 0;
+    border-radius: 9px;
+    background: none;
+    color: var(--ink);
+    font: 650 14.5px/1.2 var(--sans, inherit);
+    letter-spacing: normal;
+    text-align: left;
+    text-decoration: none;
+    text-transform: none;
+    box-shadow: none;
+    cursor: pointer;
+  }
+  .tool-menu > button:hover,
+  .tool-menu > a:hover,
+  .tool-menu-slot > button:hover,
+  .tool-menu .share-box > button:hover {
+    background: color-mix(in srgb, var(--accent) 12%, #fff);
+  }
+  .tool-menu > a {
+    margin-top: 0.3rem;
+    border-top: 1px solid var(--line);
+    border-radius: 0 0 9px 9px;
+    color: var(--accent-ink);
+  }
+  .tool-menu .share-box {
+    position: static;
+  }
+  .tool-menu .share-menu {
+    position: static;
+    min-width: 0;
+    margin: 0 0 0.3rem 0.8rem;
+    padding: 0.1rem 0 0.1rem 0.5rem;
+    border: 0;
+    border-left: 2px solid var(--accent);
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+  .tool-menu .share-menu a,
+  .tool-menu .share-menu button {
+    min-height: 42px;
+    font-size: 13.5px;
+  }
+
+  /* ---------- The work ---------- */
+  .tool-content {
+    position: relative;
+    min-height: 0;
+    overflow: hidden;
+  }
+  .tool-content > .workspace,
+  .tool-content > section {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+  }
+  .tool-content > .workspace > section {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .tool-content > .workspace > details,
+  .tool-content > .workspace > section > details {
+    flex: none;
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.55);
+  }
+  .tool-content .two-column,
+  .tool-content .two-column.qr-workspace {
+    display: grid;
+    flex: 1;
+    grid-template-columns: var(--panel) minmax(0, 1fr);
+    gap: 0;
+    min-height: 0;
+    height: 100%;
+  }
+  .tool-content .two-column > .controls {
+    max-width: none;
+    min-width: 0;
+    min-height: 0;
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: 1rem 1.15rem 2.5rem;
+    border-right: 1px solid var(--line);
+    background: rgba(255, 255, 255, 0.8);
+    scrollbar-width: thin;
+  }
+  .tool-content .two-column > .output {
+    position: relative;
+    top: auto;
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    margin: 0;
+    overflow: auto;
+    padding: clamp(1rem, 2.4vw, 2rem);
+    background:
+      radial-gradient(60% 50% at 50% 30%, color-mix(in srgb, var(--accent) 10%, transparent), transparent 70%),
+      radial-gradient(circle at 1px 1px, rgba(10, 10, 10, 0.09) 1px, transparent 0) 0 0 / 22px 22px,
+      #f3f1ec;
+  }
+  .tool-app[data-panel="closed"] .two-column,
+  .tool-app[data-panel="closed"] .two-column.qr-workspace {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .tool-app[data-panel="closed"] .two-column > .controls:not(.pw-panel) {
+    display: none;
+  }
+  .tool-app[data-panel="closed"] .pw .two-column > .controls {
+    display: none;
+  }
+
+  /* Result columns that are not a dark stage: the work on top, one Download at the foot. */
+  .tool-content .two-column > .output:not(.ws-stage) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    overflow: hidden;
+  }
+  .tool-content .output-scroll {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    overflow: auto;
+    container-type: size;
+  }
+  .tool-content .output-scroll > * {
+    max-width: 920px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .tool-content .output-actions {
+    flex: none;
+    width: 100%;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+  .tool-content .qr-output .preview {
+    width: min(100%, 440px, calc(100cqh - 5.5rem));
+    max-width: none;
+    margin: 0.2rem auto 0.8rem;
+  }
+  .tool-content .qr-output .scan-status {
+    max-width: 440px;
+    margin-inline: auto;
+  }
+
+  .tool-content .invoice-preview th {
+    white-space: nowrap;
+  }
+
+  /* ---------- One Download ---------- */
+  .exportbar {
+    position: relative;
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .exportbar .export-main {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+    min-height: 50px;
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    background: var(--accent);
+    color: var(--ink);
+    font: 700 13px/1 var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    box-shadow:
+      0 0 30px -12px var(--accent),
+      inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  }
+  .exportbar .export-main:hover:not(:disabled) {
+    filter: brightness(1.07);
+  }
+  .exportbar .export-main:disabled {
+    opacity: 0.45;
+  }
+  .exportbar .export-main svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .export-caret {
+    font-size: 12px;
+  }
+  .export-menu {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 8px);
+    left: 0;
+    z-index: 40;
+    display: grid;
+    padding: 0.35rem;
+    border: 1px solid color-mix(in srgb, var(--accent) 40%, var(--line-strong));
+    border-radius: 14px;
+    background: rgba(250, 248, 245, 0.98);
+    box-shadow:
+      0 -18px 50px -26px rgba(0, 0, 0, 0.5),
+      0 0 40px -24px var(--accent);
+  }
+  .exportbar .export-menu button,
+  .exportbar .export-menu button:first-child {
+    justify-content: flex-start;
+    min-height: 46px;
+    padding: 0.5rem 0.8rem;
+    border: 0;
+    border-radius: 9px;
+    background: none;
+    color: var(--ink);
+    font: 650 14.5px/1.2 var(--sans, inherit);
+    letter-spacing: normal;
+    text-align: left;
+    text-transform: none;
+    box-shadow: none;
+    filter: none;
+  }
+  .exportbar .export-menu button:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--accent) 12%, #fff);
+  }
+  .exportbar .export-status {
+    margin: 0.35rem 0 0;
+    text-align: center;
+  }
+  .exportbar .export-status:empty {
+    display: none;
+  }
+
+  .tool-sheet-toggle {
+    display: none;
+  }
+
+  /* ---------- Below the app ---------- */
+  .tool-below .tool-headline {
+    margin: 0 0 0.6rem;
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+  }
+
+  /* The guide, feedback and finder sheets: no site header above them here. */
+  .tool-guide-panel {
+    top: 0;
+    bottom: var(--site-bar);
+  }
+
+  /* ---------- Desktop ---------- */
+  @media (min-width: 901px) {
+    .tool-bar {
+      gap: 0.5rem;
+      padding: 0 1rem;
+    }
+    .tool-back-label {
+      display: inline;
+    }
+    .tool-bar a.tool-back {
+      border-color: var(--line-strong);
+    }
+    .tool-app:not(.tool-app-wide) .tool-bar .tool-panel-toggle,
+    .tool-bar .tool-find {
+      display: inline-flex;
+    }
+    .tool-panel-toggle[aria-pressed="true"] {
+      color: var(--accent-ink);
+    }
+    .tool-bar > .tool-icon {
+      display: grid;
+    }
+    .tool-name {
+      flex: 0 1 auto;
+      margin-right: auto;
+      font-size: 1.2rem;
+    }
+    .tool-menu-find {
+      display: none !important;
+    }
+  }
+  @media (min-width: 1280px) {
+    .tool-bar .tool-bar-quick {
+      display: flex;
+      flex: 0 1 auto;
+      gap: 0.1rem;
+      min-width: 0;
+      overflow: hidden;
+    }
+    .tool-bar-quick a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 40px;
+      padding: 0 0.6rem;
+      border-radius: 8px;
+      color: var(--body);
+      font: 600 11px var(--mono);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+    .tool-bar-quick a:hover,
+    .tool-bar-quick a[aria-current] {
+      background: color-mix(in srgb, var(--accent) 12%, #fff);
+      color: var(--ink);
+    }
+  }
+
+  /* ---------- Phones and small tablets ---------- */
+  @media (max-width: 900px) {
+    .tool-app {
+      margin: 0 -1rem;
+    }
+    .tool-app:not(.tool-app-wide) {
+      grid-template-rows: var(--bar-h) minmax(0, 1fr) auto;
+    }
+    .tool-content .two-column,
+    .tool-content .two-column.qr-workspace,
+    .tool-app[data-panel] .two-column {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-rows: minmax(0, 1fr);
+    }
+    .tool-app[data-view="result"] .two-column > .controls,
+    .tool-app[data-view="result"] .pw .two-column > .controls {
+      display: none;
+    }
+    .tool-app[data-view="edit"] .two-column {
+      grid-template-rows: minmax(0, 2fr) minmax(0, 3fr);
+    }
+    .tool-app[data-view="edit"] .two-column > .output {
+      grid-row: 1;
+    }
+    /* While editing, the result above the sheet is only the preview: Download waits for Done. */
+    .tool-app[data-view="edit"] .output-actions,
+    .tool-app[data-view="edit"] .output-scroll > :not(.preview, article) {
+      display: none;
+    }
+    .tool-app[data-view="edit"] .two-column > .controls,
+    .tool-app[data-view="edit"] .pw .two-column > .controls {
+      position: relative;
+      inset: auto;
+      grid-row: 2;
+      display: block;
+      width: auto;
+      padding: 1rem 1rem 2rem;
+      border: 0;
+      border-top: 1px solid var(--accent-line, var(--accent));
+      border-radius: 18px 18px 0 0;
+      background: #faf8f5;
+      box-shadow: 0 -18px 40px -26px rgba(0, 0, 0, 0.45);
+    }
+    .tool-content .two-column > .output {
+      padding: 0.75rem;
+    }
+    .tool-sheet-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.55rem;
+      width: 100%;
+      min-height: 50px;
+      margin: 0;
+      border: 0;
+      border-top: 1px solid var(--line);
+      border-radius: 0;
+      background: var(--glass);
+      color: var(--ink);
+      font: 700 12px/1 var(--mono);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      box-shadow: inset 0 2px 0 -1px color-mix(in srgb, var(--accent) 60%, transparent);
+    }
+    .tool-sheet-toggle span {
+      color: var(--accent-ink);
+      font-size: 16px;
+    }
+    .tool-app[data-view="edit"] .tool-sheet-toggle {
+      background: var(--accent);
+      box-shadow: 0 0 30px -12px var(--accent);
+    }
+    .tool-app[data-view="edit"] .tool-sheet-toggle span {
+      color: var(--ink);
+    }
+    .tool-guide-panel {
+      top: auto;
+      max-height: 86svh;
+      border-radius: 16px 16px 0 0;
+    }
+  }
+  @media (max-width: 650px) {
+    .tool-app {
+      --bar-h: 52px;
+    }
+    .tool-bar {
+      gap: 0.15rem;
+      padding: 0 0.35rem;
+    }
+    .tool-history .history button {
+      min-width: 38px;
+    }
+    /* The Download in the bar is its icon on a phone, so the tool keeps its name. */
+    .tool-primary button {
+      width: var(--hit);
+      padding: 0;
+      font-size: 0;
+      letter-spacing: 0;
+    }
+    .tool-name {
+      display: -webkit-box;
+      font-size: 0.95rem;
+      line-height: 1.1;
+      white-space: normal;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+    }
+    .tool-content .two-column > .output {
+      padding: 0.6rem;
+    }
+    /* Page tile actions stay inside a two-up tile. */
+    .tool-content .ws-stage .pdfw-tools {
+      left: 4px;
+      right: 4px;
+      justify-content: space-between;
+    }
+    .tool-content .ws-stage .pdfw-tools button {
+      width: 32px;
+      min-width: 32px;
+      min-height: 32px;
+    }
+  }
+}

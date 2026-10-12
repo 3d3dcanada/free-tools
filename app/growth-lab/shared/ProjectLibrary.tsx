@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { download } from "./browser";
 import Dialog from "./Dialog";
+import { ToolSlot } from "./chrome";
 import { useLocale, useT } from "./locale";
 import { changeLibrary, checkRevision, isLibrary, projectKey, projectName, readLibrary, type Project } from "./projects";
 
@@ -33,7 +34,9 @@ export default function ProjectLibrary<T>({ value, valid, onLoad, name, label = 
     onLoad(next); setOpen(false);
   };
   return <>
-    <button type="button" onClick={() => { refresh(); if (defaultName?.trim()) setTitle(defaultName.slice(0, 100)); setOpen(true); }} aria-haspopup="dialog">{tr(label)}</button>
+    <ToolSlot name="menu">
+      <button type="button" onClick={() => { refresh(); if (defaultName?.trim()) setTitle(defaultName.slice(0, 100)); setOpen(true); }} aria-haspopup="dialog">{tr(label)}</button>
+    </ToolSlot>
     <Dialog open={open} onClose={() => setOpen(false)} title={tr(label)} className="growth-lab library-layer">
       <section className="library-panel">
         <header><div><h2>{tr(label)}</h2><p className="fine">{tr("Saved only in this browser. Download backups to move devices or keep a permanent copy.")}</p></div>

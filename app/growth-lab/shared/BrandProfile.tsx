@@ -2,6 +2,7 @@ import { useState } from "react";
 import { imageFile, useLocalDraft } from "./browser";
 import { brandFields, brandLimits, emptyBrand, isBrand, type Brand } from "./brand";
 import Dialog from "./Dialog";
+import { ToolChrome, ToolSlot } from "./chrome";
 import { DraftRecovery } from "./kit";
 import { useT } from "./locale";
 import ProjectLibrary from "./ProjectLibrary";
@@ -15,7 +16,9 @@ export default function BrandProfile({ onApply, applyLabel, onLogo }: {
   const [open, setOpen] = useState(false), [error, setError] = useState("");
   const b = draft.value;
   return <>
-    <button type="button" aria-haspopup="dialog" onClick={() => setOpen(true)}>{tr("My Brand")}</button>
+    <ToolSlot name="menu">
+      <button type="button" aria-haspopup="dialog" onClick={() => setOpen(true)}>{tr("My Brand")}</button>
+    </ToolSlot>
     <Dialog open={open} title={tr("My Brand")} onClose={() => setOpen(false)} className="growth-lab library-layer">
       <section className="library-panel">
         <header><div><h2>{tr("My Brand")}</h2><p className="fine">{tr("Reuse your details, colours and logo across tools. Changes apply only when you choose an action below.")}</p></div><button type="button" aria-label={tr("Close")} onClick={() => setOpen(false)}>×</button></header>
@@ -33,7 +36,7 @@ export default function BrandProfile({ onApply, applyLabel, onLogo }: {
           <div className="library-actions">
             <button type="button" onClick={() => { onApply(b); setOpen(false); }}>{tr(applyLabel)}</button>
             {onLogo && <button type="button" disabled={!b.logo} onClick={() => { onLogo(b.logo); setOpen(false); }}>{tr("Insert Logo")}</button>}
-            <ProjectLibrary value={b} valid={isBrand} onLoad={draft.setValue} name="brand-profiles" defaultName={b.company || b.name} />
+            {/* Inside this dialog, not the tool menu. */}<ToolChrome.Provider value={null}><ProjectLibrary value={b} valid={isBrand} onLoad={draft.setValue} name="brand-profiles" defaultName={b.company || b.name} /></ToolChrome.Provider>
           </div>
         </div>
       </section>

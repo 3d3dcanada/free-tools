@@ -43,8 +43,8 @@ export const frenchUi: Record<string, string> = {
   "3D Model Viewer": "Visionneuse 3D",
   "Open STL, OBJ and 3MF files, measure them and check they fit your printer.": "Ouvrez des fichiers STL, OBJ et 3MF, mesurez-les et vérifiez qu’ils tiennent dans votre imprimante.",
   "Open": "Ouvrir",
-  "Drop images here": "Déposez vos images ici",
-  "or choose files from your device. Nothing leaves this browser.": "ou choisissez des fichiers sur votre appareil. Rien ne quitte ce navigateur.",
+  "Choose files from your device, or drop them here. Nothing leaves this browser.":
+    "Choisissez des fichiers sur votre appareil, ou déposez-les ici. Rien ne quitte ce navigateur.",
   "Typeface": "Police",
   "Sans": "Sans empattement",
   "Serif": "Avec empattement",
@@ -105,8 +105,8 @@ export const frenchUi: Record<string, string> = {
   "Choose at most 100 files.": "Choisissez au maximum 100 fichiers.",
   "Choose one file at a time.": "Choisissez un seul fichier à la fois.",
   "Each file must be smaller than 100 MB.": "Chaque fichier doit faire moins de 100 Mo.",
-  "Drop files here or choose from your device.":
-    "Déposez les fichiers ici ou choisissez-les sur votre appareil.",
+  "Choose from your device, or drop files here.":
+    "Choisissez sur votre appareil, ou déposez les fichiers ici.",
   "Free forever. No account, no watermark, no trial, no expiry. Nothing uploaded: your files never leave your device.":
     "Gratuit pour toujours. Sans compte, filigrane, essai ni expiration. Aucun fichier transmis: vos fichiers restent sur votre appareil.",
   "Preparing…": "Préparation…",
@@ -360,8 +360,8 @@ export const frenchUi: Record<string, string> = {
   Images: "Images",
   "Choose up to 20 images totalling less than 100 MB.":
     "Choisissez au maximum 20 images et moins de 100 Mo au total.",
-  "Drop one image or a batch. Up to 20 files / 100 MB total; 24 megapixels per image.":
-    "Déposez une image ou un lot. Maximum: 20 fichiers, 100 Mo au total et 24 mégapixels par image.",
+  "Add one image or a batch. Up to 20 files / 100 MB total; 24 megapixels per image.":
+    "Ajoutez une image ou un lot. Maximum: 20 fichiers, 100 Mo au total et 24 mégapixels par image.",
   "Output Format": "Format de sortie",
   "PNG (lossless)": "PNG (sans perte)",
   "Quality:": "Qualité:",
@@ -460,11 +460,11 @@ export const frenchUi: Record<string, string> = {
   "Rotate page": "Tourner la page",
   "Delete page": "Supprimer la page",
   "A document from your pictures.": "Un document à partir de vos images.",
-  "Drop images to choose their order and paper size.":
-    "Déposez les images pour choisir l’ordre et le format du papier.",
+  "Add images to choose their order and paper size.":
+    "Ajoutez des images pour choisir l’ordre et le format du papier.",
   "Your pages, in order.": "Vos pages, dans le bon ordre.",
-  "Drop PDFs to preview, arrange and export.":
-    "Déposez les PDF pour les prévisualiser, les organiser et les exporter.",
+  "Add PDFs to preview, arrange and export.":
+    "Ajoutez des PDF pour les prévisualiser, les organiser et les exporter.",
   "Download Page Images ZIP": "Télécharger les images des pages en ZIP",
   "Download Selected PDF": "Télécharger le PDF sélectionné",
   "Split Into Separate PDFs": "Créer un PDF par page",
@@ -584,7 +584,8 @@ export const frenchUi: Record<string, string> = {
   "Loading the local 3D viewer…": "Chargement de la visionneuse 3D locale…",
   "A dimensional cube illustrating model inspection": "Cube coté illustrant l’inspection d’un modèle",
   "Your geometry. Your device.": "Votre géométrie. Votre appareil.",
-  "Drop a model or open the sample cube.": "Déposez un modèle ou ouvrez le cube d’exemple.",
+  "Open a model or the sample cube.":
+    "Ouvrez un modèle ou le cube d’exemple.",
   "Dimensions XYZ": "Dimensions XYZ",
   Triangles: "Triangles",
   "Surface area": "Aire de surface",

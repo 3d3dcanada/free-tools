@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode, type SetState
 import { useLocalDraft } from "./browser";
 import { track } from "../../lib/analytics";
 import ProjectLibrary from "./ProjectLibrary";
+import { ToolSlot } from "./chrome";
 
 export function useEditor<T>(key: string | null, initial: T, valid: (v: unknown) => v is T, pristine: T[] = []) {
   const draft = useLocalDraft(key, initial, valid, pristine);
@@ -63,17 +64,21 @@ export function History({
 }) {
   const tr = useT();
 
+  // Undo and redo live in the tool bar; only a draft that could not load speaks up here.
   return (
-    <div className="history toolbar" aria-label={tr("Edit history")}>
-      <button onClick={editor.undo} disabled={!editor.canUndo}>
-        {tr("Undo")}
-      </button>
-      <button onClick={editor.redo} disabled={!editor.canRedo}>
-        {tr("Redo")}
-      </button>
-      <span className="fine">{tr("Ctrl/⌘ Z · Shift Z. Text fields use their own undo.")}</span>
+    <>
+      <ToolSlot name="history">
+        <div className="history" role="group" aria-label={tr("Edit history")}>
+          <button type="button" onClick={editor.undo} disabled={!editor.canUndo} aria-label={tr("Undo")} title={`${tr("Undo")} (Ctrl/⌘ Z)`}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5" /><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11" /></svg>
+          </button>
+          <button type="button" onClick={editor.redo} disabled={!editor.canRedo} aria-label={tr("Redo")} title={`${tr("Redo")} (Ctrl/⌘ Shift Z)`}>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5" /><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13" /></svg>
+          </button>
+        </div>
+      </ToolSlot>
       {editor.blocked && <DraftRecovery recover={editor.recover!} resume={editor.resume!} />}
-    </div>
+    </>
   );
 }
 
@@ -139,7 +144,7 @@ export function DropZone({
           }}
         />
       </label>
-      <small>{tr("Drop files here or choose from your device.")}</small>
+      <small>{tr("Choose from your device, or drop files here.")}</small>
       {children}
       {error && (
         <p role="alert" className="notice">
@@ -199,45 +204,84 @@ export function DataPromise({ slug }: { slug?: string }) {
   );
 }
 
+export type ExportAction = (() => Promise<void> | void) | { run: () => Promise<void> | void; disabled?: boolean };
+
+/**
+ * One Download button. With a single format it saves at once; with several it
+ * opens a short list of the formats (2026-10-11: a row of six buttons hid the
+ * QR code on a phone).
+ */
 export function ExportBar({
   actions,
   disabled = false,
+  label = "Download",
 }: {
-  actions: Record<string, () => Promise<void> | void>;
+  actions: Record<string, ExportAction>;
   disabled?: boolean;
+  label?: string;
 }) {
   const tr = useT();
   const [busy, setBusy] = useState("");
   const [message, setMessage] = useState("");
+  const [open, setOpen] = useState(false);
+  const box = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const close = (e: PointerEvent | KeyboardEvent) => {
+      if (e instanceof KeyboardEvent ? e.key === "Escape" : !box.current?.contains(e.target as Node)) setOpen(false);
+    };
+    document.addEventListener("pointerdown", close);
+    document.addEventListener("keydown", close);
+    return () => {
+      document.removeEventListener("pointerdown", close);
+      document.removeEventListener("keydown", close);
+    };
+  }, [open]);
+  const list = Object.entries(actions).map(([name, a]) =>
+    typeof a === "function" ? { name, run: a, off: disabled } : { name, run: a.run, off: disabled || !!a.disabled },
+  );
+  async function run(name: string, task: () => Promise<void> | void) {
+    setOpen(false);
+    setBusy(name);
+    setMessage("");
+    try {
+      await task();
+      setMessage(`${name}: ready.`);
+      // A free tool export, counted (2026-10-09). Only the page and the export kind,
+      // never a file name, size or anything typed. Uses content_cta, which the
+      // analytics worker already accepts.
+      track("content_cta", { to: window.location.pathname, kind: `tool_export:${name}` });
+    } catch (e) {
+      setMessage((e as Error).message);
+    } finally {
+      setBusy("");
+    }
+  }
+  const single = list.length === 1 ? list[0] : null;
   return (
-    <div>
-      <div className="exportbar">
-        {Object.entries(actions).map(([label, run]) => (
-          <button
-            key={label}
-            disabled={disabled || !!busy}
-            onClick={async () => {
-              setBusy(label);
-              setMessage("");
-              try {
-                await run();
-                setMessage(`${label}: ready.`);
-                // A free tool export, counted (2026-10-09). Only the page and the export kind,
-                // never a file name, size or anything typed. Uses content_cta, which the
-                // analytics worker already accepts.
-                track("content_cta", { to: window.location.pathname, kind: `tool_export:${label}` });
-              } catch (e) {
-                setMessage((e as Error).message);
-              } finally {
-                setBusy("");
-              }
-            }}
-          >
-            {tr(busy === label ? "Preparing…" : label)}
-          </button>
-        ))}
-      </div>
-      <p role="status" className="fine">
+    <div className="exportbar" ref={box}>
+      <button
+        type="button"
+        className="export-main"
+        disabled={!!busy || (single ? single.off : list.every((a) => a.off))}
+        aria-haspopup={single ? undefined : "menu"}
+        aria-expanded={single ? undefined : open}
+        onClick={() => (single ? void run(single.name, single.run) : setOpen((o) => !o))}
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19h14" /></svg>
+        {tr(busy ? "Preparing…" : single ? single.name : label)}
+        {!single && <span className="export-caret" aria-hidden="true">▾</span>}
+      </button>
+      {!single && open && (
+        <div className="export-menu" role="menu">
+          {list.map((a) => (
+            <button key={a.name} type="button" role="menuitem" disabled={a.off} onClick={() => void run(a.name, a.run)}>
+              {tr(a.name)}
+            </button>
+          ))}
+        </div>
+      )}
+      <p role="status" className="fine export-status">
         {tr(busy || message)}
       </p>
     </div>
