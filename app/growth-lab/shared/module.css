@@ -1534,7 +1534,7 @@
     letter-spacing: 0.16em;
     text-transform: uppercase;
   }
-  .hub-search + p[role="status"] {
+  .hub-status {
     max-width: 58rem;
     margin: 0.8rem auto 1.4rem;
     font-family: var(--mono);

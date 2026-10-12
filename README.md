@@ -181,4 +181,9 @@ The 3D3D name and logo are not covered by the licence.
 
 ## Contributing
 
+The lessons are the part that most wants help. If a lesson is wrong, out of date, unclear or missing
+something you learned the hard way at the printer, open a pull request against its file in
+`app/growth-lab/academy/lessons/` (French in `academy/fr/`) or an issue with the passage and the fix. Tool fixes and French wording are just
+as welcome.
+
 See [`CONTRIBUTING.md`](CONTRIBUTING.md). To report a security problem, see [`SECURITY.md`](SECURITY.md).

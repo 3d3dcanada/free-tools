@@ -140,7 +140,7 @@ function Hub({ guide }: { guide: Guide }) {
           ))}
         </div>
       )}
-      <p role="status" className="fine">
+      <p role="status" className="fine hub-status">
         {results.length} {results.length === 1 ? tr("tool") : tr("tools")}
         {query ? (locale === "fr" ? ` pour « ${query} »` : ` matching “${query}”`) : tr(" ready to use")}.
       </p>

@@ -1,9 +1,9 @@
 {
   "source": "3d3d-site app/growth-lab",
-  "sourceCommit": "6adab38",
+  "sourceCommit": "d78955c",
   "sourceHadUncommittedChanges": false,
   "files": 699,
-  "treeSha256": "5b3c5819e59c70eb68118ca62428a7a4124e1a43497f0f0bae9ea12ffdc75557",
+  "treeSha256": "c212ba6f1039e480f5a60cc28ee3dea147a66d9365dd78696a5b84d60451d278",
   "syncedTests": [
     "tests/design-studio.test.mts",
     "tests/draft-language.test.mts",
