@@ -191,7 +191,7 @@ export const academyCatalog = [
     },
     description: {
       en: "Carbon fibre is an additive, not one universal plastic.",
-      fr: "Vérifiez le polymère de base, l’abrasion et l’humidité. Un PETG-CF ne se prépare pas automatiquement comme un PA-CF.",
+      fr: "Vérifiez le polymère de base, l’abrasion et l’humidité. Un PETG-CF ne se prépare pas automatiquement comme un PC-CF.",
     },
   },
   {

@@ -58,8 +58,8 @@ export const diagramDescriptions: [string, string][] = [
     "L’enceinte présente deux voies distinctes : stabilité thermique autour de la pièce et maîtrise des émissions. Aucune vérification ne remplace l’autre.",
   ],
   [
-    "PETG-CF and PA-CF spools point to separate requirements. A storage box is distinguished from an active dryer, with no universal drying temperature.",
-    "Les bobines PETG-CF et PA-CF renvoient à des exigences distinctes. Une boîte de stockage se distingue d’un séchoir actif, sans température universelle.",
+    "PETG-CF and PC-CF spools point to separate requirements. A storage box is distinguished from an active dryer, with no universal drying temperature.",
+    "Les bobines PETG-CF et PC-CF renvoient à des exigences distinctes. Une boîte de stockage se distingue d’un séchoir actif, sans température universelle.",
   ],
   [
     "A plate identity tag leads to the documented routine. Loose first lines and an over-bonded part show opposite outcomes to investigate.",

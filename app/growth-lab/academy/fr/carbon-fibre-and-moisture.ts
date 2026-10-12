@@ -2,7 +2,7 @@ import { frenchLesson } from "./lesson";
 import type { ReadingSection } from "../types";
 const content = frenchLesson(15, {
   summary:
-    "Un filament chargé en fibres de carbone conserve les exigences de son polymère de base. PETG-CF et PA-CF ne partagent pas automatiquement la même préparation. Cette leçon gratuite distingue grade, abrasion, séchage et stockage au sec avant un essai. Aucun fichier n’est téléversé; vos réponses et votre progression restent sur votre appareil.",
+    "Un filament chargé en fibres de carbone conserve les exigences de son polymère de base. PETG-CF et PC-CF ne partagent pas automatiquement la même préparation. Cette leçon gratuite distingue grade, abrasion, séchage et stockage au sec avant un essai. Aucun fichier n’est téléversé; vos réponses et votre progression restent sur votre appareil.",
   learn: "Vérifier polymère de base, résistance à l’abrasion du matériel et procédure de séchage.",
   steps: [
     "Lisez le nom complet et la fiche technique. Identifiez le polymère et la propriété utile au projet au lieu de conclure simplement que le carbone est plus résistant.",
