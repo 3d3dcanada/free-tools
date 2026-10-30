@@ -2,6 +2,8 @@ import { initialTag, payload, safeUrl } from "../qr-code/model";
 import { isDeck, themeById, uid, type Background, type Deck, type El, type Slide } from "../deck-studio/model";
 import { localize, tl } from "./i18n";
 import { TEMPLATES, type Template } from "./templates";
+import { SELLER_CARDS, SELLER_FLYERS, SELLER_POSTERS, SELLER_SOCIAL } from "./templates/seller";
+import { SITE_BASE } from "../../../lib/free-tools-host";
 
 /*
  * The design studios (2026-10-09): flyer, poster, social image and
@@ -144,6 +146,7 @@ export function fillBind(bind: string, d: CardDetails): string {
 /** What the card's QR encodes: the website, or the details as a vCard. Throws a readable error. */
 export function cardQr(d: CardDetails, kind: "url" | "vcard"): string {
   if (kind === "url") {
+    if (SELLER) return sellerLink(SELLER);
     if (!d.website.trim()) throw new Error("Add a website for the QR code, or switch it to a contact card.");
     return safeUrl(fullUrl(d.website));
   }
@@ -158,7 +161,7 @@ export function cardQr(d: CardDetails, kind: "url" | "vcard"): string {
       company: d.company,
       phone: d.phone,
       email: d.email,
-      url: d.website.trim() ? fullUrl(d.website) : "",
+      url: SELLER ? sellerLink(SELLER) : d.website.trim() ? fullUrl(d.website) : "",
       address: d.address,
     },
   });
@@ -190,10 +193,39 @@ export function isDesign(v: unknown, studio: StudioId): v is Design {
   );
 }
 
-export const templatesOf = (studio: StudioId) => TEMPLATES[studio];
+/* ---------------------------------------------------------------- Sellers */
+
+/*
+ * Seller mode: a 3D3D seller opens a studio from the makers app with
+ * ?seller=<their card code>. 3D3D's own designs come first, and every QR code
+ * opens 3D3D's quote form with that code, so a customer who scans it is the
+ * seller's. The code is all that travels: no name, no contact.
+ */
+let SELLER: string | null = null; // ponytail: one seller per page load, read from the address
+export function readSeller(): string | null {
+  if (typeof window === "undefined") return null;
+  const c = new URLSearchParams(window.location.search).get("seller");
+  SELLER = c && /^[a-f0-9]{10}$/.test(c) ? c : null;
+  return SELLER;
+}
+export const sellerLink = (c: string) =>
+  `${SITE_BASE || (typeof window === "undefined" ? "" : window.location.origin)}/quote?utm_source=3d3d-team&utm_medium=card&utm_campaign=${c}`;
+const SELLER_TEMPLATES: Record<StudioId, Template[]> = { card: SELLER_CARDS, flyer: SELLER_FLYERS, poster: SELLER_POSTERS, social: SELLER_SOCIAL };
+const SELLER_DETAILS: CardDetails = {
+  name: "Your Name",
+  role: "Independent seller for 3D3D",
+  company: "3D3D",
+  phone: "",
+  email: "",
+  website: "3d3d.ca",
+  address: "",
+  tagline: "Parts, products, websites and private AI. Made in Fredericton.",
+};
+
+export const templatesOf = (studio: StudioId) => (SELLER ? [...SELLER_TEMPLATES[studio], ...TEMPLATES[studio]] : TEMPLATES[studio]);
 export const fileName = (d: Design) =>
   (d.title.trim().replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-|-$/g, "").slice(0, 60) || d.studio).toLowerCase();
-export const templateOf = (studio: StudioId, id: string): Template => TEMPLATES[studio].find((t) => t.id === id) ?? TEMPLATES[studio][0];
+export const templateOf = (studio: StudioId, id: string): Template => templatesOf(studio).find((t) => t.id === id) ?? templatesOf(studio)[0];
 
 /** A fresh design: the template drawn for the format, in the visitor's language. */
 export function buildDesign(
@@ -231,8 +263,16 @@ export function buildDesign(
     format: fmt.id,
     template: tpl.id,
   };
-  if (studio !== "card") return doc;
-  return applyDetails({ ...doc, details: card?.details ?? SAMPLE_DETAILS[locale], qrKind: card?.qrKind ?? "vcard" });
+  if (studio !== "card") {
+    if (!SELLER) return doc;
+    const link = sellerLink(SELLER);
+    return { ...doc, slides: doc.slides.map((s) => ({ ...s, els: s.els.map((e) => (e.type === "qr" ? { ...e, value: link } : e)) })) };
+  }
+  return applyDetails({
+    ...doc,
+    details: card?.details ?? (SELLER ? SELLER_DETAILS : SAMPLE_DETAILS[locale]),
+    qrKind: card?.qrKind ?? (SELLER ? "url" : "vcard"),
+  });
 }
 
 /** Fill every bound text and QR from the card details. */

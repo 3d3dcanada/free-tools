@@ -25,6 +25,7 @@ import {
   normalizeCard,
   reflow,
   templatesOf,
+  readSeller,
   type CardField,
   type Design,
   type Format,
@@ -107,8 +108,10 @@ export default function PageStudio({ studio }: { studio: StudioId }) {
   const [decorations, setDecorations] = useState(false);
   const [insertOpen, setInsertOpen] = useState(false);
   const importPick = useRef<HTMLInputElement>(null);
+  // Seller mode (?seller=<code>): 3D3D's designs first, every code credits the seller, saved apart from other designs.
+  const seller = useMemo(() => readSeller(), []);
   const ed = useDeckEditor<Design>({
-    store: `3d3d:design-studio:${studio}:v1`,
+    store: `3d3d:design-studio:${studio}${seller ? ":seller" : ""}:v1`,
     start: (l) => buildDesign(studio, templatesOf(studio)[0].id, cfg.formats[0].id, l),
     valid: (v): v is Design => isDesign(v, studio),
     tooLarge: tt("Too large to autosave. Use Export, then Save Design File."),
@@ -298,6 +301,11 @@ export default function PageStudio({ studio }: { studio: StudioId }) {
             </div>
             <div className="ds-inspector-body">
               {ed.blocked && <DraftRecovery recover={ed.recover} resume={ed.resume} />}
+              {seller && (
+                <p className="ds-note ds-seller">
+                  {tt("Seller mode: every QR code in this design opens 3D3D's quote form with your seller code, so anyone who scans it is your customer. Keep the 3D3D logo as it is.")}
+                </p>
+              )}
               <div className="ds-reuse"><BrandProfile applyLabel={cardStudio ? "Apply Details & Colours" : "Apply Colours"} onApply={b => onDeck({ colors: { ...deck.colors, accent: b.accent, ink: b.ink, bg: b.paper }, ...(cardStudio ? { details: Object.fromEntries(CARD_FIELDS.map(k => [k, b[k]])) as Design["details"] } : {}) })}
                 onLogo={src => { const size = Math.min(ratio.w, ratio.h) * 0.2; ed.addEl(image(ratio.w - size * 1.25, size * 0.25, size, size, src, { fit: "contain", slot: "brand-logo" })); }} /></div>
               <Layers ed={ed} />
