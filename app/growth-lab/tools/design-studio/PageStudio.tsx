@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { SELLER_PHOTOS } from "../../../lib/free-tools-host";
 import { useLocale } from "../../shared/locale";
 import { download } from "../../shared/browser";
 import { track } from "../../../lib/analytics";
@@ -26,6 +27,7 @@ import {
   reflow,
   templatesOf,
   readSeller,
+  formatsFor,
   type CardField,
   type Design,
   type Format,
@@ -351,13 +353,25 @@ export default function PageStudio({ studio }: { studio: StudioId }) {
                       <span>{tt("Photo")} {i + 1}</span><strong>{tt(e.src ? "Replace Photo" : "Add Photo")}</strong>
                     </button>)}
                   </Section>}
+                  {seller && SELLER_PHOTOS.length > 0 && <Section title={tt("3D3D Photos")}>
+                    <p className="ds-note">{tt("Real 3D3D work. Tap one to put it in the selected photo frame, or on the page if none is selected.")}</p>
+                    <div className="ps-seller-photos">
+                      {SELLER_PHOTOS.map((p) => <button type="button" key={p.src} title={p.label} aria-label={tt("Use photo") + ": " + p.label} onClick={async () => {
+                        try {
+                          const b = await (await fetch(p.src)).blob();
+                          const frame = selected[0]?.type === "image" ? selected[0].id : undefined;
+                          await ed.onFile(new File([b], "3d3d-work", { type: b.type || "image/webp" }), frame);
+                        } catch { /* the editor shows its own message for an image it cannot read */ }
+                      }}><img src={p.src.replace(/\.(webp|jpe?g)$/, "-400.webp")} onError={(e) => { (e.currentTarget as HTMLImageElement).src = p.src; }} alt="" loading="lazy" /></button>)}
+                    </div>
+                  </Section>}
                   <BackgroundSection deck={deck} slide={slide} onSlide={(patch) => ed.setSlide((s) => ({ ...s, ...patch }), "slide:" + Object.keys(patch).join())} onPickImage={ed.pickImage} />
                 </>
               )}
               {tab === "design" && (
                 <>
                   <Section title={tt("Page Size")}>
-                    <FormatRows formats={cfg.formats} current={deck.format} onPick={setFormat} />
+                    <FormatRows formats={formatsFor(studio)} current={deck.format} onPick={setFormat} />
                   </Section>
                   <ThemeSection
                     deck={deck}
@@ -418,7 +432,7 @@ export default function PageStudio({ studio }: { studio: StudioId }) {
 
         {ed.modal === "formats" && (
           <Modal title={tt("Page Size")} onClose={() => ed.setModal(null)}>
-            <FormatRows formats={cfg.formats} current={deck.format} onPick={setFormat} />
+            <FormatRows formats={formatsFor(studio)} current={deck.format} onPick={setFormat} />
             <p className="ds-note ps-modal-note">{tt("Your words, photos and colours move to the new size. Undo brings back the last one.")}</p>
           </Modal>
         )}

@@ -13,7 +13,8 @@ import { SITE_BASE } from "../../../lib/free-tools-host";
  */
 
 export type StudioId = "flyer" | "poster" | "social" | "card";
-export type Format = { id: string; label: string; w: number; h: number; note: string };
+/** `seller`: offered only in seller mode (3D3D's own designs are drawn for it; other templates are not). */
+export type Format = { id: string; label: string; w: number; h: number; note: string; seller?: true };
 const IN = 72,
   MM = 72 / 25.4;
 
@@ -40,6 +41,8 @@ export const STUDIOS: Record<StudioId, Studio> = {
       { id: "a4", label: "A4", w: 210 * MM, h: 297 * MM, note: "210 × 297 mm" },
       { id: "a5", label: "A5", w: 148 * MM, h: 210 * MM, note: "148 × 210 mm" },
       { id: "half", label: "Half Letter", w: 5.5 * IN, h: 8.5 * IN, note: "5.5 × 8.5 in" },
+      { id: "rack", label: "Rack Card", w: 4 * IN, h: 9 * IN, note: "4 × 9 in", seller: true },
+      { id: "counter", label: "Counter Card", w: 4 * IN, h: 6 * IN, note: "4 × 6 in", seller: true },
     ],
   },
   poster: {
@@ -146,7 +149,7 @@ export function fillBind(bind: string, d: CardDetails): string {
 /** What the card's QR encodes: the website, or the details as a vCard. Throws a readable error. */
 export function cardQr(d: CardDetails, kind: "url" | "vcard"): string {
   if (kind === "url") {
-    if (SELLER) return sellerLink(SELLER);
+    if (SELLER) return sellerLink(SELLER, "studio-card");
     if (!d.website.trim()) throw new Error("Add a website for the QR code, or switch it to a contact card.");
     return safeUrl(fullUrl(d.website));
   }
@@ -161,7 +164,7 @@ export function cardQr(d: CardDetails, kind: "url" | "vcard"): string {
       company: d.company,
       phone: d.phone,
       email: d.email,
-      url: SELLER ? sellerLink(SELLER) : d.website.trim() ? fullUrl(d.website) : "",
+      url: SELLER ? sellerLink(SELLER, "studio-card") : d.website.trim() ? fullUrl(d.website) : "",
       address: d.address,
     },
   });
@@ -208,8 +211,9 @@ export function readSeller(): string | null {
   SELLER = c && /^[a-f0-9]{10}$/.test(c) ? c : null;
   return SELLER;
 }
-export const sellerLink = (c: string) =>
-  `${SITE_BASE || (typeof window === "undefined" ? "" : window.location.origin)}/quote?utm_source=3d3d-team&utm_medium=card&utm_campaign=${c}`;
+/** The seller's quote link; `piece` says which studio made it (hub-v3 W05), the code keeps the customer theirs. */
+export const sellerLink = (c: string, piece: string) =>
+  `${SITE_BASE || (typeof window === "undefined" ? "" : window.location.origin)}/quote?utm_source=3d3d-team&utm_medium=card&utm_campaign=${c}&utm_content=${piece}`;
 const SELLER_TEMPLATES: Record<StudioId, Template[]> = { card: SELLER_CARDS, flyer: SELLER_FLYERS, poster: SELLER_POSTERS, social: SELLER_SOCIAL };
 const SELLER_DETAILS: CardDetails = {
   name: "Your Name",
@@ -222,6 +226,8 @@ const SELLER_DETAILS: CardDetails = {
   tagline: "Parts, products, websites and private AI. Made in Fredericton.",
 };
 
+/** The sizes a studio offers right now: the seller-only ones appear in seller mode. */
+export const formatsFor = (studio: StudioId) => STUDIOS[studio].formats.filter((f) => !f.seller || SELLER);
 export const templatesOf = (studio: StudioId) => (SELLER ? [...SELLER_TEMPLATES[studio], ...TEMPLATES[studio]] : TEMPLATES[studio]);
 export const fileName = (d: Design) =>
   (d.title.trim().replace(/[^\p{L}\p{N}]+/gu, "-").replace(/^-|-$/g, "").slice(0, 60) || d.studio).toLowerCase();
@@ -265,7 +271,7 @@ export function buildDesign(
   };
   if (studio !== "card") {
     if (!SELLER) return doc;
-    const link = sellerLink(SELLER);
+    const link = sellerLink(SELLER, `studio-${studio}`);
     return { ...doc, slides: doc.slides.map((s) => ({ ...s, els: s.els.map((e) => (e.type === "qr" ? { ...e, value: link } : e)) })) };
   }
   return applyDetails({

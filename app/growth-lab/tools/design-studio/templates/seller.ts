@@ -31,21 +31,21 @@ const page = (title: string, body: string, rows: [string, string][]) => (w: numb
   return {
     bg: WHITE,
     els: [
-      ...lockup(U, 7, 5.5, 7),
-      T(U(60), U(7), U(33), U(3), "3d3d.ca", kick(U(2), { color: "#141717", align: "right", slot: "site" })),
-      ...stripe(U(7), U(14.5), U(86), U(0.6)),
-      T(U(7), U(19), U(86), U(24), title, disp(U(title.length > 24 ? 7.6 : 10.4), { color: "#141717", slot: "title" })),
-      T(U(7), U(43), U(80), U(10), body, copy(U(3), { color: "#2a2e2e", slot: "body" })),
+      ...lockup(U, 7, 7.5, 7),
+      T(U(60), U(9), U(33), U(3), "3d3d.ca", kick(U(2), { color: "#141717", align: "right", slot: "site" })),
+      ...stripe(U(7), U(16.5), U(86), U(0.6)),
+      T(U(7), U(20.5), U(86), U(23), title, disp(U(title.length > 24 ? 7.6 : 10.4), { color: "#141717", slot: "title" })),
+      T(U(7), U(44), U(80), U(10), body, copy(U(3), { color: "#2a2e2e", slot: "body" })),
       ...rows.flatMap(([t, d], i) => [
-        box(U(7), U(56 + i * 14), U(1.1), U(11), NEONS[i % 4], { slot: `bar${i}` }),
-        T(U(11), U(56 + i * 14), U(82), U(4.4), t, head(U(3.4), { color: "#141717", slot: `row${i}` })),
-        T(U(11), U(61 + i * 14), U(78), U(6), d, copy(U(2.4), { color: "#2a2e2e", slot: `rowtext${i}` })),
+        box(U(7), U(57 + i * 14), U(1.1), U(11), NEONS[i % 4], { slot: `bar${i}` }),
+        T(U(11), U(57 + i * 14), U(82), U(4.4), t, head(U(3.4), { color: "#141717", slot: `row${i}` })),
+        T(U(11), U(62 + i * 14), U(78), U(6), d, copy(U(2.4), { color: "#2a2e2e", slot: `rowtext${i}` })),
       ]),
-      box(U(7), U(H - 31), U(86), U(0.2), "#e3e6e6", { slot: "rule" }),
-      code(U(7), U(H - 27), U(19), "https://example.com", QR),
-      T(U(30), U(H - 26), U(63), U(5), "Scan to tell 3D3D what you need", head(U(3.5), { color: "#141717", slot: "scan" })),
-      T(U(30), U(H - 20.5), U(63), U(12), "Scan the code or go to 3d3d.ca/quote. Say what you need in your own words. 3D3D replies with a quote, and asking costs nothing.", copy(U(2.4), { color: "#2a2e2e", slot: "steps" })),
-      T(U(7), U(H - 5.5), U(86), U(3), "Your name · independent seller for 3D3D, paid by commission · info@3d3d.ca", mono(U(1.8), { color: "#4a5050", slot: "who" })),
+      box(U(7), U(H - 34), U(86), U(0.2), "#e3e6e6", { slot: "rule" }),
+      code(U(7), U(H - 30), U(19), "https://example.com", QR),
+      T(U(30), U(H - 29), U(63), U(5), "Scan to tell 3D3D what you need", head(U(3.5), { color: "#141717", slot: "scan" })),
+      T(U(30), U(H - 23.5), U(63), U(12), "Scan the code or go to 3d3d.ca/quote. Say what you need in your own words. 3D3D replies with a quote, and asking costs nothing.", copy(U(2.4), { color: "#2a2e2e", slot: "steps" })),
+      T(U(7), U(H - 10.5), U(86), U(3), "Your name · independent seller for 3D3D, paid by commission · info@3d3d.ca", mono(U(1.8), { color: "#4a5050", slot: "who" })),
     ],
   };
 };
@@ -72,11 +72,23 @@ const AI: [string, string][] = [
 const ALL_TITLE = "Need something made?",
   ALL_BODY = "3D printed parts and products, websites and software, and private AI systems. Made in Fredericton, New Brunswick.";
 
-/** A square, portrait or story post: the title big, one line, the code small. */
+/** A square, portrait or story post: the title big, one line, the code small. Wide banners (LinkedIn, X, Facebook
+ *  cover) get one row instead: mark, title and code side by side. */
 const post = (dark: boolean) => (w: number, h: number): Art => {
   const { H, U } = g(w, h);
   const ink = dark ? "#f5f5f5" : "#141717",
     soft = dark ? "#c9cfcf" : "#2a2e2e";
+  if (H < 50)
+    return {
+      bg: dark ? ({ kind: "solid", color: "#0b0d12" } as Art["bg"]) : WHITE,
+      els: [
+        ...lockup(U, 4, H * 0.2, H * 0.22, ink),
+        T(U(4), U(H * 0.48), U(56), U(H * 0.3), ALL_TITLE, disp(U(H * 0.17), { color: ink, slot: "title" })),
+        T(U(62), U(H * 0.2), U(16), U(H * 0.6), "Parts, products, websites and private AI. Made in Fredericton.", copy(U(H * 0.06), { color: soft, slot: "body" })),
+        code(U(96 - H * 0.6), U(H * 0.2), U(H * 0.6), "https://example.com", dark ? QR : { ...QR, bg: "#ffffff" }),
+        ...stripe(0, U(H - 1.2), w, U(1.2)),
+      ],
+    };
   return {
     bg: dark ? ({ kind: "solid", color: "#0b0d12" } as Art["bg"]) : WHITE,
     els: [

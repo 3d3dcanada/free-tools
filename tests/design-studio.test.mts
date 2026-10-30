@@ -9,7 +9,7 @@
  * Run: npm test (tests/run.mjs bundles and runs every test file).
  */
 import assert from "node:assert/strict";
-import { STUDIOS, buildDesign, normalizeCard, reflow, templatesOf, type Design, type StudioId } from "../app/growth-lab/tools/design-studio/model";
+import { STUDIOS, buildDesign, normalizeCard, readSeller, reflow, templatesOf, type Design, type StudioId } from "../app/growth-lab/tools/design-studio/model";
 import { shape, type El } from "../app/growth-lab/tools/deck-studio/model";
 import { CONTENT_FR } from "../app/growth-lab/tools/design-studio/content-fr";
 import { TEMPLATES, deckFromTemplate } from "../app/growth-lab/tools/deck-studio/layouts";
@@ -41,7 +41,7 @@ for (const studio of Object.keys(STUDIOS) as StudioId[]) {
   assert.ok(templates.length >= 12, `${studio}: at least 12 templates`);
   for (const t of templates) if (!CONTENT_FR[t.name]) untranslated.add(`template name: ${t.name}`);
   for (const t of templates)
-    for (const f of cfg.formats) {
+    for (const f of cfg.formats.filter((x) => !x.seller)) {
       const en = buildDesign(studio, t.id, f.id, "en"),
         fr = buildDesign(studio, t.id, f.id, "fr");
       assert.equal(en.slides.length, cfg.faces.length, `${studio}/${t.id}: one page per face`);
@@ -73,7 +73,7 @@ for (const studio of Object.keys(STUDIOS) as StudioId[]) {
 
 // A resize keeps a dropped photo, an edited title and something you added, and duplicates nothing.
 for (const studio of ["flyer", "poster", "social"] as StudioId[]) {
-  const formats = STUDIOS[studio].formats;
+  const formats = STUDIOS[studio].formats.filter((x) => !x.seller);
   for (const t of templatesOf(studio)) {
     let d: Design = buildDesign(studio, t.id, formats[0].id, "en");
     const page = d.slides[0];
@@ -161,4 +161,35 @@ if (untranslated.size) {
   console.log(`French missing for ${untranslated.size} sample lines:`);
   for (const s of untranslated) console.log("  " + JSON.stringify(s));
   process.exitCode = 1;
+}
+
+// Seller mode (hub-v3 W08): 3D3D's own designs at every size, seller-only sizes included, words inside the safe line,
+// and every QR code carries the seller's code and which studio made it.
+{
+  const g = globalThis as unknown as { window?: unknown };
+  g.window = { location: { search: "?seller=0a1b2c3d4e", origin: "https://3d3d.ca" } };
+  assert.equal(readSeller(), "0a1b2c3d4e");
+  let sellerChecks = 0;
+  for (const studio of Object.keys(STUDIOS) as StudioId[]) {
+    const cfg = STUDIOS[studio];
+    for (const t of templatesOf(studio).filter((x) => x.id.startsWith("3d3d-")))
+      for (const f of cfg.formats) {
+        const d = buildDesign(studio, t.id, f.id, "en");
+        const slots = d.slides.flatMap((p) => p.els.map((e) => e.slot));
+        for (const page of d.slides) assert.equal(new Set(page.els.map((e) => e.slot)).size, page.els.length, `${t.id}@${f.id}: slots are unique`);
+        assert.ok(slots.every(Boolean));
+        for (const page of d.slides)
+          for (const e of page.els) {
+            if (e.type === "qr") assert.match(e.value, new RegExp(`utm_campaign=0a1b2c3d4e&utm_content=studio-${studio}$`), `${t.id}@${f.id}: QR credits the seller`);
+            if (cfg.print && e.type === "text" && e.text.trim() && !e.rot) {
+              const m = cfg.safe - 0.5;
+              assert.ok(e.x >= m && e.y >= m && e.x + e.w <= f.w - m && e.y + e.h <= f.h - m, `${t.id}@${f.id}: "${e.text.slice(0, 20)}" sits outside the safe line`);
+            }
+          }
+        sellerChecks++;
+      }
+  }
+  console.log(`seller mode: ${sellerChecks} designs checked`);
+  g.window = undefined;
+  readSeller();
 }

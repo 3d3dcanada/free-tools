@@ -26,6 +26,7 @@ const FETCH_ALLOWED = {
   "app/growth-lab/tools/invoice-generator/export.ts": ["fetch(`/pdf-assets/standard_fonts/"], // a font file shipped in public/
   "app/growth-lab/tools/design-studio/export.ts": ["fetch(url"], // a bundled Geist font file, to embed it in an SVG
   "app/growth-lab/tools/deck-studio/export.ts": ["fetch(href"], // this page's own preloaded font, to embed it in an HTML export
+  "app/growth-lab/tools/design-studio/PageStudio.tsx": ["fetch(p.src"], // seller mode photo picker: same-origin images from SELLER_PHOTOS, which is empty in this copy
 };
 const found = {};
 for (const f of sources) {

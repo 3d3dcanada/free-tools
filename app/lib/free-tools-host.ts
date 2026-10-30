@@ -16,3 +16,6 @@ export const TURNSTILE_SITE_KEY: string | null = (import.meta.env.VITE_TURNSTILE
 
 /** Prefix for links from a tool to a page of the 3D3D site. */
 export const SITE_BASE = "https://3d3d.ca";
+
+/** Seller mode photo picker: the 3D3D site fills this with its own published work; this copy has none, so the picker hides. */
+export const SELLER_PHOTOS: { src: string; label: string }[] = [];
