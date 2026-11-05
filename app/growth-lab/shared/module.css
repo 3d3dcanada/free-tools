@@ -1421,6 +1421,72 @@
     text-transform: uppercase;
     color: var(--accent-ink);
   }
+  /*
+   * 2026-11-05: the hub's shelves are bands on a photograph, not bare paper. Each runs
+   * full-bleed over a wall of our own app screens (the software grounds the site picks for
+   * /tools), its heading on glass and its cards solid on the picture, so no word is printed on
+   * the photograph. The three walls rotate with position, so neighbours differ, and the 800 px
+   * files serve phones. Plain CSS and literal /media paths: this folder imports nothing from
+   * the site beyond its four host files.
+   */
+  .hub-category.hub-cards,
+  section.hub-design {
+    position: relative;
+    isolation: isolate;
+    width: calc(100% + 2.5rem);
+    max-width: none;
+    margin: 0 -1.25rem;
+    padding: 2.6rem max(1.25rem, calc((100% + 2.5rem - 88rem) / 2));
+    border: 0;
+    /* the warm paper tone is the fallback while the picture loads (and in the standalone copy,
+       which does not carry the site's /media files) */
+    background: var(--ground) center / cover no-repeat, #f1eee9;
+  }
+  section.hub-design {
+    margin-block: 1.6rem;
+  }
+  .hub-category.hub-cards::before,
+  section.hub-design::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(180deg, rgba(250, 248, 245, 0.64) 0%, rgba(250, 248, 245, 0) 14%, rgba(250, 248, 245, 0) 86%, rgba(250, 248, 245, 0.64) 100%),
+      linear-gradient(100deg, rgba(250, 248, 245, 0.44) 0%, rgba(250, 248, 245, 0.36) 45%, rgba(250, 248, 245, 0.3) 100%);
+  }
+  .hub-category.hub-cards > .hub-category-head,
+  section.hub-design > div:first-child {
+    padding: 1.1rem 1.4rem;
+    border: 1px solid var(--accent-line);
+    border-radius: 16px;
+    /* 0.88, not the 0.74 of --glass: the small accent-ink tool count has to clear 4.5:1 over the
+       darkest part of a wall (modelled 4.7:1 at 0.88, 4.2:1 at 0.82) */
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 0 34px -12px color-mix(in srgb, var(--accent) 55%, transparent);
+  }
+  :is(.hub-category.hub-cards, section.hub-design):nth-of-type(3n) {
+    --ground: url("/media/screens/walls/wall-a-800.webp");
+  }
+  :is(.hub-category.hub-cards, section.hub-design):nth-of-type(3n + 1) {
+    --ground: url("/media/screens/walls/wall-b-800.webp");
+  }
+  :is(.hub-category.hub-cards, section.hub-design):nth-of-type(3n + 2) {
+    --ground: url("/media/screens/walls/wall-c-800.webp");
+  }
+  @media (min-width: 801px) {
+    :is(.hub-category.hub-cards, section.hub-design):nth-of-type(3n) {
+      --ground: url("/media/screens/walls/wall-a-1600.webp");
+    }
+    :is(.hub-category.hub-cards, section.hub-design):nth-of-type(3n + 1) {
+      --ground: url("/media/screens/walls/wall-b-1600.webp");
+    }
+    :is(.hub-category.hub-cards, section.hub-design):nth-of-type(3n + 2) {
+      --ground: url("/media/screens/walls/wall-c-1600.webp");
+    }
+  }
   .hub-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 15.5rem), 1fr));
