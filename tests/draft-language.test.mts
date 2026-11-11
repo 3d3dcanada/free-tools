@@ -6,6 +6,7 @@
  *     --log-level=warning --outfile=node_modules/.cache/draft-language.test.mjs && node node_modules/.cache/draft-language.test.mjs
  */
 import assert from "node:assert/strict";
+import "../app/growth-lab/shared/french"; // French routes register the dictionary
 import { draftIsPristine } from "../app/growth-lab/shared/browser";
 import { sampleTag } from "../app/growth-lab/tools/qr-code/model";
 import { deckSignature } from "../app/growth-lab/tools/deck-studio/model";
