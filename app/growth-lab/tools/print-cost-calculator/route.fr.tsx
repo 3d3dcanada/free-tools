@@ -1,3 +1,4 @@
+import "../../shared/french";
 import guide from "../../seo/content/print-cost-calculator.fr";
 import ToolPage from "../ToolPage";
 import Editor from "../printing-tools/PrintingTools";

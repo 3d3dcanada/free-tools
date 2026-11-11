@@ -12,6 +12,7 @@ The slide and page canvas behind the pitch deck. The design studios draw on the 
 - `Inspector.tsx`
 - `Layers.tsx`
 - `Presenter.tsx`
+- `all-icons.ts`
 - `content-fr.ts`
 - `controls.tsx`
 - `covers.ts`

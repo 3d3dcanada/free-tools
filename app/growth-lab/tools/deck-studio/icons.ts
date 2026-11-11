@@ -47,7 +47,7 @@ export const iconPaths = (name: string) => nodeToPaths(CURATED[name] ?? CURATED.
 
 /** The whole library (2,000+ icons), loaded only when someone searches the picker. */
 export async function loadAllIcons(): Promise<{ name: string; paths: string }[]> {
-  const { icons } = (await import("lucide")) as unknown as { icons: Record<string, Node> };
+  const { icons } = (await import("./all-icons")) as unknown as { icons: Record<string, Node> };
   return Object.entries(icons).map(([key, node]) => ({
     name: key.replace(/([a-z0-9])([A-Z])/g, "$1-$2").replace(/([A-Z])([A-Z][a-z])/g, "$1-$2").toLowerCase(),
     paths: nodeToPaths(node),

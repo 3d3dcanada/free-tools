@@ -1,3 +1,4 @@
+import "../../shared/french";
 import guide from "../../seo/content/social-image-maker.fr";
 import ToolPage from "../ToolPage";
 import PageStudio from "../design-studio/PageStudio";

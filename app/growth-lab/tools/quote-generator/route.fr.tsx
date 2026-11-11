@@ -1,3 +1,4 @@
+import "../../shared/french";
 import guide from "../../seo/content/quote-generator.fr";
 import ToolPage from "../ToolPage";
 import Editor from "../invoice-generator/InvoiceGenerator";

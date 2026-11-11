@@ -12,6 +12,7 @@ import { TOOL_COUNT, TOOL_FAMILIES } from "../app/growth-lab/seo/tool-families";
 import ToolPreview, { PREVIEW_SLUGS, QR_PREVIEW } from "../app/growth-lab/shared/ToolPreview";
 import { initialTag, payload } from "../app/growth-lab/tools/qr-code/model";
 import { translate } from "../app/growth-lab/shared/translate";
+import "../app/growth-lab/shared/french"; // French routes register the dictionary
 import { hubUi } from "../app/growth-lab/shared/ui.fr.hub";
 
 let checks = 0;

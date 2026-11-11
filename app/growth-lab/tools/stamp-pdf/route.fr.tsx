@@ -1,3 +1,4 @@
+import "../../shared/french";
 import guide from "../../seo/content/stamp-pdf.fr";
 import ToolPage from "../ToolPage";
 import Editor from "../pdf-toolkit/PdfToolkit";

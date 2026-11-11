@@ -1,3 +1,4 @@
+import "../../shared/french";
 import guide from "../../seo/content/qr-code.fr";
 import ToolPage from "../ToolPage";
 import Editor from "../qr-code/QrCode";

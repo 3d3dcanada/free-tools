@@ -1,3 +1,4 @@
+import "../../shared/french";
 import guide from "../../seo/content/remove-background.fr";
 import ToolPage from "../ToolPage";
 import Editor from "../image-toolkit/ImageToolkit";

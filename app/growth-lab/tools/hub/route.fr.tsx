@@ -1,3 +1,4 @@
+import "../../shared/french";
 import Hub from "../ToolsHub";
 import guide from "../../seo/hub.fr";
 import { pageMeta } from "../../seo/guide";

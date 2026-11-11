@@ -1,10 +1,13 @@
 import type { Locale } from "../seo/guide";
-import { frenchUi as sharedUi } from "./ui.fr";
-import { workspaceUi } from "./ui.fr.workspace";
-import { completionUi } from "./ui.fr.completion";
-import { hubUi } from "./ui.fr.hub";
-// 2026-10-09: the image, PDF and 3D workspaces keep their French in their own file.
-const frenchUi: Record<string, string> = { ...sharedUi, ...workspaceUi, ...completionUi, ...hubUi };
+// 2026-11-11: the French strings (about 90 KB) are no longer imported here. This file is in
+// every tool page and the academy, so English visitors downloaded the whole dictionary to
+// read none of it. Each French route imports ./french first, which fills this table before
+// anything renders, on the server and in the browser. A French route without that import
+// shows English; scripts/audit/perf-budget.test.mjs fails on one.
+const frenchUi: Record<string, string> = {};
+export function addFrench(dict: Record<string, string>) {
+  Object.assign(frenchUi, dict);
+}
 export function translate(text: string, locale: Locale): string {
   if (locale === "en") return text;
   if (frenchUi[text]) return frenchUi[text];
