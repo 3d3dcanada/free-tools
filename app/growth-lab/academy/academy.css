@@ -96,7 +96,7 @@
     font-size: 2rem;
     line-height: 1.15;
   }
-  .course-unit > div > p:last-child {
+  .course-unit > div > p:nth-of-type(2) {
     max-width: 32ch;
     color: var(--soft);
   }
@@ -269,6 +269,65 @@
   }
   .symptom li {
     margin: 0.6rem 0;
+    list-style: none;
+  }
+  .symptom li a {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+  .symptom-thumb {
+    flex: none;
+    width: 6rem;
+    height: auto;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #fff;
+  }
+  /* the picture of each track's first lesson, and the picture on each aux page. */
+  .unit-pic {
+    margin: 1rem 0 0;
+    max-width: 24rem;
+  }
+  .unit-pic img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+  }
+  .aux-pic {
+    margin-top: 0;
+  }
+  .failure-pics {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+    list-style: none;
+    margin: 0 auto 2rem;
+    padding: 0;
+    max-width: 72rem;
+  }
+  .failure-pics a {
+    display: block;
+    text-decoration: none;
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 0.9rem;
+    line-height: 1.35;
+  }
+  .failure-pics img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    margin-bottom: 0.5rem;
+  }
+  .failure-pics a:hover span {
+    text-decoration: underline;
   }
   .progress-tools {
     margin-top: 3rem;
@@ -344,6 +403,31 @@
     }
     .course-unit h2 {
       margin: 0.5rem 0;
+    }
+    /* Phone: the picture sits to the right of the track text, not a full-width block of its own. */
+    .unit-pic {
+      float: right;
+      width: 52%;
+      margin: 0 0 0.5rem 1rem;
+    }
+    .course-unit > div::after {
+      content: "";
+      display: block;
+      clear: both;
+    }
+    .failure-pics {
+      grid-auto-flow: column;
+      grid-template-columns: none;
+      grid-auto-columns: 62%;
+      overflow-x: auto;
+      scroll-snap-type: x proximity;
+      padding-bottom: 0.5rem;
+    }
+    .failure-pics li {
+      scroll-snap-align: start;
+    }
+    .symptom-thumb {
+      width: 4.5rem;
     }
     .course-unit li a {
       gap: 0.6rem;

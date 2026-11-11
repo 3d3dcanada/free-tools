@@ -12,6 +12,8 @@ import { ToolIcon } from "../shared/toolIcons";
 import { ToolChrome, type ToolSlots } from "../shared/chrome";
 import { intentFor } from "./intents";
 import { categoryFor } from "./navigation";
+import { emitToolUse } from "../shared/tooluse";
+import DidThisHelp from "../shared/DidThisHelp";
 import { QuickLinks, ToolFinder } from "./QuickTools";
 import Dialog from "../shared/Dialog";
 import QuickStart from "./QuickStart";
@@ -54,6 +56,13 @@ export default function ToolPage({
   const [menu, setMenu] = useState(false);
   const [slots, setSlots] = useState<ToolSlots>({ history: null, primary: null, menu: null });
   const menuBox = useRef<HTMLDivElement>(null);
+  // Count the open once per page load; every tool page renders through here.
+  const opened = useRef(false);
+  useEffect(() => {
+    if (opened.current) return;
+    opened.current = true;
+    emitToolUse(guide.slug, "open");
+  }, [guide.slug]);
   // Stable ref callbacks: a new function each render would detach and reattach the slot forever.
   const slot = useMemo(() => {
     const make = (name: keyof ToolSlots) => (el: HTMLElement | null) =>
@@ -186,6 +195,7 @@ export default function ToolPage({
         </div>
 
         <div className="tool-below">
+          {hydrated && <DidThisHelp slug={guide.slug} />}
           <h2 className="tool-headline">{guide.headline}</h2>
           <p className="tool-answer">{guide.answer}</p>
           <Pledge />

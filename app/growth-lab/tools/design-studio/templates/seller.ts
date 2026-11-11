@@ -138,7 +138,7 @@ export const SELLER_CARDS: Template[] = [
 ];
 export const SELLER_FLYERS: Template[] = [
   { id: "3d3d-everything", name: "3D3D Everything", theme: "studio", pages: [page(ALL_TITLE, ALL_BODY, ALL)] },
-  { id: "3d3d-printing", name: "3D3D Printing", theme: "studio", pages: [page("Broken part? New product? We print it.", "Made in Fredericton on solar power, in tough plastics that last.", PRINT)] },
+  { id: "3d3d-printing", name: "3D3D Printing", theme: "studio", pages: [page("Broken part? New product? We print it.", "Made in Fredericton on solar and battery, with a generator top-up, in tough plastics that last.", PRINT)] },
   { id: "3d3d-web", name: "3D3D Websites", theme: "studio", pages: [page("A website or tool that saves you hours.", "Built in Fredericton for local businesses.", WEB)] },
   { id: "3d3d-ai", name: "3D3D Private AI", theme: "studio", pages: [page("Your own AI, inside your office.", "An assistant that knows your business and keeps it private.", AI)] },
 ];

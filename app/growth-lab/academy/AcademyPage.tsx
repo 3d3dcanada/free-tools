@@ -66,6 +66,47 @@ function Concept({ lesson }: { lesson: Lesson }) {
     </figure>
   );
 }
+/**
+ * a lesson diagram on its own, for the hub and the aux pages that showed no picture.
+ * Same file and alt text the lesson page uses; lazy, so a phone fetches only what it scrolls to.
+ */
+function LessonPic({ lesson, className, width = 640, height = 480 }: { lesson: Lesson; className?: string; width?: number; height?: number }) {
+  const locale = useLocale();
+  return (
+    <img
+      className={className}
+      src={`/academy/diagrams/${lesson.slug}.${locale}.svg`}
+      width={width}
+      height={height}
+      loading="lazy"
+      alt={diagramAlt(lesson.id, locale)}
+    />
+  );
+}
+const bySlug = (slug: string) => lessons.find((l) => l.slug === slug)!;
+/** The three failure lessons people come to /failed-print for. */
+const FAILURE_PICS = ["first-layer-not-sticking", "corners-lifting", "layers-shift-sideways"];
+/** One existing lesson picture near the top of each aux page, chosen for what the page is about. */
+const AUX_PIC: Record<string, string> = {
+  "/glossary": "layers-walls-and-infill",
+  "/sources": "models-files-and-permission",
+  "/certificate": "review-a-first-product",
+  "/join": "keep-a-print-log",
+  "/contributors": "inspect-scale-and-placement",
+};
+function AuxPic({ suffix }: { suffix: string }) {
+  const locale = useLocale();
+  const lesson = bySlug(AUX_PIC[suffix]);
+  return (
+    <figure className="concept aux-pic no-print">
+      <LessonPic lesson={lesson} />
+      <figcaption>
+        {locale === "fr" ? "Schéma du cours : " : "From the course: "}
+        {academyCatalog[lesson.id - 1].title[locale]}
+      </figcaption>
+    </figure>
+  );
+}
 function LessonPage({
   lesson,
   state,
@@ -384,6 +425,10 @@ export default function AcademyPage({
                   </p>
                   <h2>{u.title}</h2>
                   <p>{u.description}</p>
+                  {/* the first lesson's picture beside its track. */}
+                  <figure className="unit-pic">
+                    <LessonPic lesson={lessons[i * 5]} />
+                  </figure>
                 </div>
                 <ol start={i * 5 + 1}>
                   {lessons
@@ -407,6 +452,7 @@ export default function AcademyPage({
         <ParticipationPage
           answer={guide?.answer}
           page={suffix === "/join" ? "join" : "contributors"}
+          pic={<AuxPic suffix={suffix} />}
           submitCorrection={submitCorrection}
         />
       ) : suffix === "/glossary" ? (
@@ -416,6 +462,7 @@ export default function AcademyPage({
             <h1>{t("A small printing glossary")}</h1>
             <p className="lede">{guide?.answer}</p>
           </div>
+          <AuxPic suffix="/glossary" />
           <dl className="glossary">
             {terms.map(([term, definition, id]) => (
               <div key={term}>
@@ -434,6 +481,21 @@ export default function AcademyPage({
             <h1>{t("My print failed.")}</h1>
             <p className="lede">{guide?.answer}</p>
           </div>
+          {/* the pictures of the failure lessons this page links to, visible without
+              opening anything; each one opens its lesson. */}
+          <ul className="failure-pics no-print">
+            {FAILURE_PICS.map((slug) => {
+              const l = bySlug(slug);
+              return (
+                <li key={slug}>
+                  <a href={link(lessonPath(l))}>
+                    <LessonPic lesson={l} />
+                    <span>{academyCatalog[l.id - 1].title[locale]}</span>
+                  </a>
+                </li>
+              );
+            })}
+          </ul>
           {failures.map((s) => (
             <details className="symptom" key={s.name}>
               <summary>{s.name}</summary>
@@ -443,7 +505,10 @@ export default function AcademyPage({
                   const l = lessons.find((l) => l.slug === slug)!;
                   return (
                     <li key={slug}>
-                      <a href={link(lessonPath(l))}>{academyCatalog[l.id - 1].title[locale]}</a>
+                      <a href={link(lessonPath(l))}>
+                        <LessonPic lesson={l} className="symptom-thumb" width={96} height={72} />
+                        <span>{academyCatalog[l.id - 1].title[locale]}</span>
+                      </a>
                     </li>
                   );
                 })}
@@ -458,6 +523,7 @@ export default function AcademyPage({
             <h1>{t("A first chapter, completed.")}</h1>
             <p className="lede">{guide?.answer}</p>
           </div>
+          <AuxPic suffix="/certificate" />
           {canPrintCertificate(progress) ? (
             <>
               <div className="certificate-controls no-print">
@@ -520,6 +586,7 @@ export default function AcademyPage({
             <h1>{t("Sources, scope and authorship.")}</h1>
             <p className="lede">{guide?.answer}</p>
           </div>
+          <AuxPic suffix="/sources" />
           <h2>{t("How to use this course")}</h2>
           <p>
             {t(

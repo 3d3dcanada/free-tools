@@ -511,6 +511,95 @@
   .tool-below .related-tools {
     text-align: left;
   }
+  /* "Did this help?" after the first real use, and the one quiet next-step link. */
+  .tool-help {
+    max-width: 34rem;
+    margin: 0 auto 1.6rem;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--accent-line);
+    border-radius: var(--radius);
+    background: var(--glass);
+    text-align: left;
+  }
+  .tool-help-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  .tool-help-row > p {
+    margin: 0;
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .tool-help-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  .tool-help-actions button {
+    min-height: 36px;
+    padding: 0.3rem 0.8rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--ink);
+    font: 600 13px/1.2 var(--sans);
+    cursor: pointer;
+  }
+  .tool-help-actions button:hover {
+    border-color: var(--accent);
+    background: var(--accent-wash);
+  }
+  .tool-help-close {
+    padding: 0.3rem 0.55rem !important;
+    color: var(--soft) !important;
+  }
+  .tool-help-note {
+    margin-top: 0.7rem;
+    display: grid;
+    gap: 0.5rem;
+  }
+  .tool-help-note textarea {
+    width: 100%;
+    padding: 0.55rem 0.7rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    background: #fff;
+    color: var(--ink);
+    font: 400 14px/1.5 var(--sans);
+    resize: vertical;
+  }
+  .tool-help-note textarea:focus {
+    outline: 2px solid var(--accent-line);
+    border-color: var(--accent);
+  }
+  .tool-help-note button {
+    justify-self: start;
+    min-height: 36px;
+    padding: 0.3rem 0.9rem;
+    border: 1px solid var(--accent);
+    border-radius: 6px;
+    background: var(--accent);
+    color: var(--ink);
+    font: 600 13px/1.2 var(--sans);
+    cursor: pointer;
+  }
+  .tool-help-thanks {
+    margin: 0 0 0.4rem;
+    color: var(--ink);
+    font-weight: 700;
+  }
+  .tool-next {
+    margin: 0 auto 1.6rem;
+    max-width: 34rem;
+  }
+  .tool-next a {
+    color: var(--accent-ink);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
 
   .tool-feedback-button {
     border-color: color-mix(in srgb, #ff2d92 45%, #d4d4d4);
@@ -1498,6 +1587,85 @@
   .hub-grid li {
     margin: 0;
   }
+  /* each shelf leads with captures of what its tools make, then says in one line what
+     you walk away with. The pictures scroll sideways inside their own box. */
+  .hub-shelf {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.2rem;
+    margin-bottom: 1.1rem;
+  }
+  .hub-walk {
+    flex: 0 1 15rem;
+    margin: 0;
+    padding: 0.9rem 1.1rem;
+    border: 1px solid var(--accent-line);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    color: var(--ink);
+    font-weight: 650;
+    line-height: 1.4;
+  }
+  /* the first screen of the hub: real output from four of the tools, each opening its tool */
+  .hub-lead {
+    display: flex;
+    gap: 0.7rem;
+    max-width: 88rem;
+    margin: 1.2rem auto 0;
+    padding: 0;
+    overflow-x: auto;
+    list-style: none;
+    scroll-snap-type: x proximity;
+  }
+  .hub-lead li {
+    flex: none;
+    margin: 0;
+    scroll-snap-align: start;
+  }
+  .hub-lead img {
+    display: block;
+    width: auto;
+    height: 15rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 12px;
+    background: #0f1414;
+  }
+  details.hub-guide > summary {
+    max-width: 88rem;
+    margin: 1.6rem auto 0;
+    padding: 0.9rem 0;
+    border-top: 1px solid var(--line);
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .hub-pics {
+    display: flex;
+    gap: 0.8rem;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    overflow-x: auto;
+    list-style: none;
+  }
+  .hub-pics li {
+    flex: none;
+    margin: 0;
+  }
+  .hub-pics img {
+    display: block;
+    width: auto;
+    max-width: none;
+    height: 17rem;
+    border: 1px solid var(--line-strong);
+    border-radius: 12px;
+    background: #0f1414;
+  }
   .hub-tool {
     position: relative;
     display: flex;
@@ -1832,7 +2000,7 @@
     }
     /* The tools hub: a short hero so the search is on the first screen. */
     .hub-hero {
-      padding: 1.8rem 1rem 2.6rem;
+      padding: 1.2rem 1rem 2.2rem;
     }
     .hub-hero h1 {
       font-size: clamp(2rem, 9vw, 2.6rem);
@@ -1899,8 +2067,70 @@
     .invoice-head h2 {
       font-size: 1.2rem;
     }
+    /* on a phone the hub is rows that scroll sideways inside their own box, not thirty
+       screens of cards. The next card always peeks in, so the row reads as scrollable. */
     .hub-featured {
-      grid-template-columns: minmax(0, 1fr);
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x proximity;
+    }
+    .hub-feature {
+      flex: 0 0 78%;
+      scroll-snap-align: start;
+    }
+    .hub-shelf {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.7rem;
+      margin-bottom: 0.8rem;
+    }
+    .hub-walk {
+      flex: none;
+      padding: 0.5rem 0.8rem;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      line-height: 1.35;
+    }
+    .hub-shelf {
+      flex-direction: column-reverse;
+    }
+    .hub-category-head h2::before {
+      display: none;
+    }
+    .hub-category .hub-tool > span {
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+    .hub-pics {
+      scroll-snap-type: x proximity;
+    }
+    .hub-pics li {
+      scroll-snap-align: start;
+    }
+    .hub-pics img {
+      height: 11rem;
+    }
+    .hub-lead {
+      margin-top: 0.9rem;
+    }
+    .hub-lead img {
+      height: 8.5rem;
+    }
+    .hub-category .hub-grid {
+      display: flex;
+      gap: 0.7rem;
+      overflow-x: auto;
+      scroll-snap-type: x proximity;
+      padding-bottom: 0.4rem;
+    }
+    .hub-category .hub-grid li {
+      flex: 0 0 64%;
+      scroll-snap-align: start;
+    }
+    .hub-category .hub-tool .tool-preview {
+      display: none;
     }
     .hub-search {
       grid-template-columns: minmax(0, 1fr);
@@ -2047,6 +2277,17 @@ dialog.gl-dialog::backdrop { background: transparent; }
   .hub-design .tool-icon { width: 26px; height: 26px; flex: none; }
   @media (max-width: 650px) {
     .hub-design { grid-template-columns: minmax(0, 1fr); gap: 0.6rem; }
+    /* the design studios are a row that scrolls sideways, and the shelves are tighter. */
+    .hub-design nav { display: flex; overflow-x: auto; scroll-snap-type: x proximity; }
+    .hub-design nav a { flex: 0 0 64%; scroll-snap-align: start; }
+    .hub-category.hub-cards, section.hub-design {
+      /* the phone's page gutter is 1rem, not the 1.25rem the bands were cut for: they ran 4 px past the screen */
+      width: calc(100% + 2rem);
+      margin-inline: -1rem;
+      padding: 1.3rem 1rem;
+    }
+    .hub-category.hub-cards > .hub-category-head, section.hub-design > div:first-child { padding: 0.8rem 1rem; }
+    .hub-category-head { margin-bottom: 0.7rem; }
     .tool-finder .tool-guide-panel { top: 1rem; bottom: 1rem; max-height: none; border-radius: 16px; }
   }
 }

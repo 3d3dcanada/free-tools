@@ -1,7 +1,7 @@
 import { useT, useLocale } from "./locale";
 import { useCallback, useEffect, useRef, useState, type ReactNode, type SetStateAction } from "react";
 import { useLocalDraft } from "./browser";
-import { track } from "../../lib/analytics";
+import { countExport } from "./tooluse";
 import ProjectLibrary from "./ProjectLibrary";
 import { ToolSlot } from "./chrome";
 
@@ -179,7 +179,7 @@ export function Pledge({ fr = false }: { fr?: boolean }) {
  * background remover loads from this site, and the feedback form); drafts go to
  * localStorage through useLocalDraft and the deck editor; QR payloads are the typed
  * text itself (qr-code/model.ts `payload`, no redirect and no short link); the only
- * counting is a `tool_export:<label>` event with the page path (lib/analytics).
+  * counting is a `tool_use` event with the tool slug and the export label (lib/analytics).
  */
 const QR_FAMILY = new Set(["qr-code", "wifi-qr-code", "vcard-qr-code", "calendar-qr-code"]);
 export function DataPromise({ slug }: { slug?: string }) {
@@ -247,10 +247,10 @@ export function ExportBar({
     try {
       await task();
       setMessage(`${name}: ready.`);
-      // A free tool export, counted (2026-10-09). Only the page and the export kind,
-      // never a file name, size or anything typed. Uses content_cta, which the
-      // analytics worker already accepts.
-      track("content_cta", { to: window.location.pathname, kind: `tool_export:${name}` });
+      // A free tool export, counted (2026-10-09): a `tool_use` event with the tool
+      // slug, action "export" and the format name. Never a file name, size or
+      // anything typed (shared/tooluse.ts).
+      countExport(name);
     } catch (e) {
       setMessage((e as Error).message);
     } finally {

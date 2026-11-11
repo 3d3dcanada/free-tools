@@ -1,6 +1,7 @@
 import { useT, useLocale } from "../../shared/locale";
 import { useEffect, useState } from "react";
 import { download, imageFile } from "../../shared/browser";
+import { countExport } from "../../shared/tooluse";
 import { DraftFiles, DropZone, ExportBar, History, useEditor } from "../../shared/kit";
 import BrandProfile from "../../shared/BrandProfile";
 import { qrUseCase, useCases } from "./use-cases";
@@ -475,13 +476,14 @@ export default function QrCode({ intent }: { intent?: QrKind }) {
               )}
             </p>
             <button
-              onClick={() =>
+              onClick={() => {
+                countExport("Download CSV Example");
                 download(
                   "qr-batch.csv",
                   "name,kind,value\nStudio,url,https://3d3d.ca\nHelp,url,https://3d3d.ca/quote\n",
                   "text/csv",
-                )
-              }
+                );
+              }}
             >
               {tr("Download CSV Example")}
             </button>
@@ -511,6 +513,7 @@ export default function QrCode({ intent }: { intent?: QrKind }) {
                   zip.file(name + ".svg", tagSvg(next, locale));
                   zip.file(name + ".txt", payload(next));
                 }
+                countExport("Download Batch ZIP");
                 download("qr-batch.zip", await zip.generateAsync({ type: "blob" }), "application/zip");
               }}
             />

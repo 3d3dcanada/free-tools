@@ -1,5 +1,5 @@
 import { LocaleProvider, useT, useLocale, useLocalLink } from "../shared/locale";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { DataPromise, Pledge } from "../shared/kit";
 import { catalogFor } from "./catalog";
 import { categories, categoryFor, matchesSearch } from "./navigation";
@@ -10,6 +10,7 @@ import { ToolIcon } from "../shared/toolIcons";
 import ToolPreview from "../shared/ToolPreview";
 import { TOOL_FAMILIES } from "../seo/tool-families";
 import QuickTools from "./QuickTools";
+import { SITE_BASE } from "../../lib/free-tools-host";
 
 const CATEGORY_ACCENT: Record<string, string> = {
   "QR and Contacts": "#04D9C4",
@@ -28,6 +29,61 @@ const BLURB: Record<string, string> = {
   Business: "Invoices, quotes and receipts with your own prices.",
   "3D Printing": "Open a model, check the fit and price the print.",
 };
+/**
+ * what each shelf makes. The pictures are captures of the running tools, taken in the
+ * browser on 2026-11-10 with each tool's own starter content (public/media/tools): nothing drawn,
+ * nothing from a stock library. The line says what you walk away with, no more than the capture shows.
+ */
+const SHELF: Record<string, { line: string; pics: { slug: string; file: string; alt: string; w: number; h: number }[] }> = {
+  "QR and Contacts": {
+    line: "A QR code that has already been scanned back to check it.",
+    pics: [{ slug: "qr-code", file: "qr-code", alt: "A finished QR code with a caption, made in QR Studio and decoded back to its exact content", w: 527, h: 658 }],
+  },
+  Design: {
+    line: "A flyer, a business card or a poster, ready to download as a print PDF.",
+    pics: [
+      { slug: "flyer-maker", file: "flyer-maker", alt: "A flyer made in Flyer Maker from its Night Market starter template", w: 494, h: 635 },
+      { slug: "business-card", file: "business-card", alt: "The front of a business card made in Business Card Maker from its Orbit template", w: 882, h: 505 },
+      { slug: "poster-maker", file: "poster-maker", alt: "A poster made in Poster Maker from its Summer Sessions starter template", w: 410, h: 632 },
+    ],
+  },
+  Images: {
+    line: "A smaller image, with the before and after file size shown.",
+    pics: [{ slug: "compress-image", file: "compress-image", alt: "A photograph in Image Compressor, split between the original at 349 KB and the compressed copy at 70 KB", w: 440, h: 700 }],
+  },
+  "PDF Documents": {
+    line: "One PDF from several, with every page in the order you chose.",
+    pics: [{ slug: "merge-pdf", file: "merge-pdf", alt: "Three sample pages laid out in Merge PDF Files, ready to reorder and download", w: 672, h: 288 }],
+  },
+  Business: {
+    line: "An invoice with your own details, ready to download as a PDF.",
+    pics: [{ slug: "invoice-generator", file: "invoice-generator", alt: "An invoice made in Invoice Generator, with its starter wording", w: 919, h: 597 }],
+  },
+  "3D Printing": {
+    line: "A rough print cost from your own volume and filament price.",
+    pics: [{ slug: "print-cost-calculator", file: "print-cost-calculator", alt: "The 3D Print Cost Calculator showing an estimate over a Prusa CORE One L build plate", w: 1200, h: 635 }],
+  },
+};
+/** The four captures that open the hub, under the search, so the first phone screen shows real output. */
+const LEAD = ["qr-code", "flyer-maker", "compress-image", "print-cost-calculator"];
+const leadPics = LEAD.map((slug) => Object.values(SHELF).flatMap((s) => s.pics).find((p) => p.slug === slug)!);
+
+/**
+ * The long practical guide stays in the page (it is the hub's text for search and for answer
+ * engines) but folds shut on a phone, where it was five screens by itself. Open from 651 px up.
+ */
+function GuideFold({ guide, label }: { guide: Guide; label: string }) {
+  const ref = useRef<HTMLDetailsElement>(null);
+  useEffect(() => {
+    if (window.matchMedia("(min-width: 651px)").matches && ref.current) ref.current.open = true;
+  }, []);
+  return (
+    <details ref={ref} className="hub-guide">
+      <summary>{label}</summary>
+      <ToolGuide guide={guide} />
+    </details>
+  );
+}
 /** The free resources that lived on the old /tools page, kept. */
 const MORE: { title: string; accent: string; links: [string, string, string][] }[] = [
   {
@@ -109,6 +165,17 @@ function Hub({ guide }: { guide: Guide }) {
           </select>
         </label>
       </div>
+      {!query && category === categories[0] && (
+        <ul className="hub-lead" aria-label={tr("What the tools make")}>
+          {leadPics.map((p) => (
+            <li key={p.slug}>
+              <a href={localLink(`/tools/${p.slug}`)}>
+                <img src={`${SITE_BASE}/media/tools/${p.file}.webp`} width={p.w} height={p.h} alt={tr(p.alt)} />
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
       {/* The search comes first on a phone; the long answer reads below it (2026-10-11). */}
       <p className="answer hub-intro">{guide.answer}</p>
       {!query && category === categories[0] && (
@@ -157,6 +224,20 @@ function Hub({ guide }: { guide: Guide }) {
                 {group.length} {group.length === 1 ? tr("tool") : tr("tools")}
               </span>
             </header>
+            {SHELF[c] && !query && (
+              <div className="hub-shelf">
+                <p className="hub-walk">{tr(SHELF[c].line)}</p>
+                <ul className="hub-pics">
+                  {SHELF[c].pics.map((p) => (
+                    <li key={p.slug}>
+                      <a href={localLink(`/tools/${p.slug}`)}>
+                        <img src={`${SITE_BASE}/media/tools/${p.file}.webp`} width={p.w} height={p.h} loading="lazy" alt={tr(p.alt)} />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <ul className="hub-grid">
               {group.map((t) => (
                 <li key={t.slug}>
@@ -215,7 +296,7 @@ function Hub({ guide }: { guide: Guide }) {
           <a href={localLink("/snitch")}>{tr("SNITCH")}</a>.
         </p>
       </aside>
-      <ToolGuide guide={guide} />
+      <GuideFold guide={guide} label={tr("Read the practical guide")} />
     </section>
   );
 }

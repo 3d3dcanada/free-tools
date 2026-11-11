@@ -7,7 +7,6 @@ import {
   Trash2, X,
 } from "lucide";
 import { useEffect, useRef, useState, type DragEvent, type ReactNode, type RefObject } from "react";
-import { track } from "../../lib/analytics";
 import type { Locale } from "../seo/guide";
 import { useT } from "./locale";
 
@@ -196,6 +195,8 @@ export const stem = (name: string, fallback = "file") =>
     .replace(/^-+|-+$/g, "")
     .slice(0, 80) || fallback;
 
-/** Count an export exactly as ExportBar does: the page and the export kind, never a file name or size. */
-export const countExport = (label: string) =>
-  track("content_cta", { to: window.location.pathname, kind: `tool_export:${label}` });
+/**
+ * Count an export: a `tool_use` event with the tool slug, action "export" and the
+ * format label, never a file name or size (shared/tooluse.ts).
+ */
+export { countExport } from "./tooluse";

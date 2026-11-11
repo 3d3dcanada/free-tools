@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { SELLER_PHOTOS } from "../../../lib/free-tools-host";
 import { useLocale } from "../../shared/locale";
 import { download } from "../../shared/browser";
-import { track } from "../../../lib/analytics";
+import { countExport } from "../../shared/tooluse";
 import { Field, Modal, Section, Seg, Toggle } from "../deck-studio/controls";
 import { DeckCanvas, IconsModal, ShapesModal, ToolBtn, retheme, useDeckEditor } from "../deck-studio/editor";
 import { BackgroundSection, BrandSection, ElementPanel, FontsSection, ThemeSection } from "../deck-studio/Inspector";
@@ -690,8 +690,9 @@ function ExportPanel({
       }
       setStatus(`${tt(rows.find((r) => r.k === kind)?.t ?? "Design File")}: ${tt("ready")}`);
       setMessage(`${tt(rows.find((r) => r.k === kind)?.t ?? "Design File")}: ${tt("ready")}`);
-      // A free tool export, counted by kind only (2026-10-09).
-      track("content_cta", { to: window.location.pathname, kind: `tool_export:${kind}` });
+      // A free tool export, counted by kind only (2026-10-09): tool_use with the
+      // slug and the format, never a file name or anything typed.
+      countExport(kind);
     } catch (e) {
       setStatus(tt((e as Error).message || "Export failed"));
       setMessage(tt((e as Error).message || "Export failed"));

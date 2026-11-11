@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useRef, useState } from "react";
 import { useDT } from "./i18n";
 import { useLocale } from "../../shared/locale";
+import { countExport } from "../../shared/tooluse";
 import Inspector from "./Inspector";
 import { Modal } from "./controls";
 import { DeckCanvas, IconsModal, ShapesModal, ToolBtn, retheme, useDeckEditor } from "./editor";
@@ -410,6 +411,9 @@ function ExportModal({
     try {
       const m = await import("./export");
       await m.exportDeck(deck, kind, cur);
+      // A free tool export, counted by format only: tool_use with the slug and the
+      // kind, never a file name or anything typed.
+      countExport(kind);
       setStatus(`${kind.toUpperCase()} ${tt("ready")}`);
       setMessage(`${kind.toUpperCase()} ${tt("ready")}`);
     } catch (e) {

@@ -930,4 +930,17 @@ export const frenchUi: Record<string, string> = {
   "Keep encoded content below 1,001 bytes.": "Limitez le contenu encodé à 1 000 octets.",
   "Invalid QR style.": "Le style du code QR n'est pas valide.",
   "Invalid QR settings.": "Les réglages du code QR ne sont pas valides.",
+  "Did this help?": "Est-ce que cela vous a aidé?",
+  "Yes": "Oui",
+  "No": "Non",
+  "Send": "Envoyer",
+  "Dismiss": "Ignorer",
+  "What was missing?": "Qu’est-ce qui manquait?",
+  "Thanks. That goes straight to the person who builds these.":
+    "Merci. Cela parvient directement à la personne qui construit ces outils.",
+  "Need NFC keychains or cards with this on them? We make those.":
+    "Besoin de porte-clés ou de cartes NFC avec ceci? Nous les fabriquons.",
+  "Want it printed or made in 3D?": "Voulez-vous l’imprimer ou le fabriquer en 3D?",
+  "Want us to print it?": "Voulez-vous que nous l’imprimions?",
+  "More free tools": "Plus d’outils gratuits",
 };

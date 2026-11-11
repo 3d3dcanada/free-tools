@@ -1,6 +1,7 @@
 import { useT, useLocale, useLocalLink } from "../../shared/locale";
 import { lazy, Suspense, useEffect, useRef, useState, type ReactNode } from "react";
-import { download } from "../../shared/browser";
+import { download, draftIsPristine } from "../../shared/browser";
+import { emitToolUse } from "../../shared/tooluse";
 import { DraftFiles, ExportBar, History, useEditor } from "../../shared/kit";
 import ProjectLibrary from "../../shared/ProjectLibrary";
 import { isPrinterProfile, type PrinterProfile } from "./profiles";
@@ -216,6 +217,24 @@ export default function PrintingTools({ mode }: { mode: PrintingMode }) {
   const [layer, layerError] = attempt(() => layers(s));
   const [fitting, fitError] = attempt(() => fit(s));
   const [conversion, conversionError] = attempt(() => convert(s));
+  // Count a real result once per page load: a model report, or a calculator
+  // result on inputs the visitor actually changed (not the untouched sample).
+  const ran = useRef(false);
+  useEffect(() => {
+    if (ran.current) return;
+    const result =
+      tab === "model" ? r
+      : tab === "print-cost-calculator" ? cost
+      : tab === "filament-calculator" ? spool
+      : tab === "nozzle-layer-guide" ? layer
+      : tab === "tolerance-calculator" ? fitting
+      : conversion;
+    const real = tab === "model" ? !!r : !!result && !draftIsPristine(s, defaults);
+    if (real) {
+      ran.current = true;
+      emitToolUse(mode, "run");
+    }
+  });
   const dims = r ? (r.dimensions.map((d) => u.length(d)) as [string, string, string]) : null;
   const bedText = (size: number[]) =>
     `${size.map((v) => u.lengthNumber(v, imperial ? 1 : 0)).join(" × ")} ${u.lengthUnit}`;

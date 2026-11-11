@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { useLocale, useLocalLink } from "../shared/locale";
 import { ACADEMY_PATH } from "./curriculum";
 import CorrectionForm, { type CorrectionTransport } from "./CorrectionForm";
@@ -7,9 +8,12 @@ export default function ParticipationPage({
   page,
   answer,
   submitCorrection,
+  pic,
 }: {
   page: "join" | "contributors";
   answer?: string;
+  /** one lesson picture under the heading. */
+  pic?: ReactNode;
   submitCorrection?: CorrectionTransport;
 }) {
   const locale = useLocale(),
@@ -37,6 +41,7 @@ export default function ParticipationPage({
                 ))}
         </p>
       </div>
+      {pic}
       {page === "contributors" ? (
         <>
           <h2>{t("Public acknowledgements", "Remerciements publics")}</h2>
