@@ -103,9 +103,9 @@ export type CardField = (typeof CARD_FIELDS)[number];
 export type CardDetails = Record<CardField, string>;
 export const SAMPLE_DETAILS: Record<"en" | "fr", CardDetails> = {
   en: {
-    name: "Alex Martin",
+    name: "Your Name",
     role: "Independent Maker",
-    company: "Studio Martin",
+    company: "Your Business",
     phone: "+1 506 555 0100",
     email: "hello@example.com",
     website: "example.com",
@@ -113,9 +113,9 @@ export const SAMPLE_DETAILS: Record<"en" | "fr", CardDetails> = {
     tagline: "Good ideas deserve to be made.",
   },
   fr: {
-    name: "Alex Martin",
+    name: "Votre nom",
     role: "Artisan indépendant",
-    company: "Atelier Martin",
+    company: "Votre entreprise",
     phone: "+1 506 555 0100",
     email: "bonjour@example.com",
     website: "example.com",

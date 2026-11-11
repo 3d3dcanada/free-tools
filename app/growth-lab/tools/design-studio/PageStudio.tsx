@@ -4,7 +4,7 @@ import { useLocale } from "../../shared/locale";
 import { download } from "../../shared/browser";
 import { countExport } from "../../shared/tooluse";
 import { Field, Modal, Section, Seg, Toggle } from "../deck-studio/controls";
-import { DeckCanvas, IconsModal, ShapesModal, ToolBtn, retheme, useDeckEditor } from "../deck-studio/editor";
+import { AddGrid, DeckCanvas, IconsModal, ShapesModal, StageCorner, retheme, useDeckEditor } from "../deck-studio/editor";
 import { BackgroundSection, BrandSection, ElementPanel, FontsSection, ThemeSection } from "../deck-studio/Inspector";
 import { FONTS, fontStack, icon, image, paint, shape, type El, type TextEl } from "../deck-studio/model";
 import ProjectLibrary from "../../shared/ProjectLibrary";
@@ -102,13 +102,11 @@ export default function PageStudio({ studio }: { studio: StudioId }) {
   const cfg = STUDIOS[studio];
   const tt = useST();
   const locale = useLocale();
-  const [tab, setTab] = useState<"element" | "page" | "design">("page");
-  const [sheet, setSheet] = useState<null | "inspector">(null);
+  const [tab, setTab] = useState<"templates" | "element" | "page" | "design">("page");
   const [templateQuery, setTemplateQuery] = useState("");
   const [purpose, setPurpose] = useState("All Purposes"), [layout, setLayout] = useState("All Layouts");
   const [guides, setGuides] = useState(true);
   const [decorations, setDecorations] = useState(false);
-  const [insertOpen, setInsertOpen] = useState(false);
   const importPick = useRef<HTMLInputElement>(null);
   // Seller mode (?seller=<code>): 3D3D's designs first, every code credits the seller, saved apart from other designs.
   const seller = useMemo(() => readSeller(), []);
@@ -119,7 +117,9 @@ export default function PageStudio({ studio }: { studio: StudioId }) {
     tooLarge: tt("Too large to autosave. Use Export, then Save Design File."),
     onFocusElement: () => setTab("element"),
     fitInserts: true,
-    footRoom: 48,
+    footRoom: cfg.faces.length > 1 ? 52 : 0,
+    // The bleed is drawn outside the page; at a card's large fit it ran past the stage edge.
+    edgeRoom: cfg.print ? 14 : 0,
     normalize: (next, prev) => fitWords(studio === "card" ? normalizeCard(next, prev) : next, prev),
   });
   const { deck, slide, selected, sel, scale, ratio } = ed;
@@ -151,7 +151,6 @@ export default function PageStudio({ studio }: { studio: StudioId }) {
   const onDeck = (patch: Partial<Design>) =>
     ed.commit((d) => (patch.theme && patch.theme !== d.theme ? retheme(d, patch.theme, patch) : { ...d, ...patch }), "deck:" + Object.keys(patch).join());
   const applyTemplate = (id: string) => {
-    setSheet(null);
     ed.setModal(null);
     if (id === deck.template) return;
     ed.commit((d) => reflow(d, { template: id }, locale));
@@ -179,83 +178,54 @@ export default function PageStudio({ studio }: { studio: StudioId }) {
   const cardStudio = studio === "card";
   const faceName = cfg.faces[Math.min(ed.cur, cfg.faces.length - 1)];
 
+  // The templates: the rail on desktop, the first tab of the settings sheet on a phone.
+  const sheetThumb = cardStudio ? 140 : studio === "social" ? 120 : 92;
+  const templateList = (thumb: number) => (
+    <>
+      <p className="ps-rail-head">
+        {tt("Templates")} <span>{previews.length}</span>
+        <button type="button" className="ps-browse" onClick={() => ed.setModal("templates")}>{tt("Search")}</button>
+      </p>
+      <ol>
+        {previews.map(({ t, d }) => (
+          <li key={t.id} className={t.id === deck.template ? "on" : undefined}>
+            <button
+              type="button"
+              className="ps-tpl"
+              aria-pressed={t.id === deck.template}
+              aria-label={`${tt("Use template:")} ${tt(t.name)}`}
+              // A mouse pick should not pull focus: focusing inside the rail scrolls the whole page.
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => applyTemplate(t.id)}
+            >
+              <span className="ps-tpl-art">
+                {d.slides.map((s) => (
+                  <SlideThumb key={s.id} deck={d} slide={s} width={thumb} />
+                ))}
+              </span>
+              <span className="ps-tpl-name">{tt(t.name)}</span>
+            </button>
+          </li>
+        ))}
+      </ol>
+    </>
+  );
+
   return (
     <EmptyFrame.Provider value="tint">
-      <div className={`ds-root ps-root ps-${studio}`} data-mobile-panel={sheet ?? ""}>
-        {/* ------------------------------------------------ toolbar */}
-        <div className="ds-toolbar" role="toolbar" aria-label={tt("Design tools")}>
-          <input
-            className="ds-title"
-            value={deck.title}
-            maxLength={120}
-            aria-label={tt("Design name")}
-            onChange={(e) => ed.commit((d) => ({ ...d, title: e.target.value }), "title")}
-          />
-          <div className="ds-tool-group">
-            <button type="button" className="ps-browse" onClick={() => ed.setModal("templates")}>{tt("Templates")}</button>
-            <button type="button" className="ps-size-btn" onClick={() => ed.setModal("formats")} title={tt("Page Size")}>
-              <span className="ps-size-glyph" style={{ aspectRatio: `${fmt.w} / ${fmt.h}` }} aria-hidden="true" />
-              {tt(fmt.label)}
-            </button>
-          </div>
-          <button type="button" className="ds-insert-toggle" aria-expanded={insertOpen} onClick={() => setInsertOpen(!insertOpen)}>{tt("Insert")}</button>
-          <div className="ds-tool-group ds-insert" data-open={insertOpen} onClick={() => setInsertOpen(false)} aria-label={tt("Insert")}>
-            <ToolBtn label={tt("Heading")} d="M6 4v16M18 4v16M6 12h12" onClick={ed.insert.heading} />
-            <ToolBtn label={tt("Text")} d="M4 6h16M4 12h10M4 18h14" onClick={ed.insert.text} />
-            <ToolBtn label={tt("List")} d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01" onClick={ed.insert.bullets} />
-            <ToolBtn label={tt("Shape")} d="M12 3l9 9-9 9-9-9z" onClick={() => ed.setModal("shapes")} />
-            <ToolBtn label={tt("Photo")} d="M4 5h16v14H4zM4 15l5-5 4 4 3-3 4 4M15 9h.01" onClick={ed.insert.photo} />
-            <ToolBtn label={tt("Icon")} d="M12 3l2.6 6 6.4.6-4.8 4.3 1.4 6.3L12 17l-5.6 3.2 1.4-6.3L3 9.6 9.4 9z" onClick={ed.insert.icon} />
-            <ToolBtn label={tt("QR")} d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM14 18h2M18 14h2" onClick={ed.insert.qr} />
-            <ToolBtn label={tt("Number")} d="M7 20V4L4 7M14 8a3 3 0 1 1 6 0c0 4-6 6-6 12h6" onClick={ed.insert.stat} />
-            {!cardStudio && <ToolBtn label={tt("Table")} d="M3 5h18v14H3zM3 10h18M3 15h18M9 5v14M15 5v14" onClick={ed.insert.table} />}
-            {!cardStudio && <ToolBtn label={tt("Chart")} d="M4 20V10M10 20V4M16 20v-7M22 20H2" onClick={ed.insert.chart} />}
-          </div>
-          <History editor={{ undo: ed.undo, redo: ed.redo, canUndo: ed.canUndo, canRedo: ed.canRedo }} />
-          <div className="ds-tool-group ds-zoom">
-            <button type="button" aria-label={tt("Zoom out")} onClick={() => ed.setZoom(Math.max(0.05, scale - 0.1))}>−</button>
-            <button type="button" onClick={() => ed.setZoom("fit")} aria-pressed={ed.zoom === "fit"}>{Math.round(scale * 100)}%</button>
-            <button type="button" aria-label={tt("Zoom in")} onClick={() => ed.setZoom(Math.min(4, scale + 0.1))}>+</button>
-          </div>
-          <span className="ds-spacer" />
-          <span className="ds-status" role="status">{ed.status}</span>
-          <ProjectLibrary value={deck} valid={(v): v is Design => isDesign(v, studio)} name={`${studio}-designs`} defaultName={deck.title} onLoad={d => { ed.commit(d); ed.setCur(0); ed.setSel([]); }} />
-          {cardStudio && <button type="button" className="ps-decoration-btn" onClick={() => setDecorations(true)}>{tt("Decorations")}</button>}
-          <ToolSlot name="primary">
-            <button type="button" className="ds-export-btn ps-export-btn" onClick={() => ed.setModal("export")}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19h14" /></svg>{tt("Download")}</button>
-          </ToolSlot>
-        </div>
+      <div className={`ds-root ps-root ps-${studio}`}>
+        {/* 2026-11-11: no toolbar of its own. Undo, redo, Download and Projects sit in the tool's one bar;
+            adding things is in Content; on a phone Templates, Content, Style and Design are the one
+            Edit Settings sheet, and the page keeps the screen above it. */}
+        <History editor={{ undo: ed.undo, redo: ed.redo, canUndo: ed.canUndo, canRedo: ed.canRedo }} />
+        <ProjectLibrary value={deck} valid={(v): v is Design => isDesign(v, studio)} name={`${studio}-designs`} defaultName={deck.title} onLoad={d => { ed.commit(d); ed.setCur(0); ed.setSel([]); }} />
+        <ToolSlot name="primary">
+          <button type="button" onClick={() => ed.setModal("export")}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11m0 0-4.5-4.5M12 15l4.5-4.5M5 19h14" /></svg>{tt("Download")}</button>
+        </ToolSlot>
 
         <div className="ds-main">
           {/* ------------------------------------------------ templates */}
-          <nav className="ds-rail ps-rail" aria-label={tt("Templates")}>
-            <button type="button" className="ds-sheet-close" aria-label={tt("Close panel")} onClick={() => setSheet(null)}>×</button>
-            <p className="ps-rail-head">
-              {tt("Templates")} <span>{previews.length}</span>
-            </p>
-            <ol>
-              {previews.map(({ t, d }) => (
-                <li key={t.id} className={t.id === deck.template ? "on" : undefined}>
-                  <button
-                    type="button"
-                    className="ps-tpl"
-                    aria-pressed={t.id === deck.template}
-                    aria-label={`${tt("Use template:")} ${tt(t.name)}`}
-                    // A mouse pick should not pull focus: focusing inside the rail scrolls the whole page.
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => applyTemplate(t.id)}
-                  >
-                    <span className="ps-tpl-art">
-                      {d.slides.map((s) => (
-                        <SlideThumb key={s.id} deck={d} slide={s} width={cardStudio ? 164 : 172} />
-                      ))}
-                    </span>
-                    <span className="ps-tpl-name">{tt(t.name)}</span>
-                  </button>
-                </li>
-              ))}
-            </ol>
-          </nav>
+          <nav className="ds-rail ps-rail" aria-label={tt("Templates")}>{templateList(146)}</nav>
 
           {/* ------------------------------------------------ page */}
           <DeckCanvas
@@ -268,44 +238,49 @@ export default function PageStudio({ studio }: { studio: StudioId }) {
               ) : undefined
             }
             foot={
-              cfg.faces.length > 1 ? (
-                <div className="ds-stage-foot ps-faces" role="group" aria-label={tt("Card side")}>
-                  {cfg.faces.map((f, i) => (
-                    <button key={f} type="button" aria-pressed={ed.cur === i} onClick={() => (ed.setCur(i), ed.setSel([]))}>
-                      {tt(f)}
-                    </button>
-                  ))}
-                </div>
-              ) : undefined
+              <>
+                {cfg.faces.length > 1 && (
+                  <div className="ds-stage-foot ps-faces" role="group" aria-label={tt("Card side")}>
+                    {cfg.faces.map((f, i) => (
+                      <button key={f} type="button" aria-pressed={ed.cur === i} onClick={() => (ed.setCur(i), ed.setSel([]))}>
+                        {tt(f)}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <StageCorner ed={ed} />
+              </>
             }
           />
 
           {/* ------------------------------------------------ inspector */}
           <aside className="ds-inspector" aria-label={tt("Inspector")}>
-            <button type="button" className="ds-sheet-close" aria-label={tt("Close panel")} onClick={() => setSheet(null)}>×</button>
             <div className="ds-tabs" role="group" aria-label={tt("Inspector")}>
-              {(["page", "element", "design"] as const).map((t) => (
-                <button key={t} type="button" aria-pressed={tab === t} onClick={() => setTab(t)}>
-                  {t === "element"
-                    ? selected.length > 1
-                      ? `${selected.length} ${tt("Items")}`
-                      : tt("Style")
-                    : t === "page"
-                      ? tt("Content")
-                      : tt("Design")}
+              {(["templates", "page", "element", "design"] as const).map((t) => (
+                <button key={t} type="button" className={t === "templates" ? "ds-tab-phone" : undefined} aria-pressed={tab === t} onClick={() => setTab(t)}>
+                  {t === "templates"
+                    ? tt("Templates")
+                    : t === "element"
+                      ? selected.length > 1
+                        ? `${selected.length} ${tt("Items")}`
+                        : tt("Style")
+                      : t === "page"
+                        ? tt("Content")
+                        : tt("Design")}
                 </button>
               ))}
             </div>
             <div className="ds-inspector-body">
+              {tab === "templates" ? <div className="ds-sheet-templates ps-rail" style={{ ["--thumb" as string]: `${sheetThumb + 12}px` }}>{templateList(sheetThumb)}</div> : <>
               {ed.blocked && <DraftRecovery recover={ed.recover} resume={ed.resume} />}
               {seller && (
                 <p className="ds-note ds-seller">
                   {tt("Seller mode: every QR code in this design opens 3D3D's quote form with your seller code, so anyone who scans it is your customer. Keep the 3D3D logo as it is.")}
                 </p>
               )}
-              <div className="ds-reuse"><BrandProfile applyLabel={cardStudio ? "Apply Details & Colours" : "Apply Colours"} onApply={b => onDeck({ colors: { ...deck.colors, accent: b.accent, ink: b.ink, bg: b.paper }, ...(cardStudio ? { details: Object.fromEntries(CARD_FIELDS.map(k => [k, b[k]])) as Design["details"] } : {}) })}
-                onLogo={src => { const size = Math.min(ratio.w, ratio.h) * 0.2; ed.addEl(image(ratio.w - size * 1.25, size * 0.25, size, size, src, { fit: "contain", slot: "brand-logo" })); }} /></div>
-              <Layers ed={ed} />
+              <BrandProfile applyLabel={cardStudio ? "Apply Details & Colours" : "Apply Colours"} onApply={b => onDeck({ colors: { ...deck.colors, accent: b.accent, ink: b.ink, bg: b.paper }, ...(cardStudio ? { details: Object.fromEntries(CARD_FIELDS.map(k => [k, b[k]])) as Design["details"] } : {}) })}
+                onLogo={src => { const size = Math.min(ratio.w, ratio.h) * 0.2; ed.addEl(image(ratio.w - size * 1.25, size * 0.25, size, size, src, { fit: "contain", slot: "brand-logo" })); }} />
+              </>}
               {tab === "element" &&
                 (selected.length ? (
                   <ElementPanel
@@ -334,7 +309,7 @@ export default function PageStudio({ studio }: { studio: StudioId }) {
                 ))}
               {tab === "page" && (
                 <>
-                  <p className="ds-note ps-content-note">{tt("Edit your words here. Select anything on the canvas to style it, or open Design for colours and fonts.")}</p>
+                  <label className="ds-name-field">{tt("Design name")}<input value={deck.title} maxLength={120} onChange={(e) => ed.commit((d) => ({ ...d, title: e.target.value }), "title")} /></label>
                   {cardStudio && <CardSection d={deck} commit={ed.commit} />}
                   <WordsSection
                     els={slide.els}
@@ -343,6 +318,7 @@ export default function PageStudio({ studio }: { studio: StudioId }) {
                     onFocus={(id) => ed.setSel([id])}
                     onText={(id, v) => ed.patchEls([id], { text: v } as Partial<El>, "words:" + id)}
                   />
+                  <AddGrid ed={ed} title={tt("Add to the Page")} charts={!cardStudio} onShapes={() => ed.setModal("shapes")} />
                   {slide.els.some((e) => e.type === "image") && <Section title={tt("Photos")}>
                     {slide.els.filter((e) => e.type === "image").map((e, i) => <button type="button" className="ps-photo-row" key={e.id} onClick={() => { ed.setSel([e.id]); ed.pickImage("element"); }}>
                       <span>{tt("Photo")} {i + 1}</span><strong>{tt(e.src ? "Replace Photo" : "Add Photo")}</strong>
@@ -368,6 +344,11 @@ export default function PageStudio({ studio }: { studio: StudioId }) {
                   <Section title={tt("Page Size")}>
                     <FormatRows formats={formatsFor(studio)} current={deck.format} onPick={setFormat} />
                   </Section>
+                  {cardStudio && (
+                    <Section title={tt("Decorations")}>
+                      <button type="button" className="ps-photo-row" onClick={() => setDecorations(true)}><span>{tt("Line art, contours, rings and more")}</span><strong>{tt("Choose")}</strong></button>
+                    </Section>
+                  )}
                   <ThemeSection
                     deck={deck}
                     onDeck={onDeck}
@@ -390,15 +371,10 @@ export default function PageStudio({ studio }: { studio: StudioId }) {
                   )}
                 </>
               )}
+              {/* Last in every tab but Templates: the list of everything on the page, for what is hard to tap. */}
+              {tab !== "templates" && <Layers ed={ed} />}
             </div>
           </aside>
-        </div>
-
-        {/* ------------------------------------------------ phone bar */}
-        <div className="ds-mobile-bar ps-mobile-bar">
-          <button type="button" onClick={() => ed.setModal("templates")}>{tt("Templates")}</button>
-          <button type="button" aria-pressed={sheet === "inspector" && tab === "page"} onClick={() => { setTab("page"); setSheet(sheet === "inspector" && tab === "page" ? null : "inspector"); }}>{tt("Content")}</button>
-          <button type="button" aria-pressed={sheet === "inspector" && tab !== "page"} onClick={() => { setTab(selected.length ? "element" : "design"); setSheet(sheet === "inspector" && tab !== "page" ? null : "inspector"); }}>{tt("Style")}</button>
         </div>
 
         <input
@@ -708,7 +684,7 @@ function ExportPanel({
   );
   return (
     <Modal title={tt("Export and Save")} onClose={onClose}>
-      <div className="ds-export-review"><strong>{doc.title}</strong><p>{tt(fmt.label)} · {sizeNote(fmt.note, locale)} · {doc.slides.length} {tt("Pages / Faces")}</p><p>{tt(cfg.print ? "Image exports use the current page. Print PDF includes every face with bleed and crop marks." : "Image exports use the current page at its selected pixel dimensions.")}</p></div>
+      <div className="ds-export-review"><strong>{doc.title}</strong><p>{sizeNote(fmt.note, locale).startsWith(tt(fmt.label)) ? "" : `${tt(fmt.label)} · `}{sizeNote(fmt.note, locale)} · {doc.slides.length} {tt(cfg.faces.length > 1 ? "Sides" : doc.slides.length === 1 ? "Page" : "Pages")}</p><p>{tt(cfg.print ? "Image exports use the current page. Print PDF includes every face with bleed and crop marks." : "Image exports use the current page at its selected pixel dimensions.")}</p></div>
       <p className="ds-export-status" role="status" aria-atomic="true">{message || tt("Choose a file format below.")}</p>
       {notes.length > 0 && (
         <ul className="ps-preflight" aria-label={tt("Before you print")}>

@@ -678,8 +678,8 @@ export const frenchUi: Record<string, string> = {
   "Shape error, surface ridges, thermal changes and insertion length still matter.":
     "Les défauts de forme, les stries, les variations thermiques et la longueur d’emboîtement comptent aussi.",
   equals: "équivaut à",
-  "Exports retain the full JavaScript numeric precision; the display rounds to nine decimal places. US customary inch, foot, ounce and pound definitions are used.":
-    "Les exports gardent la précision numérique complète de JavaScript; l’affichage est arrondi à neuf décimales. Les définitions américaines du pouce, du pied, de l’once et de la livre sont utilisées.",
+  "Shown to nine decimal places; the downloaded file keeps every digit. Inches, feet, ounces and pounds are the US units.":
+    "Affiché à neuf décimales; le fichier téléchargé garde tous les chiffres. Pouces, pieds, onces et livres sont les unités américaines.",
   "Layer-to-nozzle ratio": "Rapport hauteur de couche / buse",
   "Below the general 80% boundary. Confirm your printer profile.":
     "Sous la limite générale de 80 %. Confirmez le profil d’impression.",

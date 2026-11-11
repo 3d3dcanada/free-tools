@@ -2,6 +2,9 @@ import type { Locale } from "../../seo/guide";
 import { translate } from "../../shared/translate";
 import QRCode from "qrcode";
 import { escapeXml, validColour, validImage } from "../../shared/browser";
+
+/** Placeholder shown in the Wi-Fi sample code; the visitor replaces it. Not a credential. */
+const WIFI_SAMPLE_TEXT = "your-password";
 export const kinds = [
   "url",
   "text",
@@ -69,8 +72,8 @@ export const initialTag: Tag = {
     password: "",
     security: "WPA",
     hidden: "false",
-    first: "Alex",
-    last: "Martin",
+    first: "Your",
+    last: "Name",
     company: "",
     phone: "+15065550100",
     email: "hello@example.com",
@@ -100,6 +103,10 @@ export function sampleTag(locale: "en" | "fr", kind: QrKind): Tag {
       ssid: t(initialTag.fields.ssid),
       subject: t(initialTag.fields.subject),
       title: t(initialTag.fields.title),
+      // 2026-11-11: the Wi-Fi and event tools open on a working code, like every other kind,
+      // instead of a failure; the sample password and dates are there to be replaced.
+      ...(kind === "wifi" ? { password: WIFI_SAMPLE_TEXT } : {}),
+      ...(kind === "event" ? { start: "2026-12-05T10:00", end: "2026-12-05T12:00" } : {}),
     },
     kind,
   };

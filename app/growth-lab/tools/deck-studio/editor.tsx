@@ -12,7 +12,7 @@ import {
 import { useDT } from "./i18n";
 import { useLocale } from "../../shared/locale";
 import { download, readDraft } from "../../shared/browser";
-import { Modal } from "./controls";
+import { Modal, Section } from "./controls";
 import { CURATED, iconPaths, loadAllIcons, nodeToPaths } from "./icons";
 import {
   deckSignature,
@@ -70,6 +70,8 @@ export type EditorOptions<D extends Deck> = {
   normalize?: (next: D, prev: D) => D;
   /** Pixels kept clear under the page for the stage footer. */
   footRoom?: number;
+  /** Pixels kept clear on every side (the print bleed drawn outside the page). */
+  edgeRoom?: number;
 };
 
 /** Slides on the old theme's own background follow a new theme. */
@@ -207,7 +209,8 @@ export function useDeckEditor<D extends Deck>(o: EditorOptions<D>) {
     if (!el) return;
     const fit = () => {
       const r = el.getBoundingClientRect();
-      const s = Math.min((r.width - 48) / ratio.w, (r.height - 48 - (o.footRoom ?? 0)) / ratio.h);
+      const edge = 2 * (o.edgeRoom ?? 0);
+      const s = Math.min((r.width - 48 - edge) / ratio.w, (r.height - 48 - edge - (o.footRoom ?? 0)) / ratio.h);
       setScale(zoom === "fit" ? Math.max(0.1, s) : zoom);
     };
     fit();
@@ -709,7 +712,7 @@ export function DeckCanvas<D extends Deck>({
               }}
             >
               {editing === el.id && el.type === "text" ? (
-                <TextEditor deck={deck} el={el} onDone={(value) => { ed.setEditing(null); if (value !== el.text) ed.patchEls([el.id], { text: value } as Partial<El>); }} />
+                <TextEditor deck={deck} el={el} onDone={(value, closing = true) => { if (closing) ed.setEditing(null); if (value !== el.text) ed.patchEls([el.id], { text: value } as Partial<El>); }} />
               ) : (
                 <ElementView deck={deck} el={el} />
               )}
@@ -760,8 +763,48 @@ export function ToolBtn({ label, d, onClick }: { label: string; d: string; onCli
   );
 }
 
+/**
+ * 2026-11-11: the studios' own toolbar is gone; zoom floats in the stage's corner
+ * (desktop only, a phone fits the page) and the save note sits quietly at its top.
+ */
+export function StageCorner<D extends Deck>({ ed, max = 4 }: { ed: DeckEditor<D>; max?: number }) {
+  const tt = useDT();
+  return (
+    <>
+      <p className="ds-stage-status" role="status">{ed.status}</p>
+      <div className="ds-zoom-float" role="group" aria-label={tt("Zoom")}>
+        <button type="button" aria-label={tt("Zoom out")} onClick={() => ed.setZoom(Math.max(0.05, ed.scale - 0.1))}>−</button>
+        <button type="button" onClick={() => ed.setZoom("fit")} aria-pressed={ed.zoom === "fit"}>{Math.round(ed.scale * 100)}%</button>
+        <button type="button" aria-label={tt("Zoom in")} onClick={() => ed.setZoom(Math.min(max, ed.scale + 0.1))}>+</button>
+      </div>
+    </>
+  );
+}
+
+/** Everything the studios can add, as one grid of labelled icons. */
+export function AddGrid<D extends Deck>({ ed, title, charts = true, onShapes }: { ed: DeckEditor<D>; title: string; charts?: boolean; onShapes: () => void }) {
+  const tt = useDT();
+  const i = ed.insert;
+  return (
+    <Section title={title}>
+      <div className="ds-add-grid">
+        <ToolBtn label={tt("Heading")} d="M6 4v16M18 4v16M6 12h12" onClick={i.heading} />
+        <ToolBtn label={tt("Text")} d="M4 6h16M4 12h10M4 18h14" onClick={i.text} />
+        <ToolBtn label={tt("List")} d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01" onClick={i.bullets} />
+        <ToolBtn label={tt("Number")} d="M7 20V4L4 7M14 8a3 3 0 1 1 6 0c0 4-6 6-6 12h6" onClick={i.stat} />
+        <ToolBtn label={tt("Shape")} d="M12 3l9 9-9 9-9-9z" onClick={onShapes} />
+        <ToolBtn label={tt("Photo")} d="M4 5h16v14H4zM4 15l5-5 4 4 3-3 4 4M15 9h.01" onClick={i.photo} />
+        <ToolBtn label={tt("Icon")} d="M12 3l2.6 6 6.4.6-4.8 4.3 1.4 6.3L12 17l-5.6 3.2 1.4-6.3L3 9.6 9.4 9z" onClick={i.icon} />
+        <ToolBtn label={tt("QR")} d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h2v2h-2zM18 18h2v2h-2zM14 18h2M18 14h2" onClick={i.qr} />
+        {charts && <ToolBtn label={tt("Chart")} d="M4 20V10M10 20V4M16 20v-7M22 20H2" onClick={i.chart} />}
+        {charts && <ToolBtn label={tt("Table")} d="M3 5h18v14H3zM3 10h18M3 15h18M9 5v14M15 5v14" onClick={i.table} />}
+      </div>
+    </Section>
+  );
+}
+
 /** Inline text editing: a plain-text contentEditable laid over the element. */
-function TextEditor({ deck, el, onDone }: { deck: Deck; el: Extract<El, { type: "text" }>; onDone: (v: string) => void }) {
+function TextEditor({ deck, el, onDone }: { deck: Deck; el: Extract<El, { type: "text" }>; onDone: (v: string, closing?: boolean) => void }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const n = ref.current!;
@@ -773,6 +816,18 @@ function TextEditor({ deck, el, onDone }: { deck: Deck; el: Extract<El, { type: 
     s?.removeAllRanges();
     s?.addRange(r);
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  // 2026-11-11: a tap beside the page ends editing by unmounting this box, and a removed box
+  // fires no blur, so the words typed were dropped. Keep them on the way out (a layout
+  // cleanup runs while the box is still in the page, so its line breaks read true).
+  const done = useRef(false);
+  const finish = useRef(onDone);
+  finish.current = onDone;
+  useLayoutEffect(() => {
+    const n = ref.current;
+    return () => {
+      if (!done.current && n) finish.current((n.innerText || "").replace(/\n$/, ""), false);
+    };
   }, []);
   return (
     <div style={{ position: "relative", width: "100%", height: "100%" }}>
@@ -792,7 +847,10 @@ function TextEditor({ deck, el, onDone }: { deck: Deck; el: Extract<El, { type: 
             (e.target as HTMLElement).blur();
           }
         }}
-        onBlur={(e) => onDone((e.currentTarget.innerText || "").replace(/\n$/, ""))}
+        onBlur={(e) => {
+          done.current = true;
+          onDone((e.currentTarget.innerText || "").replace(/\n$/, ""));
+        }}
         style={{
           fontFamily: fontStack(deck, el.font),
           color: paint(deck, el.color, "#111"),

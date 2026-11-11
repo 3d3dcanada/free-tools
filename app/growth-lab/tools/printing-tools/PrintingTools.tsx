@@ -529,7 +529,7 @@ export default function PrintingTools({ mode }: { mode: PrintingMode }) {
         <>
           <p className="pw-note">
             {tr(
-              "Exports retain the full JavaScript numeric precision; the display rounds to nine decimal places. US customary inch, foot, ounce and pound definitions are used.",
+              "Shown to nine decimal places; the downloaded file keeps every digit. Inches, feet, ounces and pounds are the US units.",
             )}
           </p>
           {calculation("unit-converter", conversion)}

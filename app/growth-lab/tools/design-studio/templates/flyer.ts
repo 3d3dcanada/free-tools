@@ -254,7 +254,7 @@ export const FLYERS: Template[] = [
             box(0, U(H - 19), w, U(0.3), "theme:ink", { slot: "cut" }),
             ...Array.from({ length: strips - 1 }, (_, i) => box(U(((i + 1) * 100) / strips), U(H - 19), U(0.2), U(19), "theme:line")),
             ...Array.from({ length: strips }, (_, i) =>
-              T(U((i * 100) / strips + 100 / strips / 2 - 8.5), U(H - 10.4 - 1.6), U(17), U(3.2), "Max · 506 555 0100", mono(U(1.45), { align: "center", rot: -90, weight: 600, slot: `strip${i}` })),
+              T(U((i * 100) / strips + 100 / strips / 2 - 8.5), U(H - 10.4 - 1.6), U(17), U(3.2), "Lost Cat · 506 555 0100", mono(U(1.45), { align: "center", rot: -90, weight: 600, slot: `strip${i}` })),
             ),
           ],
         };
@@ -287,7 +287,7 @@ export const FLYERS: Template[] = [
             ico(U(63), U(ph + 35), U(4.5), "ruler"),
             T(U(69), U(ph + 35.4), U(24), U(4), "1,850 sq ft", mono(U(2.3), { slot: "f3" })),
             box(U(7), U(H - 19), U(86), U(0.3), "theme:line"),
-            T(U(7), U(H - 15), U(50), U(5), "Jordan Lee", head(U(3.6), { slot: "who" })),
+            T(U(7), U(H - 15), U(50), U(5), "Agent Name", head(U(3.6), { slot: "who" })),
             T(U(7), U(H - 10), U(60), U(4), "Realtor · 506 555 0100", mono(U(2.2), { color: "theme:muted", slot: "contact" })),
             code(U(80), U(H - 17.5), U(13), "https://example.com", WHITE_QR),
           ],

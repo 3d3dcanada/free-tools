@@ -520,10 +520,13 @@ export default function QrCode({ intent }: { intent?: QrKind }) {
         </div>
         <div className="output qr-output">
           <div className="output-scroll">
-            <div className="preview">{svg && <div dangerouslySetInnerHTML={{ __html: svg }} />}</div>
-            <p className="scan-status" role="status">
-              {tr(scan)}
-            </p>
+            {/* 2026-11-11: with nothing to encode yet, one line says what is missing (no empty frame, no FAIL twice). */}
+            {svg && <div className="preview"><div dangerouslySetInnerHTML={{ __html: svg }} /></div>}
+            {!issue && (
+              <p className="scan-status" role="status">
+                {tr(scan)}
+              </p>
+            )}
             {issue && (
               <p role="alert" className="notice">
                 {tr(issue)}

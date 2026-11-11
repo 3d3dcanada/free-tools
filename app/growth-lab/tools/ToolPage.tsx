@@ -48,7 +48,7 @@ export default function ToolPage({
 }: {
   guide: Guide;
   children: ReactNode;
-  /** The editor owns its whole layout (the deck and page studios). */
+  /** The editor owns its panels (the deck and page studios); the bar and the sheet button stay the shell's. */
   wide?: boolean;
 }) {
   const [hydrated, setHydrated] = useState(false);
@@ -163,20 +163,19 @@ export default function ToolPage({
           </div>
           {/* After the first result: a slim strip at the foot, above Edit Settings, never over the work's Download. */}
           <div className="tool-help-dock">{hydrated && <DidThisHelp slug={guide.slug} />}</div>
-          {!wide && (
-            <button
-              type="button"
-              className="tool-sheet-toggle"
-              aria-expanded={view === "edit"}
-              onClick={() => setView((v) => (v === "edit" ? "result" : "edit"))}
-            >
-              {view === "edit" ? (
-                <>{fr ? "Terminé" : "Done"} <span aria-hidden="true">⌄</span></>
-              ) : (
-                <><span aria-hidden="true">⌃</span> {fr ? "Modifier les réglages" : "Edit Settings"}</>
-              )}
-            </button>
-          )}
+          {/* Every tool, the studios too (2026-11-11): their Templates, Content and Style are this one sheet. */}
+          <button
+            type="button"
+            className="tool-sheet-toggle"
+            aria-expanded={view === "edit"}
+            onClick={() => setView((v) => (v === "edit" ? "result" : "edit"))}
+          >
+            {view === "edit" ? (
+              <>{fr ? "Terminé" : "Done"} <span aria-hidden="true">⌄</span></>
+            ) : (
+              <><span aria-hidden="true">⌃</span> {fr ? "Modifier les réglages" : "Edit Settings"}</>
+            )}
+          </button>
         </div>
 
         <Dialog

@@ -23,7 +23,12 @@ import {
 
 type Props = {
   tools?: ReactNode;
-  onClose: () => void;
+  /** A first tab for phones only (the slide list): on desktop it is the rail. */
+  lead?: { label: string; body: ReactNode };
+  /** Shown at the top of Content: the deck's name and what can be added to a slide. */
+  add?: ReactNode;
+  /** Last in every tab but the phone's slide list. */
+  layers?: ReactNode;
   deck: Deck;
   slide: Slide;
   selected: El[];
@@ -37,9 +42,10 @@ type Props = {
   onLayer: (how: "front" | "forward" | "backward" | "back") => void;
   onDuplicate: () => void;
   onDelete: () => void;
-  tab: "element" | "slide" | "deck";
-  setTab: (t: "element" | "slide" | "deck") => void;
+  tab: InspectorTab;
+  setTab: (t: InspectorTab) => void;
 };
+export type InspectorTab = "lead" | "element" | "slide" | "deck";
 
 const SHAPES: { v: ShapeKind; d: string }[] = [
   { v: "rect", d: "M3 5h18v14H3z" },
@@ -83,19 +89,19 @@ export default function Inspector(p: Props) {
   const { deck, slide, selected, tab, setTab } = p;
   return (
     <aside className="ds-inspector" aria-label={tt("Inspector")}>
-      <button type="button" className="ds-sheet-close" aria-label={tt("Close panel")} onClick={p.onClose}>×</button>
       <div className="ds-tabs" role="group" aria-label={tt("Inspector")}>
-        {(["slide", "element", "deck"] as const).map((t) => (
-          <button key={t} type="button" aria-pressed={tab === t} onClick={() => setTab(t)}>
-            {t === "element" ? (selected.length > 1 ? `${selected.length} ${tt("Items")}` : tt("Style")) : t === "slide" ? tt("Content") : tt("Design")}
+        {((p.lead ? ["lead", "slide", "element", "deck"] : ["slide", "element", "deck"]) as InspectorTab[]).map((t) => (
+          <button key={t} type="button" className={t === "lead" ? "ds-tab-phone" : undefined} aria-pressed={tab === t} onClick={() => setTab(t)}>
+            {t === "lead" ? p.lead!.label : t === "element" ? (selected.length > 1 ? `${selected.length} ${tt("Items")}` : tt("Style")) : t === "slide" ? tt("Content") : tt("Design")}
           </button>
         ))}
       </div>
       <div className="ds-inspector-body">
-        {p.tools}
+        {tab === "lead" ? p.lead?.body : p.tools}
         {tab === "element" && (selected.length ? <ElementPanel {...p} /> : <EmptyHint />)}
-        {tab === "slide" && <SlidePanel {...p} />}
+        {tab === "slide" && <>{p.add}<SlidePanel {...p} /></>}
         {tab === "deck" && <DeckPanel deck={deck} onDeck={p.onDeck} slide={slide} />}
+        {tab !== "lead" && p.layers}
       </div>
     </aside>
   );

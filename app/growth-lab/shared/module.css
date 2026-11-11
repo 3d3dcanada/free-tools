@@ -409,7 +409,6 @@
   }
 
   /* Hub heroes carry a real shop photograph under a scrim, like MediaStage. */
-  .hub-hero,
   .course-hero {
     position: relative;
     isolation: isolate;
@@ -422,15 +421,6 @@
     color: #e5e5e5;
   }
   /* the 194 KB original went to every phone; the 800 px file is 73 KB and a scrim sits on it. */
-  .hub-hero {
-    background-image: url("/media/ground/studio-leds-800.webp");
-  }
-  @media (min-width: 801px) {
-    .hub-hero {
-      background-image: url("/media/ground/studio-leds-1600.webp");
-    }
-  }
-  .hub-hero::before,
   .course-hero::before {
     content: "";
     position: absolute;
@@ -440,20 +430,11 @@
       radial-gradient(90% 70% at 50% 100%, rgba(4, 217, 196, 0.16), transparent 60%),
       linear-gradient(180deg, rgba(10, 10, 10, 0.55) 0%, rgba(10, 10, 10, 0.72) 55%, rgba(10, 10, 10, 0.9) 100%);
   }
-  .hub-hero h1,
   .course-hero h1 {
     color: #fff;
   }
-  .hub-hero .eyebrow,
   .course-hero .eyebrow {
     color: var(--accent);
-  }
-  .hub-hero > p.answer {
-    color: #e5e5e5;
-  }
-  .hub-hero .pledge {
-    background: rgba(10, 10, 10, 0.5);
-    color: #f5f5f5;
   }
 
   .share-box {
@@ -635,18 +616,6 @@
     font-weight: 600;
     text-decoration: underline;
     text-underline-offset: 3px;
-  }
-
-  .tool-feedback-button {
-    border-color: color-mix(in srgb, #ff2d92 45%, #d4d4d4);
-  }
-  .tool-feedback-button::before {
-    content: "";
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #ff2d92;
-    box-shadow: 0 0 8px #ff2d92;
   }
   .feedback-form .field-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -868,45 +837,11 @@
   }
 
   /* Deck builder. */
-  .editor-grid {
-    display: grid;
-    grid-template-columns: 225px minmax(0, 1fr);
-    gap: 2rem;
-    padding-top: 1.4rem;
-    border-top: 1px solid var(--line);
-  }
   .editing {
     min-width: 0;
   }
   .editing > .toolbar {
     margin: 0.75rem 0;
-  }
-  .slide-list {
-    display: flex;
-    flex-direction: column;
-    align-self: start;
-  }
-  .slide-list button {
-    justify-content: flex-start;
-    gap: 0.65rem;
-    border: 0;
-    border-bottom: 1px solid var(--line);
-    border-radius: 0;
-    background: transparent;
-    padding: 0.95rem 0.6rem;
-    font-family: inherit;
-    font-size: 0.88rem;
-    letter-spacing: 0;
-    text-align: left;
-    text-transform: none;
-  }
-  .slide-list button[aria-current] {
-    border-left: 3px solid var(--accent);
-    background: var(--accent-wash);
-    box-shadow: none;
-  }
-  .slide-list button[draggable="true"] {
-    cursor: grab;
   }
   .presenter {
     width: 96vw;
@@ -935,50 +870,12 @@
   .notes {
     white-space: pre-wrap;
   }
-  .theme-tiles {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.8rem;
-    margin: 1rem 0;
-  }
-  .theme-tiles button {
-    display: block;
-    padding: 0.45rem;
-    border: 1px solid var(--line-strong);
-    background: rgba(255, 255, 255, 0.5);
-    font-family: inherit;
-    letter-spacing: 0;
-    text-align: left;
-    text-transform: none;
-  }
-  .theme-tiles svg {
-    display: block;
-    width: 100%;
-    height: auto;
-    border-radius: 4px;
-  }
-  .theme-tiles strong,
-  .theme-tiles small {
-    display: block;
-    padding: 0.2rem;
-  }
-  .theme-tiles small {
-    color: var(--soft);
-    font-weight: 400;
-  }
-  .flyer-tiles {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-  .card-tiles {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
 
   /* QR + design outputs. */
   .qr-workspace {
     grid-template-columns: minmax(280px, 0.9fr) minmax(0, 1.1fr);
   }
-  .qr-output,
-  .design-output {
+  .qr-output {
     position: sticky;
     top: 7.5rem;
     width: 100%;
@@ -993,16 +890,6 @@
     padding: 0.6rem;
     box-shadow: 0 0 50px -24px var(--accent);
   }
-  .design-output {
-    max-width: 540px;
-  }
-  .design-output .preview {
-    max-height: 600px;
-    overflow: auto;
-  }
-  .design-output .preview svg {
-    max-height: 580px;
-  }
   .scan-status {
     padding: 0.7rem 0.9rem;
     border: 1px solid color-mix(in srgb, #18e36b 45%, transparent);
@@ -1011,10 +898,6 @@
     background: color-mix(in srgb, #18e36b 8%, #fff);
     font-family: var(--mono);
     font-size: 12px;
-  }
-  .tag-preview {
-    max-width: 480px;
-    margin: auto;
   }
 
   /* Invoice, quote, receipt. */
@@ -1401,33 +1284,6 @@
   }
 
   /* ---------- Hub ---------- */
-  .hub-search {
-    display: grid;
-    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-    gap: 0 1.2rem;
-    max-width: 58rem;
-    margin: -1.6rem auto 0;
-    padding: 0.4rem 1.2rem 0.3rem;
-    position: relative;
-    border: 1px solid var(--accent-line);
-    border-radius: 12px;
-    background: var(--glass);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    box-shadow: 0 0 50px -24px var(--accent);
-  }
-  .hub-intro {
-    max-width: 46rem;
-    margin: 1.4rem auto 0;
-    text-align: center;
-  }
-  .hub-search label {
-    color: var(--soft);
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-  }
   .hub-status {
     max-width: 58rem;
     margin: 0.8rem auto 1.4rem;
@@ -1436,181 +1292,6 @@
     letter-spacing: 0.12em;
     text-align: center;
     text-transform: uppercase;
-  }
-  .hub-featured {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 0.9rem;
-    max-width: 88rem;
-    margin: 1.8rem auto 0.4rem;
-  }
-  .hub-feature {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 1.2rem 1.2rem 1.1rem;
-    overflow: hidden;
-    border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
-    border-radius: 16px;
-    background:
-      radial-gradient(90% 80% at 100% 0%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 60%),
-      var(--glass);
-    text-decoration: none;
-    transition:
-      transform 180ms ease,
-      box-shadow 180ms ease;
-  }
-  .hub-feature:hover {
-    color: inherit;
-    transform: translateY(-3px);
-    box-shadow: 0 24px 50px -30px var(--accent);
-  }
-  .hub-feature .tool-icon {
-    width: 52px;
-    height: 52px;
-    background: var(--accent);
-    color: #0a0a0a;
-    box-shadow: 0 0 26px -8px var(--accent);
-  }
-  .hub-feature strong {
-    margin-top: 0.4rem;
-    color: var(--ink);
-    font-size: 1.35rem;
-    font-weight: 900;
-    letter-spacing: -0.02em;
-  }
-  .hub-feature span {
-    color: var(--soft);
-    font-size: 0.92rem;
-    line-height: 1.45;
-  }
-  .hub-feature em {
-    margin-top: auto;
-    padding-top: 0.6rem;
-    color: color-mix(in srgb, var(--accent) 55%, #0a0a0a);
-    font-family: var(--mono);
-    font-size: 11px;
-    font-style: normal;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-  }
-  .hub-category {
-    display: grid;
-    grid-template-columns: 260px minmax(0, 1fr);
-    column-gap: 2rem;
-    max-width: 88rem;
-    margin: 0 auto;
-    padding: 1.6rem 0;
-    border-top: 1px solid var(--line);
-  }
-  .hub-category h2 {
-    margin: 0.4rem 0 0.8rem;
-    font-size: clamp(1.5rem, 3.4vw, 2.2rem);
-    font-weight: 900;
-  }
-  .hub-category h2::before {
-    content: "";
-    display: block;
-    width: 2rem;
-    height: 3px;
-    margin-bottom: 0.8rem;
-    background: var(--accent);
-    box-shadow: 0 0 12px var(--accent);
-  }
-  /* the hub as cards, each with a picture of what the tool makes. */
-  .hub-cards {
-    display: block;
-    scroll-margin-top: 5.5rem;
-  }
-  .hub-category-head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.2rem 1.2rem;
-    margin-bottom: 1.1rem;
-  }
-  .hub-category-head h2 {
-    margin: 0.4rem 0 0.2rem;
-  }
-  .hub-category-head p {
-    flex: 1 1 18rem;
-    margin: 0;
-    color: var(--soft);
-  }
-  .hub-count {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--accent-ink);
-  }
-  /*
-   * 2026-11-05: the hub's shelves are bands on a photograph, not bare paper. Each runs
-   * full-bleed over a wall of our own app screens (the software grounds the site picks for
-   * /tools), its heading on glass and its cards solid on the picture, so no word is printed on
-   * the photograph. The three walls rotate with position, so neighbours differ, and the 800 px
-   * files serve phones. Plain CSS and literal /media paths: this folder imports nothing from
-   * the site beyond its four host files.
-   */
-  .hub-category.hub-cards,
-  section.hub-design {
-    position: relative;
-    isolation: isolate;
-    width: calc(100% + 2.5rem);
-    max-width: none;
-    margin: 0 -1.25rem;
-    padding: 2.6rem max(1.25rem, calc((100% + 2.5rem - 88rem) / 2));
-    border: 0;
-    /* the warm paper tone is the fallback while the picture loads (and in the standalone copy,
-       which does not carry the site's /media files) */
-    background: var(--ground) center / cover no-repeat, #f1eee9;
-  }
-  section.hub-design {
-    margin-block: 1.6rem;
-  }
-  .hub-category.hub-cards::before,
-  section.hub-design::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background:
-      linear-gradient(180deg, rgba(250, 248, 245, 0.64) 0%, rgba(250, 248, 245, 0) 14%, rgba(250, 248, 245, 0) 86%, rgba(250, 248, 245, 0.64) 100%),
-      linear-gradient(100deg, rgba(250, 248, 245, 0.44) 0%, rgba(250, 248, 245, 0.36) 45%, rgba(250, 248, 245, 0.3) 100%);
-  }
-  .hub-category.hub-cards > .hub-category-head,
-  section.hub-design > div:first-child {
-    padding: 1.1rem 1.4rem;
-    border: 1px solid var(--accent-line);
-    border-radius: 16px;
-    /* 0.88, not the 0.74 of --glass: the small accent-ink tool count has to clear 4.5:1 over the
-       darkest part of a wall (modelled 4.7:1 at 0.88, 4.2:1 at 0.82) */
-    background: rgba(255, 255, 255, 0.88);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    box-shadow: 0 0 34px -12px color-mix(in srgb, var(--accent) 55%, transparent);
-  }
-  :is(.hub-category.hub-cards, section.hub-design):nth-of-type(3n) {
-    --ground: url("/media/screens/walls/wall-a-800.webp");
-  }
-  :is(.hub-category.hub-cards, section.hub-design):nth-of-type(3n + 1) {
-    --ground: url("/media/screens/walls/wall-b-800.webp");
-  }
-  :is(.hub-category.hub-cards, section.hub-design):nth-of-type(3n + 2) {
-    --ground: url("/media/screens/walls/wall-c-800.webp");
-  }
-  @media (min-width: 801px) {
-    :is(.hub-category.hub-cards, section.hub-design):nth-of-type(3n) {
-      --ground: url("/media/screens/walls/wall-a-1600.webp");
-    }
-    :is(.hub-category.hub-cards, section.hub-design):nth-of-type(3n + 1) {
-      --ground: url("/media/screens/walls/wall-b-1600.webp");
-    }
-    :is(.hub-category.hub-cards, section.hub-design):nth-of-type(3n + 2) {
-      --ground: url("/media/screens/walls/wall-c-1600.webp");
-    }
   }
   .hub-grid {
     display: grid;
@@ -1623,51 +1304,6 @@
   .hub-grid li {
     margin: 0;
   }
-  /* each shelf leads with captures of what its tools make, then says in one line what
-     you walk away with. The pictures scroll sideways inside their own box. */
-  .hub-shelf {
-    display: flex;
-    align-items: flex-start;
-    gap: 1.2rem;
-    margin-bottom: 1.1rem;
-  }
-  .hub-walk {
-    flex: 0 1 15rem;
-    margin: 0;
-    padding: 0.9rem 1.1rem;
-    border: 1px solid var(--accent-line);
-    border-radius: 16px;
-    background: rgba(255, 255, 255, 0.88);
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-    color: var(--ink);
-    font-weight: 650;
-    line-height: 1.4;
-  }
-  /* the first screen of the hub: real output from four of the tools, each opening its tool */
-  .hub-lead {
-    display: flex;
-    gap: 0.7rem;
-    max-width: 88rem;
-    margin: 1.2rem auto 0;
-    padding: 0;
-    overflow-x: auto;
-    list-style: none;
-    scroll-snap-type: x proximity;
-  }
-  .hub-lead li {
-    flex: none;
-    margin: 0;
-    scroll-snap-align: start;
-  }
-  .hub-lead img {
-    display: block;
-    width: auto;
-    height: 15rem;
-    border: 1px solid var(--line-strong);
-    border-radius: 12px;
-    background: #0f1414;
-  }
   details.hub-guide > summary {
     max-width: 88rem;
     margin: 1.6rem auto 0;
@@ -1679,28 +1315,6 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     cursor: pointer;
-  }
-  .hub-pics {
-    display: flex;
-    gap: 0.8rem;
-    min-width: 0;
-    margin: 0;
-    padding: 0;
-    overflow-x: auto;
-    list-style: none;
-  }
-  .hub-pics li {
-    flex: none;
-    margin: 0;
-  }
-  .hub-pics img {
-    display: block;
-    width: auto;
-    max-width: none;
-    height: 17rem;
-    border: 1px solid var(--line-strong);
-    border-radius: 12px;
-    background: #0f1414;
   }
   .hub-tool {
     position: relative;
@@ -1769,9 +1383,6 @@
     letter-spacing: 0.14em;
     text-transform: uppercase;
   }
-  .hub-tool-link {
-    min-height: 8.5rem;
-  }
   .data-promise {
     max-width: 88rem;
     margin: 0 auto;
@@ -1798,52 +1409,6 @@
     font-size: 0.95rem;
     line-height: 1.45;
   }
-  .tool-below .data-promise {
-    margin-top: 1rem;
-  }
-  .hub-rows {
-    width: 100%;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .hub-rows li + li {
-    border-top: 1px solid var(--line);
-  }
-  .hub-rows a {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.5rem;
-    padding: 1.05rem 0.8rem;
-    border-radius: 6px;
-    text-decoration: none;
-    transition: background-color 160ms ease;
-  }
-  .hub-rows a::after {
-    content: "";
-    position: absolute;
-    left: 50%;
-    right: 50%;
-    bottom: -1px;
-    height: 2px;
-    background: var(--accent);
-    box-shadow: 0 0 10px var(--accent);
-    transition:
-      left 220ms ease,
-      right 220ms ease;
-  }
-  .hub-rows a:hover,
-  .hub-rows a:focus-visible {
-    background: color-mix(in srgb, var(--accent) 7%, transparent);
-    color: inherit;
-  }
-  .hub-rows a:hover::after,
-  .hub-rows a:focus-visible::after {
-    left: 0;
-    right: 0;
-  }
   .tool-icon {
     display: grid;
     flex: none;
@@ -1862,41 +1427,6 @@
   .tool-icon svg {
     width: 22px;
     height: 22px;
-  }
-  .hub-rows a:hover .tool-icon {
-    background: var(--accent);
-    color: #0a0a0a;
-    box-shadow: 0 0 24px -6px var(--accent);
-    transform: rotate(-4deg) scale(1.05);
-  }
-  .hub-row-text {
-    flex: 1;
-    min-width: 0;
-  }
-  .hub-rows strong {
-    display: block;
-    margin-bottom: 0.2rem;
-    color: var(--ink);
-    font-size: 1.15rem;
-    font-weight: 700;
-    letter-spacing: -0.01em;
-  }
-  .hub-rows span span {
-    display: block;
-    max-width: 780px;
-    color: var(--soft);
-    font-size: 0.93rem;
-    line-height: 1.5;
-  }
-  .hub-rows a > span[aria-hidden] {
-    flex: none;
-    color: var(--accent-ink);
-    font-family: var(--mono);
-    font-size: 1.1rem;
-    transition: transform 160ms ease;
-  }
-  .hub-rows a:hover > span[aria-hidden] {
-    transform: translate(2px, -2px);
   }
 
   /* Reference blocks: guide, FAQ, related tools, service links. */
@@ -1927,33 +1457,6 @@
   }
   .tool-guide {
     line-height: 1.7;
-  }
-
-  .hub-commission {
-    max-width: 88rem;
-    margin: 2rem auto 0;
-    padding: clamp(1.4rem, 3vw, 2.2rem);
-    border: 1px solid color-mix(in srgb, #ff2d92 35%, transparent);
-    border-radius: 16px;
-    background:
-      radial-gradient(70% 120% at 100% 0%, color-mix(in srgb, #ff2d92 12%, transparent), transparent 60%),
-      var(--glass);
-  }
-  .hub-commission .eyebrow {
-    color: color-mix(in srgb, #ff2d92 55%, #0a0a0a);
-  }
-  .hub-commission .eyebrow::before {
-    background: #ff2d92;
-    box-shadow: 0 0 10px #ff2d92;
-  }
-  .hub-commission h2 {
-    margin: 0.6rem 0 0.3rem;
-    font-size: clamp(1.6rem, 4vw, 2.4rem);
-    font-weight: 900;
-  }
-  .hub-commission .growth-made-links {
-    justify-content: flex-start;
-    margin-top: 1rem;
   }
 
   /* The closing band: the one ask on these pages. */
@@ -2010,11 +1513,6 @@
   }
 
   /* ---------- Phone ---------- */
-  @media (min-width: 651px) and (max-width: 1100px) {
-    .hub-featured {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
   @media (max-width: 650px) {
     .growth-bar-promise {
       display: none;
@@ -2028,22 +1526,12 @@
     .hero {
       padding: 2rem 0 1.2rem;
     }
-    .hub-hero,
     .course-hero {
       width: calc(100% + 2rem);
       margin: 0 -1rem;
       padding: 4.5rem 1rem 3rem;
     }
     /* The tools hub: a short hero so the search is on the first screen. */
-    .hub-hero {
-      padding: 1.2rem 1rem 2.2rem;
-    }
-    .hub-hero h1 {
-      font-size: clamp(2rem, 9vw, 2.6rem);
-    }
-    .hub-intro {
-      font-size: 0.98rem;
-    }
     .pledge {
       font-size: 10.5px;
       padding: 0.45rem 0.7rem;
@@ -2059,26 +1547,6 @@
     .qr-output .preview {
       max-width: 215px;
     }
-    .design-output {
-      position: static;
-    }
-    .design-output .preview svg {
-      max-height: 440px;
-    }
-    .editor-grid {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .slide-list {
-      flex-direction: row;
-      flex-wrap: nowrap;
-      max-width: 100%;
-      overflow: auto;
-    }
-    .slide-list button {
-      flex: 0 0 155px;
-    }
     .toolbar {
       gap: 0.4rem;
     }
@@ -2087,9 +1555,6 @@
     }
     .exportbar button {
       flex: 1 1 140px;
-    }
-    .theme-tiles {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
     .field-grid {
       grid-template-columns: minmax(0, 1fr);
@@ -2105,80 +1570,6 @@
     }
     /* on a phone the hub is rows that scroll sideways inside their own box, not thirty
        screens of cards. The next card always peeks in, so the row reads as scrollable. */
-    .hub-featured {
-      display: flex;
-      overflow-x: auto;
-      scroll-snap-type: x proximity;
-    }
-    .hub-feature {
-      flex: 0 0 78%;
-      scroll-snap-align: start;
-    }
-    .hub-shelf {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 0.7rem;
-      margin-bottom: 0.8rem;
-    }
-    .hub-walk {
-      flex: none;
-      padding: 0.5rem 0.8rem;
-      border-radius: 12px;
-      font-size: 0.9rem;
-      line-height: 1.35;
-    }
-    .hub-shelf {
-      flex-direction: column-reverse;
-    }
-    .hub-category-head h2::before {
-      display: none;
-    }
-    .hub-category .hub-tool > span {
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-    .hub-pics {
-      scroll-snap-type: x proximity;
-    }
-    .hub-pics li {
-      scroll-snap-align: start;
-    }
-    .hub-pics img {
-      height: 11rem;
-    }
-    .hub-lead {
-      margin-top: 0.9rem;
-    }
-    .hub-lead img {
-      height: 8.5rem;
-    }
-    .hub-category .hub-grid {
-      display: flex;
-      gap: 0.7rem;
-      overflow-x: auto;
-      scroll-snap-type: x proximity;
-      padding-bottom: 0.4rem;
-    }
-    .hub-category .hub-grid li {
-      flex: 0 0 64%;
-      scroll-snap-align: start;
-    }
-    .hub-category .hub-tool .tool-preview {
-      display: none;
-    }
-    .hub-search {
-      grid-template-columns: minmax(0, 1fr);
-      margin-top: -1.2rem;
-    }
-    .hub-category {
-      grid-template-columns: minmax(0, 1fr);
-      padding: 1.2rem 0;
-    }
-    .hub-rows a {
-      padding: 0.95rem 0.4rem;
-    }
     .table-scroll {
       font-size: 0.8rem;
     }
@@ -2230,37 +1621,8 @@
 
 /* a visible working stage with dismissible controls. */
 .growth-lab {
-  .tool-quick {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem;
-    padding: 0.35rem 0.8rem;
-    border-bottom: 1px solid var(--line);
-    background: #f6f4f0;
-  }
-  .tool-quick-links {
-    display: flex;
-    flex-wrap: inherit;
-    gap: 0.25rem;
-  }
-  .tool-quick a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    min-width: 44px;
-    padding: 0.3rem 0.7rem;
-    font: 600 11px var(--mono);
-    text-decoration: none;
-    border-radius: 6px;
-  }
-  .tool-quick a:hover, .tool-quick a[aria-current] {
-    background: var(--accent-wash);
-    box-shadow: inset 0 -2px var(--accent);
-  }
   .tool-guide-close { min-width: 44px; min-height: 44px; width: 44px; }
   @media (max-width: 650px) {
-    .tool-quick { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: thin; }
-    .tool-quick > * { flex: none; white-space: nowrap; }
     .tool-content :is(button, select, input:not([type="checkbox"]):not([type="radio"]), .ws-add, summary),
     .tool-content .ws-stage button:not(.ws-export) {
       min-height: 44px;
@@ -2284,7 +1646,6 @@ dialog.gl-dialog {
 dialog.gl-dialog:not([open]) { display: none; }
 dialog.gl-dialog::backdrop { background: transparent; }
 .growth-lab {
-  .tool-finder-trigger { min-height: 44px; padding: 0.35rem 0.8rem; white-space: nowrap; }
   .tool-finder-search { padding: 0.8rem 1.4rem 0.2rem; }
   .tool-finder-search label { display: grid; gap: 0.35rem; font-weight: 700; }
   .tool-finder-search input { width: 100%; min-height: 44px; }
@@ -2298,32 +1659,8 @@ dialog.gl-dialog::backdrop { background: transparent; }
   .tool-finder-group a span { color: var(--soft); font-size: 13px; }
   .tool-finder-group a:is(:hover, [aria-current]) { background: var(--accent-wash); }
   .tool-finder-all { display: inline-flex; align-items: center; min-height: 44px; font-weight: 700; }
-  .hub-design {
-    display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: 2rem;
-    padding: 2rem 0; margin: 1rem 0; border-block: 1px solid var(--line);
-  }
-  .hub-design h2 { margin: 0.25rem 0; font-size: clamp(1.6rem, 3vw, 2.8rem); }
-  .hub-design nav { display: grid; gap: 0.35rem; }
-  .hub-design a {
-    display: flex; align-items: center; gap: 0.8rem; min-height: 54px; padding: 0.6rem 0.9rem;
-    background: #efede8; border-radius: 8px; text-decoration: none;
-  }
-  .hub-design a:hover { background: color-mix(in srgb, #FF2D92 9%, #efede8); }
-  .hub-design a span:last-child { margin-left: auto; }
-  .hub-design .tool-icon { width: 26px; height: 26px; flex: none; }
   @media (max-width: 650px) {
-    .hub-design { grid-template-columns: minmax(0, 1fr); gap: 0.6rem; }
     /* the design studios are a row that scrolls sideways, and the shelves are tighter. */
-    .hub-design nav { display: flex; overflow-x: auto; scroll-snap-type: x proximity; }
-    .hub-design nav a { flex: 0 0 64%; scroll-snap-align: start; }
-    .hub-category.hub-cards, section.hub-design {
-      /* the phone's page gutter is 1rem, not the 1.25rem the bands were cut for: they ran 4 px past the screen */
-      width: calc(100% + 2rem);
-      margin-inline: -1rem;
-      padding: 1.3rem 1rem;
-    }
-    .hub-category.hub-cards > .hub-category-head, section.hub-design > div:first-child { padding: 0.8rem 1rem; }
-    .hub-category-head { margin-bottom: 0.7rem; }
     .tool-finder .tool-guide-panel { top: 1rem; bottom: 1rem; max-height: none; border-radius: 16px; }
   }
 }

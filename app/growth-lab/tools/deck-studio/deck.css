@@ -65,98 +65,6 @@
   box-shadow: 0 0 22px -8px var(--ds-accent);
 }
 
-/* ------------------------------------------------ toolbar */
-.ds-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.45rem 0.7rem;
-  overflow-x: auto;
-  border-bottom: 1px solid var(--ds-line);
-  background: var(--ds-panel);
-  backdrop-filter: blur(14px);
-  scrollbar-width: none;
-}
-.ds-root .ds-title {
-  flex: none;
-  width: 200px !important;
-  border-color: transparent !important;
-  background: transparent !important;
-  font-family: "Geist Variable", sans-serif !important;
-  font-size: 15px !important;
-  font-weight: 800 !important;
-  letter-spacing: -0.01em !important;
-}
-.ds-title:hover,
-.ds-title:focus {
-  border-color: var(--ds-line) !important;
-  background: #fff !important;
-}
-.ds-tool-group {
-  display: flex;
-  flex: none;
-  gap: 0.25rem;
-  padding-left: 0.5rem;
-  border-left: 1px solid var(--ds-line);
-}
-.ds-tool {
-  flex-direction: column;
-  gap: 2px !important;
-  min-width: 52px;
-  min-height: 46px !important;
-  padding: 0.25rem 0.35rem !important;
-  border-color: transparent !important;
-  background: transparent !important;
-  font-size: 9.5px !important;
-  letter-spacing: 0.06em !important;
-}
-.ds-tool:hover {
-  border-color: var(--ds-line) !important;
-  background: #fff !important;
-}
-.ds-tool svg {
-  width: 20px;
-  height: 20px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-.ds-tool:hover svg {
-  stroke: #00a493;
-}
-.ds-zoom button[aria-pressed] {
-  min-width: 58px;
-  box-shadow: none;
-}
-.ds-spacer {
-  flex: 1;
-}
-.ds-status {
-  flex: none;
-  max-width: 260px;
-  overflow: hidden;
-  color: var(--ds-soft);
-  font-family: var(--ds-mono);
-  font-size: 10.5px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.ds-export-btn {
-  flex: none;
-}
-.ds-present-btn {
-  flex: none;
-  border-color: #0a0a0a !important;
-  background: #0a0a0a !important;
-  color: #fff !important;
-  box-shadow: 0 0 24px -10px var(--ds-accent);
-}
-.ds-present-btn:hover {
-  background: #1d1d1d !important;
-}
-
 /* ------------------------------------------------ main grid */
 .ds-main {
   display: grid;
@@ -390,6 +298,11 @@
   letter-spacing: 0.08em;
   text-align: center;
   text-transform: uppercase;
+}
+/* The foot (slide arrows and Present, or the card's Front / Back) has its own room under the
+   page, so a short stage (the sheet open on a phone) never puts it over the work. */
+.ds-stage:has(> .ds-stage-foot) {
+  padding-bottom: 52px;
 }
 .ds-stage-foot {
   position: absolute;
@@ -1188,159 +1101,245 @@
   color: #04d9c4 !important;
 }
 
+/* ------------------------------------------------ studio chrome, 2026-11-11 */
+/* The studios have no toolbar of their own and no tab row at the foot (the owner: "It doesn't
+   feel like a web app at all"; at 1024 the old toolbar ran 97 to 155 px past its edge). Undo,
+   redo, Download and Projects are in the tool's one bar; zoom and the save note sit on the stage;
+   adding things is a grid in Content. Up to 900 px the inspector is the shell's Edit Settings
+   sheet, its tabs led by Templates (or Slides), and the page keeps the screen above it. */
+.ds-stage-status {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  max-width: calc(100% - 24px);
+  margin: 0;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.62);
+  font-family: var(--ds-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.ds-zoom-float {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 999px;
+  background: rgba(10, 10, 10, 0.65);
+  backdrop-filter: blur(10px);
+}
+.ds-root .ds-zoom-float button {
+  min-width: 34px;
+  min-height: 34px;
+  padding: 0 0.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  font-family: var(--ds-mono);
+  font-size: 12px;
+  box-shadow: none;
+}
+.ds-root .ds-zoom-float button:hover,
+.ds-root .ds-zoom-float button[aria-pressed="true"] {
+  background: rgba(255, 255, 255, 0.12);
+}
+.ds-stage-foot > span,
+.ds-root .ds-stage-foot .ds-play {
+  white-space: nowrap;
+}
+.ds-root .ds-stage-foot .ds-play {
+  width: auto;
+  padding: 0 0.8rem !important;
+  border-radius: 999px !important;
+  background: var(--ds-accent) !important;
+  color: #0a0a0a !important;
+  font-family: var(--ds-mono) !important;
+  font-size: 11px !important;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.ds-name-field {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.7rem 0 0.6rem;
+  border-bottom: 1px solid var(--ds-line);
+  font-family: var(--ds-mono);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.ds-name-field input {
+  font-family: "Geist Variable", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: normal;
+  text-transform: none;
+}
+.ds-add-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(58px, 1fr));
+  gap: 0.3rem;
+}
+.ds-tool {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 4px !important;
+  min-width: 52px;
+  padding: 0.25rem 0.2rem !important;
+  font-size: 9.5px !important;
+  letter-spacing: 0.06em !important;
+}
+.ds-tool svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ds-tool:hover svg {
+  stroke: #00a493;
+}
+.ds-add-grid .ds-tool {
+  width: 100%;
+  min-height: 56px !important;
+  border-color: var(--ds-line) !important;
+  border-radius: 10px !important;
+  background: #fff !important;
+}
+/* The tool pages wrap every nav in their content; the rail is one column. */
+.ds-root .ds-main > .ds-rail {
+  flex-wrap: nowrap;
+  gap: 0;
+}
+.ds-rail-templates {
+  margin: 0.7rem 0.6rem 0;
+  white-space: normal;
+  border-color: var(--ds-accent) !important;
+}
+.ds-tabs {
+  grid-template-columns: none;
+  grid-auto-columns: minmax(0, 1fr);
+  grid-auto-flow: column;
+}
+@media (min-width: 901px) {
+  .ds-tabs .ds-tab-phone {
+    display: none;
+  }
+}
+
 /* ------------------------------------------------ phone and tablet */
 .ds-template-search { display: grid; gap: 0.4rem; margin-bottom: 1rem; font-size: 13px; font-weight: 700; }
 .ds-template-search input { width: 100%; min-height: 44px; }
 .ds-export-status { min-height: 1.5em; font-weight: 700; }
-.ds-mobile-bar,
-.ds-mobile-close {
-  display: none;
-}
-@media (max-width: 1100px) {
-  .ds-main {
-    grid-template-columns: 150px minmax(0, 1fr) 290px;
-  }
-}
+.ds-root { grid-template-rows: minmax(0, 1fr); }
+.ds-root .ds-main { grid-template-columns: 180px minmax(0, 1fr) 290px; }
+.ds-template-grid { grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); }
 @media (max-width: 900px) {
-  .ds-root .ds-title {
-    width: 130px !important;
-  }
-  .ds-root {
-    grid-template-rows: auto minmax(0, 1fr) auto;
-  }
-  .ds-main {
+  /* The page alone, or the page above the sheet while Edit Settings is open. */
+  .ds-root .ds-main {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
   }
-  .ds-title {
-    width: 130px;
-  }
-  .ds-status {
+  /* Specific enough to beat the tool pages' own `.tool-content nav` rule. */
+  .ds-root .ds-main > .ds-rail,
+  .ds-root .ds-main > .ds-inspector {
     display: none;
   }
-  .ds-rail,
-  .ds-inspector {
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 52px;
-    z-index: 20;
-    max-height: 62%;
+  .tool-app[data-view="edit"] .ds-main {
+    grid-template-rows: minmax(0, 2fr) minmax(0, 3fr);
+  }
+  .tool-app[data-view="edit"] .ds-main > .ds-inspector {
+    display: flex;
     border: 0;
-    border-top: 1px solid rgba(4, 217, 196, 0.4);
+    border-top: 1px solid var(--accent-line, var(--ds-accent));
     border-radius: 18px 18px 0 0;
     background: #faf8f5;
-    box-shadow: 0 -30px 60px -30px rgba(0, 0, 0, 0.45);
-    transform: translateY(calc(100% + 80px));
-    visibility: hidden;
-    transition: transform 260ms cubic-bezier(0.2, 0.7, 0.2, 1);
+    box-shadow: 0 -18px 40px -26px rgba(0, 0, 0, 0.45);
   }
-  .ds-root[data-mobile-panel="slides"] .ds-rail,
-  .ds-root[data-mobile-panel="inspector"] .ds-inspector {
-    transform: none;
-    visibility: visible;
+  /* The save note would sit on the page while the sheet shrinks the stage. */
+  .tool-app[data-view="edit"] .ds-stage-status {
+    display: none;
   }
-  .ds-rail ol {
-    display: flex;
-    gap: 0.5rem;
-    overflow-x: auto;
-    overflow-y: hidden;
-  }
-  /* The sheet stretched its strip to every slide's width, so the strip never
-     scrolled and a swipe moved nothing; held to the sheet it scrolls. */
-  .ds-rail > * {
-    max-width: 100%;
-  }
-  .ds-rail li {
-    flex: none;
-    width: 150px;
-  }
-  .ds-rail-actions {
-    opacity: 1;
+  /* A phone fits the page; zoom is a desktop control. */
+  .ds-zoom-float {
+    display: none;
   }
   .ds-stage-foot {
     bottom: 8px;
   }
-  .ds-mobile-bar {
+  .ds-root .ds-stage-foot { max-width: calc(100% - 12px); }
+  /* Wrapped, so the sheet only ever scrolls down: no sideways swipe at any width. */
+  .ds-sheet-slides ol,
+  .ds-sheet-templates ol {
     display: grid;
-    grid-template-columns: 1fr 1fr 1fr auto;
-    gap: 0.35rem;
-    padding: 0.4rem 0.5rem calc(0.4rem + env(safe-area-inset-bottom));
-    border-top: 1px solid var(--ds-line);
-    background: var(--ds-panel);
+    grid-template-columns: repeat(auto-fill, minmax(var(--thumb, 150px), 1fr));
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0.6rem 0 0.4rem;
+    list-style: none;
   }
-  .ds-mobile-close {
-    position: absolute;
-    right: 12px;
-    bottom: calc(52px + min(62%, 62svh) - 18px);
-    z-index: 21;
+  .ds-sheet-slides li,
+  .ds-sheet-templates li {
+    position: relative;
+    margin: 0;
+  }
+  /* One slide a row in the sheet, its four actions beside it rather than over it. */
+  .ds-sheet-slides ol {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .ds-sheet-slides li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .ds-sheet-slides .ds-rail-slide {
+    width: auto;
+  }
+  .ds-sheet-slides .ds-rail-actions {
+    position: static;
     display: grid;
-    place-items: center;
-    width: 36px;
-    min-height: 36px !important;
-    padding: 0 !important;
-    border-radius: 50% !important;
-    background: #fff !important;
-    font-size: 20px !important;
-    font-family: inherit !important;
+    grid-template-columns: repeat(2, 44px);
+    gap: 4px;
+    margin-left: auto;
   }
-  .ds-tool span {
-    display: none;
+  .ds-sheet-slides .ds-rail-templates,
+  .ds-sheet-slides .ds-add-slide {
+    width: 100%;
+    margin: 0.6rem 0 0;
   }
-  .ds-tool {
-    min-width: 38px;
-    min-height: 38px !important;
+  .ds-sheet-templates .ps-rail-head {
+    padding: 0.7rem 0 0;
+  }
+  .ds-rail-actions {
+    opacity: 1;
   }
   .ds-shape-picker {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
-}
-
-/* phone actions fit without a sideways toolbar. */
-.ds-insert-toggle { display: none !important; }
-.ds-sheet-close { display: none !important; }
-.ds-root .ds-toolbar { min-width: 0; }
-.ds-root .ds-main { grid-template-columns: 180px minmax(0, 1fr) 290px; }
-.ds-root .ds-mobile-close { width: 44px; min-height: 44px !important; }
-.ds-template-grid { grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); }
-@media (max-width: 900px) {
-  .ds-root .ds-main { grid-template-columns: minmax(0, 1fr); }
-  .ds-root .ds-toolbar { flex-wrap: wrap; overflow: visible; gap: 0.3rem; padding: 0.4rem; }
-  .ds-root .ds-toolbar .ds-title { flex: 1; width: 100px !important; min-width: 0; }
-  .ds-root .ds-spacer, .ds-root .ds-zoom { display: none; }
-  .ds-root .ds-tool-group { border: 0; padding: 0; gap: 0.3rem; }
-  .ds-root .ds-insert-toggle { display: inline-flex !important; }
-  .ds-root .ds-insert {
-    display: none;
-    position: absolute;
-    top: 104px;
-    left: 0;
-    right: 0;
-    z-index: 25;
-    flex-wrap: wrap;
-    padding: 0.7rem;
-    background: #faf8f5;
-    border-bottom: 1px solid var(--ds-accent);
-  }
-  .ds-root .ds-insert[data-open="true"] { display: flex; }
-  .ds-root .ds-tool span { display: inline; }
   .ds-root button, .ds-root .ds-stage-foot button, .ds-root .ds-rail-actions button,
   .ds-root .ds-tool, .ds-root .ds-tabs button, .ds-modal button {
     min-width: 44px;
     min-height: 44px !important;
   }
-  .ds-root input:not([type="checkbox"]), .ds-root select { min-height: 44px; }
-  .ds-root .ds-mobile-bar { gap: 0.25rem; }
-  .ds-root .ds-mobile-bar button { padding: 0.3rem; font-size: 10px; letter-spacing: 0; }
-  .ds-root .ds-stage-foot { max-width: calc(100% - 12px); }
-  .ds-root .ds-rail, .ds-root .ds-inspector { bottom: 60px; max-height: 70%; }
-  .ds-root .ds-sheet-close { display: grid !important; flex: none; align-self: flex-start; margin: 0.3rem 0.5rem; padding: 0; font-size: 22px; }
-  .ds-root .ds-mobile-close { bottom: calc(60px + 70% - 48px); }
+  .ds-root input:not([type="checkbox"]), .ds-root select, .ds-root textarea { min-height: 44px; }
   .ds-modal { max-width: calc(100vw - 16px); }
   .ds-modal-body { padding: 0.8rem; }
 }
 
-/* Reuse and layer controls stay inside the existing scrollable inspector. */
-.ds-reuse { padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--ds-line); }
+/* Layer controls stay inside the existing scrollable inspector. */
 .ds-layers .ds-snap { display: flex; align-items: center; gap: 0.5rem; font-size: 12px; }
 .ds-layers .ds-snap input { width: 18px; height: 18px; }
 .ds-layer-list { list-style: none; margin: 0.5rem 0; padding: 0; max-height: 240px; overflow: auto; }
@@ -1364,47 +1363,6 @@
 @media (max-height: 550px) and (orientation: landscape) {
   .ds-modal-layer { padding: 0.35rem; }
   .ds-modal { max-height: calc(100svh - 0.7rem); }
-  .ds-toolbar { padding-block: 0.25rem; }
 }
 
 .ds-photo-row { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; width: 100%; min-height: 44px !important; margin-block: 0.3rem; text-align: left; }
-
-/* 2026-10-11: on a phone the studio toolbar is one row that scrolls sideways.
-   Undo, redo and Download moved to the tool bar; the file name lives in
-   Projects & Backups and the Present button in the bottom bar. */
-@media (max-width: 900px) {
-  .ds-root .ds-toolbar {
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    gap: 0.3rem;
-    padding: 0.35rem 0.5rem;
-    scrollbar-width: none;
-  }
-  .ds-root .ds-toolbar > * {
-    flex: none;
-  }
-  .ds-root .ds-toolbar .ds-title,
-  .ds-root .ds-toolbar .ds-present-btn {
-    display: none;
-  }
-  .ds-root .ds-insert {
-    top: 3.3rem;
-  }
-}
-
-/* 2026-11-11: from 901 to 1439 px the insert labels and the save note pushed Zoom and Present past
-   the toolbar's edge (measured 300 to 354 px over at 1024, 12 px at 1366). Icons only there: the
-   title still names each insert, and the save note stays for screen readers. */
-@media (min-width: 901px) and (max-width: 1439px) {
-  .ds-root .ds-toolbar .ds-tool span { display: none; }
-  .ds-root .ds-toolbar .ds-title { width: 140px !important; }
-  .ds-root .ds-toolbar .ds-status {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
-}

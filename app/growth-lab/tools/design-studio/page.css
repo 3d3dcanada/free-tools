@@ -2,7 +2,7 @@
    pages on the Deck Studio canvas. Deck Studio's sheet does the heavy lifting;
    this adds the template rail, the page-size picker and the print guides. */
 
-/* ------------------------------------------------ toolbar */
+/* ------------------------------------------------ template browser */
 .ps-template-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr));
@@ -11,26 +11,6 @@
 .ps-template-grid .ps-tpl { padding: 1rem !important; background: #efede8 !important; }
 .ps-template-grid .ps-tpl > span:last-child { font-size: 12px; }
 .ps-photo-row { display: flex !important; justify-content: space-between; width: 100%; min-height: 44px; gap: 0.5rem; }
-.ps-content-note { margin: 0 0 0.8rem; }
-@media (max-width: 900px) { .ps-root .ps-browse { display: none; } }
-.ps-size-btn {
-  gap: 0.5rem;
-  min-width: 118px;
-  font-weight: 700 !important;
-  letter-spacing: 0.06em !important;
-}
-.ps-size-glyph {
-  display: inline-block;
-  height: 18px;
-  max-width: 26px;
-  border: 1.5px solid currentColor;
-  border-radius: 2px;
-  background: color-mix(in srgb, var(--ds-accent) 22%, transparent);
-}
-.ds-root .ps-export-btn {
-  min-width: 96px;
-  font-weight: 800;
-}
 
 /* ------------------------------------------------ template rail */
 .ps-rail {
@@ -39,7 +19,8 @@
 .ps-rail-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   margin: 0;
   padding: 0.8rem 0.9rem 0.2rem;
   font-family: var(--ds-mono);
@@ -47,6 +28,11 @@
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
+}
+.ps-rail-head .ps-browse {
+  min-height: 30px;
+  margin-left: auto;
+  padding: 0.2rem 0.6rem;
 }
 .ps-rail-head span {
   padding: 1px 7px;
@@ -153,16 +139,6 @@
   background: var(--ds-accent) !important;
   color: #0a0a0a !important;
 }
-.ds-root .ps-size-foot {
-  min-height: 0;
-  padding: 0.45rem 0.9rem;
-  cursor: pointer;
-  font-family: var(--ds-mono);
-  font-size: 10.5px;
-  letter-spacing: 0.08em;
-  /* Centred from left: 50%, so it would wrap at half the stage's width. */
-  white-space: nowrap;
-}
 
 /* ------------------------------------------------ page size rows */
 .ps-formats {
@@ -267,12 +243,6 @@
   /* As wide as the drawn thumbnail (172 px), so the templates sit side by side. */
   .ps-rail li {
     width: auto !important;
-  }
-  .ps-mobile-bar {
-    grid-template-columns: 1fr 1fr 1fr !important;
-  }
-  .ps-size-btn {
-    min-width: 0;
   }
   .ds-pattern-picker {
     grid-template-columns: repeat(4, minmax(0, 1fr));
