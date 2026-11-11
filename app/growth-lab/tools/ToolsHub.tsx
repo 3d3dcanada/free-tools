@@ -282,7 +282,7 @@ function Hub({ guide }: { guide: Guide }) {
         <h2>{tr("Need a tool for a different job?")}</h2>
         <p>{tr("Describe the repetitive or private job and 3D3D will quote a tool that does exactly that.")}</p>
         <div className="growth-made-links">
-          <a href={localLink("/apps")}>{tr("Everything we build, on one page")}</a>
+          <a href={localLink("/built")}>{tr("Everything we build, on one page")}</a>
           <a href={localLink("/quote?for=software&context=document-tool")}>{tr("Commission a tool")}</a>
         </div>
       </aside>
