@@ -133,6 +133,21 @@ const french: Record<string, string> = {
   Contributors: "Contributions",
   "Join the project": "Participer au projet",
   "Get help with a printing project": "Obtenir de l’aide pour un projet d’impression",
+  // The lesson as composed steps and the course map (2026-11-11).
+  Lesson: "Leçon",
+  Question: "Question",
+  "Lessons in this unit": "Leçons de cette unité",
+  "In this lesson": "Dans cette leçon",
+  "Key terms in this lesson": "Termes clés de cette leçon",
+  "Open the glossary": "Ouvrir le glossaire",
+  "Check yourself": "Vérifiez-vous",
+  "Up next": "Ensuite",
+  "lessons of this unit complete": "leçons de cette unité terminées",
+  "Tools, sources, common questions and corrections": "Outils, sources, questions fréquentes et corrections",
+  "You are here": "Vous êtes ici",
+  "Start here": "Commencez ici",
+  "In progress": "En cours",
+  "Where the course uses it:": "Là où le cours l’emploie :",
 };
 export function academyText(text: string, locale: "en" | "fr") {
   return locale === "fr" ? (french[text] ?? text) : text;

@@ -1,4 +1,5 @@
 import { download, svgPng } from "../../shared/browser";
+import { cleanSvgFragment } from "../../shared/safe-markup";
 import {
   dims,
   fontFor,
@@ -91,7 +92,7 @@ export function elSvg(deck: Deck, el: El, withText: boolean): string {
       const tile = el.fill ? `<rect width="${el.w}" height="${el.h}" rx="${el.radius}" fill="${paint(deck, el.fill)}"/>` : "";
       const k = el.fill ? 0.58 : 1;
       const s = Math.min(el.w, el.h) * k;
-      inner = `${tile}<svg x="${(el.w - s) / 2}" y="${(el.h - s) / 2}" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${paint(deck, el.color, "#111")}" stroke-width="${el.strokeW}" stroke-linecap="round" stroke-linejoin="round">${el.paths}</svg>`;
+      inner = `${tile}<svg x="${(el.w - s) / 2}" y="${(el.h - s) / 2}" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="${paint(deck, el.color, "#111")}" stroke-width="${el.strokeW}" stroke-linecap="round" stroke-linejoin="round">${cleanSvgFragment(el.paths)}</svg>`;
       break;
     }
     case "chart":
@@ -466,7 +467,7 @@ async function exportHtml(deck: Deck) {
     .filter((s) => !s.hidden)
     .map(
       (s, i) =>
-        `<section class="s ${s.transition}" data-i="${i}"${i ? "" : ' data-on="1"'}><div class="f">${renderToStaticMarkup(createElement(SlideView, { deck, slide: s, play: true }))}</div><aside>${esc(s.notes)}</aside></section>`,
+        `<section class="s ${esc(String(s.transition))}" data-i="${i}"${i ? "" : ' data-on="1"'}><div class="f">${renderToStaticMarkup(createElement(SlideView, { deck, slide: s, play: true }))}</div><aside>${esc(s.notes)}</aside></section>`,
     )
     .join("");
   const css = `${faces.join("")}*{box-sizing:border-box}html,body{margin:0;height:100%;background:#050505;overflow:hidden;font-family:"Geist Variable",system-ui,sans-serif}.s{position:fixed;inset:0;display:grid;place-items:center;visibility:hidden}.s[data-on]{visibility:visible}.f{width:${r.w}px;height:${r.h}px;transform-origin:center;flex:none}.s aside{display:none}.s[data-on].fade .f{animation:fd .5s ease both}.s[data-on].slide .f{animation:sl .55s cubic-bezier(.2,.7,.2,1) both}.s[data-on].zoom .f{animation:zm .55s cubic-bezier(.2,.7,.2,1) both}.s[data-on].lift .f{animation:lf .6s cubic-bezier(.2,.7,.2,1) both}@keyframes fd{from{opacity:0}}@keyframes sl{from{opacity:0;translate:6% 0}}@keyframes zm{from{opacity:0;scale:.92}}@keyframes lf{from{opacity:0;translate:0 5%}}.ds-anim{animation:.7s cubic-bezier(.2,.7,.2,1) both;animation-play-state:paused}.s[data-on] .ds-anim{animation-play-state:running}.ds-anim-fade{animation-name:af}.ds-anim-rise{animation-name:ar}.ds-anim-zoom{animation-name:az}.ds-anim-left{animation-name:al}.ds-anim-right{animation-name:aR}.ds-anim-pop{animation-name:ap}@keyframes af{from{opacity:0}}@keyframes ar{from{opacity:0;translate:0 40px}}@keyframes az{from{opacity:0;scale:.85}}@keyframes al{from{opacity:0;translate:-60px 0}}@keyframes aR{from{opacity:0;translate:60px 0}}@keyframes ap{0%{opacity:0;scale:.5}70%{scale:1.08}}#n{position:fixed;right:14px;bottom:12px;color:#fff;font:12px ui-monospace,monospace;opacity:.55}@media print{html,body{overflow:visible;height:auto;background:#fff}.s{position:static;visibility:visible;break-after:page;display:block}.f{transform:none!important}#n{display:none}}@media (prefers-reduced-motion:reduce){*{animation:none!important}}`;

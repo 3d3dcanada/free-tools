@@ -33,6 +33,7 @@ export const frenchUi: Record<string, string> = {
   "Describe the repetitive or private job and 3D3D will quote a tool that does exactly that.": "Décrivez la tâche répétitive ou confidentielle et 3D3D chiffrera un outil qui fait exactement cela.",
   "Everything we build, on one page": "Tout ce que nous construisons, sur une page",
   "Commission a tool": "Commander un outil",
+  "The apps, websites and tools 3D3D has built.": "Les applications, sites web et outils que 3D3D a construits.",
   "Most used": "Les plus utilisés",
   "Deck Studio": "Studio de présentation",
   "Design a presentation on a real canvas, then present it or export PowerPoint and PDF.": "Concevez une présentation sur un vrai canevas, puis présentez-la ou exportez-la en PowerPoint et PDF.",

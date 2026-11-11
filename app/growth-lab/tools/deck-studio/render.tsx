@@ -1,6 +1,7 @@
 import { createContext, useContext, type CSSProperties } from "react";
 import { qrSvg, defaultStyle } from "../qr-code/model";
 import { useLocale } from "../../shared/locale";
+import { cleanSvgFragment } from "../../shared/safe-markup";
 import { dt } from "./i18n";
 import {
   dims,
@@ -511,7 +512,7 @@ export function ElementView({ deck, el, editing }: { deck: Deck; el: El; editing
             strokeWidth={el.strokeW}
             strokeLinecap="round"
             strokeLinejoin="round"
-            dangerouslySetInnerHTML={{ __html: el.paths }}
+            dangerouslySetInnerHTML={{ __html: cleanSvgFragment(el.paths) }}
           />
         </div>
       );

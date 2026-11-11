@@ -3,6 +3,7 @@ import { catalogFor } from "../tools/catalog";
 import { sources } from "./sources";
 import { siteAbsolute } from "../seo/site-links";
 import type { Lesson } from "./types";
+import { composeReading } from "./compose";
 export type AcademyFaq = { q: string; a: string };
 export type SupportGuide = {
   answer: string;
@@ -35,15 +36,23 @@ export function AcademyFaqs({ faqs }: { faqs: AcademyFaq[] }) {
     </section>
   );
 }
+/** The hub's and side pages' guide text, cut by compose.ts like a lesson (2026-11-11). */
 export function SupportReading({ guide }: { guide?: SupportGuide }) {
+  const composed = guide ? composeReading(guide.sections, { gap: 520 }) : [];
   return guide ? (
     <div className="reading no-print academy-guide">
-      {guide.sections.map((s) => (
+      {guide.sections.map((s, i) => (
         <section key={s.title}>
           <h2>{s.title}</h2>
-          {s.paragraphs.map((p) => (
-            <p key={p}>{p}</p>
-          ))}
+          {composed[i].map((part, j) =>
+            part.kind === "p" ? (
+              <p key={j}>{part.text}</p>
+            ) : (
+              <p key={j} className="pull-line" data-vb="line">
+                {part.text}
+              </p>
+            ),
+          )}
         </section>
       ))}
       <AcademyFaqs faqs={guide.faqs} />

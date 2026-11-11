@@ -70,6 +70,16 @@ const MORE: { title: string; accent: string; links: [string, string, string][] }
       ["The 3D Printing Academy", "/learn/academy", "Forty free lessons, from first layer to a product worth selling."],
     ],
   },
+  // 2026-11-11: run 1 dropped the "Built to order" block and with it the hub's only link to /built,
+  // which the site's navigation contract needs. Back as two plain rows, not a block.
+  {
+    title: "Built to order",
+    accent: "#FF2D92",
+    links: [
+      ["Everything we build, on one page", "/built", "The apps, websites and tools 3D3D has built."],
+      ["Commission a tool", "/quote?for=software&context=document-tool", "Describe the repetitive or private job and 3D3D will quote a tool that does exactly that."],
+    ],
+  },
 ];
 
 export default function ToolsHub({ guide }: { guide: Guide }) {

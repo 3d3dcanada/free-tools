@@ -1,9 +1,9 @@
 {
   "source": "3d3d-site app/growth-lab",
-  "sourceCommit": "d9bbf6fd",
+  "sourceCommit": "44113cb1",
   "sourceHadUncommittedChanges": false,
-  "files": 709,
-  "treeSha256": "958e50180e579df2cedc7f7d70e7df33a08fe7f6d9d0ac78d19b914f6f156fa8",
+  "files": 711,
+  "treeSha256": "b192471bf29c8268c2a345dd836c29861c042cf4dad584a2a0da6444fd94a2e5",
   "syncedTests": [
     "tests/design-studio.test.mts",
     "tests/draft-language.test.mts",
@@ -19,6 +19,7 @@
     "@jsquash/oxipng",
     "@pdf-lib/fontkit",
     "@react-router/dev",
+    "dompurify",
     "jspdf",
     "jsqr",
     "jszip",

@@ -16,6 +16,7 @@ import { initialTag, isTag } from "../app/growth-lab/tools/qr-code/model";
 import { emptyBrand, isBrand } from "../app/growth-lab/shared/brand";
 import { validImage } from "../app/growth-lab/shared/browser";
 import { safeSvg } from "../app/growth-lab/tools/image-toolkit/model";
+import { cleanSvgFragment } from "../app/growth-lab/shared/safe-markup";
 import { parseCsv } from "../app/growth-lab/shared/csv";
 import { validProgress } from "../app/growth-lab/academy/progress";
 import { importModel } from "../app/growth-lab/tools/printing-tools/import-model";
@@ -69,6 +70,31 @@ refused(isDeck(withEl(loose(q, { bind: "<b>" }))), "QR bind outside the list");
 refused(isDeck(withEl({ ...s, type: "image", src: "data:image/svg+xml;base64,PHN2Zz48L3N2Zz4=" } as unknown as El)), "SVG data image");
 refused(isDeck(withEl({ ...s, type: "image", src: "javascript:alert(1)" } as unknown as El)), "javascript: image");
 refused(isDeck(withEl({ ...s, type: "icon", name: "x", paths: '<path d="M0 0" onload="1"/>' } as unknown as El)), "icon markup with a handler");
+// Finding 16 (2026-11-11): icon markup is checked on import AND cleaned every time it is drawn.
+const HOSTILE_SVG = {
+  "a script element": '<script>window.__pwn=1</script><path d="M0 0"/>',
+  "an event handler attribute": '<path d="M0 0" onclick="window.__pwn=1"/>',
+  "a javascript: href": '<path d="M0 0" href="javascript:window.__pwn=1"/>',
+  "a javascript: link around a shape": '<a href="javascript:window.__pwn=1"><path d="M0 0"/></a>',
+  "a style attribute": '<path d="M0 0" style="fill:url(javascript:1)"/>',
+};
+for (const [why, paths] of Object.entries(HOSTILE_SVG)) {
+  refused(isDeck(withEl({ ...s, type: "icon", name: "x", paths } as unknown as El)), `icon markup with ${why}`);
+  checks++;
+  const drawn = cleanSvgFragment(paths);
+  assert.ok(!/script|on[a-z]+=|javascript:|href|style/i.test(drawn), `drawn icon still carries ${why}: ${drawn}`);
+}
+{
+  const clean = '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>';
+  accepted(cleanSvgFragment(clean) === clean, "a library icon is drawn unchanged");
+  accepted(isDeck(withEl({ ...s, type: "icon", name: "circle-check", paths: clean } as unknown as El)), "a deck with a library icon");
+  accepted(cleanSvgFragment({ toString: () => clean }) === "", "icon markup that is not a string draws nothing");
+}
+{
+  const d = clone(base);
+  (d.slides[0] as { transition: string }).transition = '"><img src=x onerror=window.__pwn=1>';
+  refused(isDeck(d), "a slide transition written into the HTML export's class attribute");
+}
 refused(isDeck({ ...clone(base), v: 2 }), "unknown version");
 refused(isDeck({ ...clone(base), slides: new Array(300).fill(clone(base).slides[0]) }), "more than 200 slides");
 {

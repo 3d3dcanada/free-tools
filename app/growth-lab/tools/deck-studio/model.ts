@@ -3,6 +3,7 @@
  * positioned elements on a fixed design canvas, so what you see in the editor
  * is what PowerPoint, the PDF and the HTML player receive.
  */
+import { ICON_MARKUP } from "../../shared/safe-markup";
 
 export type Ratio = "16:9" | "4:3" | "1:1" | "9:16";
 export const RATIOS: Record<Ratio, { w: number; h: number; label: string }> = {
@@ -400,8 +401,8 @@ const ELTYPES = ["text", "shape", "image", "icon", "chart", "table", "qr"];
 const PAINT = /^(#[0-9a-f]{6}|theme:(ink|muted|bg|surface|accent|accent2|accent3|line|on-accent|on-accent2|on-accent3))?$/i;
 const ID = /^[a-z0-9_-]{1,40}$/i;
 const DATA_IMAGE = /^(data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+)?$/;
-// No event-handler attributes: an imported .deck file must never carry script into the page.
-const ICON_MARKUP = /^(<(path|circle|rect|line|polyline|polygon|ellipse)( (?!on)[a-z][a-z-]*="[^"<>&]*")*\/>)*$/;
+// Icon markup: SVG shapes with geometry attributes only (no handlers, no href), see shared/safe-markup.ts.
+const TRANSITIONS: readonly string[] = ["none", "fade", "slide", "zoom", "lift"];
 const PAINT_KEYS = ["color", "fill", "fill2", "stroke", "border", "accent", "bg"] as const;
 // Shapes, charts and QR codes are drawn as SVG strings, so a numeric field that
 // arrives as text ("1\" onload=\"...") would reach an attribute. Every number, enum, list
@@ -483,6 +484,9 @@ export function isDeck(v: unknown): v is Deck {
         typeof s.bg.angle === "number" &&
         typeof s.bg.dim === "number" &&
         typeof s.notes === "string" &&
+        // The HTML export writes the transition into a class attribute.
+        (s.transition === undefined || TRANSITIONS.includes(s.transition)) &&
+        (s.hidden === undefined || typeof s.hidden === "boolean") &&
         Array.isArray(s.els) &&
         s.els.length <= 300 &&
         s.els.every(
