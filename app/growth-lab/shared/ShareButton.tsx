@@ -20,11 +20,17 @@ export default function ShareButton({ title, fr = false, className = "" }: { tit
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const box = useRef<HTMLDivElement | null>(null);
+  const opener = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     if (!open) return;
     const close = (e: MouseEvent | KeyboardEvent) => {
-      if (e instanceof KeyboardEvent ? e.key === "Escape" : !box.current?.contains(e.target as Node)) setOpen(false);
+      if (e instanceof KeyboardEvent) {
+        if (e.key !== "Escape") return;
+        // Back to Share, not to <body> (WCAG 2.4.3).
+        if (box.current?.contains(document.activeElement)) opener.current?.focus();
+        setOpen(false);
+      } else if (!box.current?.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener("mousedown", close);
     document.addEventListener("keydown", close);
@@ -68,15 +74,15 @@ export default function ShareButton({ title, fr = false, className = "" }: { tit
   const t = encodeURIComponent(title);
   return (
     <div ref={box} className={`share-box ${className}`}>
-      <button type="button" onClick={onShare} aria-haspopup="menu" aria-expanded={open}>
+      {/* A disclosure of plain links, not role="menu", which promises arrow keys (4.1.2). */}
+      <button ref={opener} type="button" onClick={onShare} aria-expanded={open}>
         {fr ? "Partager" : "Share"}
       </button>
       {open && (
-        <div role="menu" className="share-menu">
+        <div className="share-menu">
           {NETS.map((n) => (
             <a
               key={n.id}
-              role="menuitem"
               href={n.href(u, t)}
               target="_blank"
               rel="noopener noreferrer"
@@ -88,10 +94,11 @@ export default function ShareButton({ title, fr = false, className = "" }: { tit
               {n.label}
             </a>
           ))}
-          <a role="menuitem" href={`mailto:?subject=${t}&body=${u}`} onClick={() => note("email")}>
+          <a href={`mailto:?subject=${t}&body=${u}`} onClick={() => note("email")}>
             {fr ? "Courriel" : "Email"}
           </a>
-          <button type="button" role="menuitem" onClick={copy}>
+          {/* aria-live: "Link copied" is said, not only shown (4.1.3). */}
+          <button type="button" onClick={copy} aria-live="polite">
             {copied ? (fr ? "Lien copié" : "Link copied") : fr ? "Copier le lien" : "Copy link"}
           </button>
         </div>

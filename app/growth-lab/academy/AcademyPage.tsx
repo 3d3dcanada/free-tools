@@ -799,7 +799,7 @@ export default function AcademyPage({
                   <input
                     value={name}
                     maxLength={80}
-                    autoComplete="off"
+                    autoComplete="name"
                     onChange={(e) => setName(e.target.value)}
                   />
                 </label>

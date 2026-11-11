@@ -131,7 +131,14 @@ export default function InvoiceGenerator({
   ) => (
     <label>
       {tr(label)}
-      <input type={type} maxLength={max} value={b[key]} onChange={(e) => patch({ [key]: e.target.value })} />
+      <input
+        type={type}
+        maxLength={max}
+        value={b[key]}
+        // The sender's own details can fill from the browser (WCAG 1.3.5); the client's are not the user's.
+        autoComplete={key === "business" ? "organization" : key === "email" ? "email" : undefined}
+        onChange={(e) => patch({ [key]: e.target.value })}
+      />
     </label>
   );
   return (
@@ -272,6 +279,7 @@ export default function InvoiceGenerator({
               {tr("Business Address")}
               <textarea
                 aria-label={tr("Business Address")}
+                autoComplete="street-address"
                 maxLength={400}
                 value={b.address}
                 onChange={(e) => patch({ address: e.target.value })}

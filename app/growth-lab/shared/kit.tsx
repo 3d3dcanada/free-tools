@@ -226,10 +226,16 @@ export function ExportBar({
   const [message, setMessage] = useState("");
   const [open, setOpen] = useState(false);
   const box = useRef<HTMLDivElement>(null);
+  const opener = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     if (!open) return;
     const close = (e: PointerEvent | KeyboardEvent) => {
-      if (e instanceof KeyboardEvent ? e.key === "Escape" : !box.current?.contains(e.target as Node)) setOpen(false);
+      if (e instanceof KeyboardEvent) {
+        if (e.key !== "Escape") return;
+        // Escape from a format put focus on <body> (WCAG 2.4.3); it goes back to Download.
+        if (box.current?.contains(document.activeElement)) opener.current?.focus();
+        setOpen(false);
+      } else if (!box.current?.contains(e.target as Node)) setOpen(false);
     };
     document.addEventListener("pointerdown", close);
     document.addEventListener("keydown", close);
@@ -263,10 +269,12 @@ export function ExportBar({
     <ToolSlot name="primary">
     <div className="exportbar" ref={box}>
       <button
+        ref={opener}
         type="button"
         className="export-main"
         disabled={!!busy || (single ? single.off : list.every((a) => a.off))}
-        aria-haspopup={single ? undefined : "menu"}
+        // A disclosure, not role="menu": a menu promises arrow keys, and these are
+        // plain buttons reached with Tab (WCAG 4.1.2).
         aria-expanded={single ? undefined : open}
         onClick={() => (single ? void run(single.name, single.run) : setOpen((o) => !o))}
       >
@@ -275,9 +283,14 @@ export function ExportBar({
         {!single && <span className="export-caret" aria-hidden="true">▾</span>}
       </button>
       {!single && open && (
-        <div className="export-menu" role="menu">
+        <div
+          className="export-menu"
+          onBlur={(e) => {
+            if (!box.current?.contains(e.relatedTarget as Node | null)) setOpen(false);
+          }}
+        >
           {list.map((a) => (
-            <button key={a.name} type="button" role="menuitem" disabled={a.off} onClick={() => void run(a.name, a.run)}>
+            <button key={a.name} type="button" disabled={a.off} onClick={() => void run(a.name, a.run)}>
               {tr(a.name)}
             </button>
           ))}

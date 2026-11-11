@@ -57,6 +57,8 @@ export default function ToolPage({
   const [menu, setMenu] = useState(false);
   const [slots, setSlots] = useState<ToolSlots>({ history: null, primary: null, menu: null });
   const menuBox = useRef<HTMLDivElement>(null);
+  const moreButton = useRef<HTMLButtonElement>(null);
+  const sheetButton = useRef<HTMLButtonElement>(null);
   // Count the open once per page load; every tool page renders through here.
   const opened = useRef(false);
   useEffect(() => {
@@ -76,6 +78,10 @@ export default function ToolPage({
   useEffect(() => {
     const close = (e: KeyboardEvent) => {
       if (e.key !== "Escape" || (e.target as HTMLElement).closest("dialog")) return;
+      // Focus goes back to what opened the thing Escape just shut, never to <body> (2.4.3).
+      const at = document.activeElement;
+      if (menuBox.current?.contains(at)) moreButton.current?.focus();
+      else if (at?.closest(".tool-content") && window.matchMedia("(max-width: 900px)").matches) sheetButton.current?.focus();
       setMenu(false);
       setView("result");
     };
@@ -123,9 +129,9 @@ export default function ToolPage({
             <div className="tool-primary" ref={slot("primary")} />
             <div className="tool-more" ref={menuBox}>
               <button
+                ref={moreButton}
                 type="button"
                 className="tool-more-button"
-                aria-haspopup="menu"
                 aria-expanded={menu}
                 aria-label={fr ? "Plus d’options" : "More options"}
                 onClick={() => setMenu((m) => !m)}
@@ -165,6 +171,7 @@ export default function ToolPage({
           <div className="tool-help-dock">{hydrated && <DidThisHelp slug={guide.slug} />}</div>
           {/* Every tool, the studios too (2026-11-11): their Templates, Content and Style are this one sheet. */}
           <button
+            ref={sheetButton}
             type="button"
             className="tool-sheet-toggle"
             aria-expanded={view === "edit"}

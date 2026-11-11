@@ -459,6 +459,17 @@
   .academy-nav a {
     text-decoration-color: transparent;
   }
+  /* 24 px targets (WCAG 2.5.8): the mono links were 17 to 19 px tall in a wrapping row. */
+  .academy-nav a,
+  .lesson-navigation a {
+    display: inline-block;
+    padding-block: 0.3rem;
+  }
+  /* Links that are a whole list item or line (sources, further reading, the footnote):
+     inline padding takes the hit area to 24 px without moving a line. */
+  :is(li, p) > a {
+    padding-block: 3px;
+  }
   .academy-nav a:hover,
   .academy-nav [aria-current] {
     text-decoration-color: var(--accent);

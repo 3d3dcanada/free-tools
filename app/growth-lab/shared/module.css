@@ -142,7 +142,8 @@
     max-width: 100%;
     margin-top: 0.4rem;
     padding: 0.7rem 0.8rem;
-    border: 1px solid var(--line-strong);
+    /* The edge of a field is how you find it: 3:1 at least (WCAG 1.4.11). --line-strong was 1.4:1. */
+    border: 1px solid #767676;
     border-radius: 6px;
     background: rgba(255, 255, 255, 0.85);
     color: var(--ink);
@@ -158,8 +159,9 @@
   input:focus,
   textarea:focus,
   select:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
+    /* A 2 px ring in the readable accent tone: the 22% neon wash measured about 1.2:1. */
+    border-color: var(--accent-ink);
+    box-shadow: 0 0 0 2px var(--accent-ink);
     outline: none;
   }
   input[type="checkbox"],
@@ -212,7 +214,8 @@
   a:focus-visible,
   summary:focus-visible,
   input[type="checkbox"]:focus-visible,
-  input[type="radio"]:focus-visible {
+  input[type="radio"]:focus-visible,
+  input[type="range"]:focus-visible {
     outline: 2px solid var(--ink);
     outline-offset: 3px;
   }
@@ -754,9 +757,10 @@
     align-items: center;
     gap: 0.6rem;
   }
+  /* 24 px, the WCAG 2.2 AA target (2.5.8); the row was exactly 22 px tall. */
   .check input {
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     margin: 0;
   }
   .history {
@@ -1740,12 +1744,17 @@ dialog.library-layer[open] { display: grid; place-items: center; padding: 1rem; 
   max-width: 40rem;
   margin: 0 auto 1rem;
   padding: 0 0.9rem;
-  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
+  /* The field's edge, 3:1 at least (WCAG 1.4.11); the 45% neon tint read about 1.6:1. */
+  border: 1px solid var(--accent-ink);
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.82);
   backdrop-filter: blur(14px);
   -webkit-backdrop-filter: blur(14px);
   box-shadow: 0 12px 30px -24px rgba(0, 0, 0, 0.5), 0 0 30px -22px var(--accent);
+}
+/* The field inside has no edge of its own; the box is the focus cue (WCAG 2.4.7). */
+.growth-lab .hub-find:focus-within {
+  box-shadow: 0 0 0 2px var(--accent-ink);
 }
 .growth-lab .hub-find > span {
   color: var(--accent-ink);
@@ -1869,14 +1878,12 @@ dialog.library-layer[open] { display: grid; place-items: center; padding: 1rem; 
   font-weight: 800;
   letter-spacing: -0.01em;
 }
+/* No line clamp: every line already fits in two, and with a reader's own text
+   spacing (WCAG 1.4.12) the clamp cut the third line off with no way to read it. */
 .growth-lab .hub-row small {
-  overflow: hidden;
   color: var(--soft);
   font-size: 0.85rem;
   line-height: 1.35;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
 }
 .growth-lab .hub-row-link {
   padding-left: 0.6rem;

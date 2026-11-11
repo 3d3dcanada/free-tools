@@ -136,7 +136,7 @@ export default function CorrectionForm({
             value={name}
             onChange={(e) => setName(e.target.value)}
             maxLength={80}
-            autoComplete="off"
+            autoComplete="name"
             disabled={pending || !!receipt}
           />
         </label>
@@ -147,7 +147,7 @@ export default function CorrectionForm({
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             maxLength={254}
-            autoComplete="off"
+            autoComplete="email"
             disabled={pending || !!receipt}
           />
         </label>
