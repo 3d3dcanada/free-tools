@@ -1,4 +1,5 @@
 import "../../shared/french";
+import "../design-studio/french";
 import guide from "../../seo/content/business-card.fr";
 import ToolPage from "../ToolPage";
 import PageStudio from "../design-studio/PageStudio";

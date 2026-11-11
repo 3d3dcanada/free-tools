@@ -1,5 +1,7 @@
 import "../../shared/french";
-import { academyLoader, academyMeta } from "./shared";
+import "../french";
+import { academyLoader } from "./load";
+import { metaFromLoader } from "./shared";
 export { AcademyRoute as default, academyLinks as links } from "./shared";
 export const loader = () => academyLoader("fr");
-export const meta = () => academyMeta("fr");
+export const meta = metaFromLoader;

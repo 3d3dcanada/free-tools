@@ -353,6 +353,3 @@ export const CONTENT_FR: Record<string, string> = {
   Sunrise: "Aurore",
   "Mint Clean": "Menthe",
 };
-
-export const frContent = (s: string) =>
-  CONTENT_FR[s] ?? (s.includes("\n") ? s.split("\n").map((l) => CONTENT_FR[l] ?? l).join("\n") : s);

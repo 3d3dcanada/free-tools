@@ -1,4 +1,5 @@
 import "../../shared/french";
+import "../deck-studio/french";
 import guide from "../../seo/content/pitch-deck.fr";
 import ToolPage from "../ToolPage";
 import DeckStudio from "../deck-studio/DeckStudio";

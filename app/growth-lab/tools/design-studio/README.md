@@ -14,6 +14,7 @@ One-page designs on the deck canvas: flyers, posters, social images and business
 - `PageStudio.tsx`
 - `content-fr.ts`
 - `export.ts`
+- `french.ts`
 - `i18n.ts`
 - `model.ts`
 - `page.css`

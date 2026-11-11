@@ -1,5 +1,5 @@
-import { useLocale } from "../shared/locale";
-const french: Record<string, string> = {
+/** The academy interface in French. Registered by ./french (French routes only, 2026-11-11). */
+export const academyUiFr: Record<string, string> = {
   "Loading local draft…": "Chargement de la progression locale…",
   "Saved on this device": "Enregistré sur cet appareil",
   "Local draft could not be loaded. Downloads still work. Clear this tool’s saved draft to enable saving.":
@@ -149,10 +149,3 @@ const french: Record<string, string> = {
   "In progress": "En cours",
   "Where the course uses it:": "Là où le cours l’emploie :",
 };
-export function academyText(text: string, locale: "en" | "fr") {
-  return locale === "fr" ? (french[text] ?? text) : text;
-}
-export function useAcademyT() {
-  const locale = useLocale();
-  return (text: string) => academyText(text, locale);
-}

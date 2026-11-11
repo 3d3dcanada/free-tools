@@ -19,9 +19,11 @@ The slide and page canvas behind the pitch deck. The design studios draw on the 
 - `deck.css`
 - `editor.tsx`
 - `export.ts`
+- `french.ts`
 - `i18n.ts`
 - `icons.ts`
 - `layouts.ts`
 - `model.ts`
 - `render.tsx`
 - `template-filters.ts`
+- `ui.fr.ts`

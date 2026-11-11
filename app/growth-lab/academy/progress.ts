@@ -1,8 +1,12 @@
-import { COURSE_VERSION, lessons } from "./curriculum";
-import type { Lesson } from "./types";
+import { COURSE_VERSION } from "./paths";
 
 export type LessonProgress = { answers: (number | null)[]; checked: boolean; practice: boolean };
 export type Progress = { version: 1; courseVersion: number; lessons: Record<string, LessonProgress> };
+/**
+ * Each lesson's five correct options, by slug, for all forty (curriculum.ts answerKeys). The
+ * loader sends these instead of the lessons themselves (2026-11-11): scoring needs nothing else.
+ */
+export type AnswerKeys = Record<string, number[]>;
 export const PROGRESS_KEY = "3d3d-academy-progress-v1";
 export const EMPTY_PROGRESS: Progress = { version: 1, courseVersion: COURSE_VERSION, lessons: {} };
 export const emptyLesson = (): LessonProgress => ({
@@ -10,7 +14,7 @@ export const emptyLesson = (): LessonProgress => ({
   checked: false,
   practice: false,
 });
-export function validProgress(value: unknown): value is Progress {
+export function validProgress(value: unknown, keys: AnswerKeys): value is Progress {
   if (!value || typeof value !== "object") return false;
   const p = value as Progress;
   if (
@@ -23,7 +27,7 @@ export function validProgress(value: unknown): value is Progress {
     return false;
   return Object.entries(p.lessons).every(
     ([slug, v]) =>
-      lessons.some((l) => l.slug === slug) &&
+      Object.hasOwn(keys, slug) &&
       v &&
       typeof v === "object" &&
       typeof v.checked === "boolean" &&
@@ -33,12 +37,13 @@ export function validProgress(value: unknown): value is Progress {
       v.answers.every((a) => a === null || (Number.isInteger(a) && a >= 0 && a < 3)),
   );
 }
-export function score(lesson: Lesson, state: LessonProgress) {
-  return lesson.quiz.reduce((n, q, i) => n + (state.answers[i] === q.answer ? 1 : 0), 0);
+export function score(answers: number[], state: LessonProgress) {
+  return answers.reduce((n, a, i) => n + (state.answers[i] === a ? 1 : 0), 0);
 }
-export function complete(lesson: Lesson, state: LessonProgress | undefined) {
-  return Boolean(state?.checked && state.practice && score(lesson, state) === 5);
+export function complete(answers: number[] | undefined, state: LessonProgress | undefined) {
+  return Boolean(answers && state?.checked && state.practice && score(answers, state) === 5);
 }
-export const completedCount = (progress: Progress) =>
-  lessons.filter((l) => complete(l, progress.lessons[l.slug])).length;
-export const canPrintCertificate = (progress: Progress) => completedCount(progress) === lessons.length;
+export const completedCount = (progress: Progress, keys: AnswerKeys) =>
+  Object.keys(keys).filter((slug) => complete(keys[slug], progress.lessons[slug])).length;
+export const canPrintCertificate = (progress: Progress, keys: AnswerKeys) =>
+  completedCount(progress, keys) === Object.keys(keys).length;

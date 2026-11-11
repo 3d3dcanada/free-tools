@@ -1,17 +1,13 @@
 import ShareButton from "../shared/ShareButton";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { download, useLocalDraft } from "../shared/browser";
-import { ACADEMY_PATH, lessons, lessonPath } from "./curriculum";
+import { ACADEMY_PATH, lessonPath } from "./paths";
 import { units, type Lesson, type ReadingSection } from "./types";
 import { sources } from "./sources";
 import { glossary, symptoms } from "./reference";
-import { academySchema } from "./schema";
-import { diagramAlt } from "./diagrams";
 import { composeReading, keyTerms, KEY_NUMBER, type Part } from "./compose";
 import { useLocale, useLocalLink } from "../shared/locale";
-import { useAcademyT } from "./ui.fr";
-import * as frenchReference from "./reference.fr";
-import { academyCatalog } from "./catalog";
+import { frenchReference, useAcademyT } from "./text";
 import { siteAbsolute } from "../seo/site-links";
 import {
   AcademyFaqs,
@@ -32,12 +28,11 @@ import {
   complete,
   completedCount,
   canPrintCertificate,
+  type AnswerKeys,
   type LessonProgress,
   type Progress,
 } from "./progress";
-
-import { academyInfo } from "./metadata";
-export { academyInfo, academyRoutes } from "./metadata";
+import type { AcademyView, CourseEntry } from "./view";
 function SourceLinks({ ids }: { ids: string[] }) {
   return (
     <ul className="source-links">
@@ -49,7 +44,7 @@ function SourceLinks({ ids }: { ids: string[] }) {
     </ul>
   );
 }
-function Concept({ lesson }: { lesson: Lesson }) {
+function Concept({ lesson, alt }: { lesson: Lesson; alt: string }) {
   const locale = useLocale();
   return (
     <figure className="concept">
@@ -58,7 +53,7 @@ function Concept({ lesson }: { lesson: Lesson }) {
         width={640}
         height={480}
         loading="lazy"
-        alt={diagramAlt(lesson.id, locale)}
+        alt={alt}
       />
       <figcaption>
         {/* The three parts the diagram draws, named as it names them (lesson data). */}
@@ -105,15 +100,15 @@ function ReadingPart({ part }: { part: Part }) {
   );
 }
 type LessonState = "done" | "started" | "open";
-const lessonState = (l: Lesson, s: LessonProgress | undefined): LessonState =>
-  complete(l, s) ? "done" : s && (s.checked || s.practice || s.answers.some((a) => a !== null)) ? "started" : "open";
+const lessonState = (answers: number[] | undefined, s: LessonProgress | undefined): LessonState =>
+  complete(answers, s) ? "done" : s && (s.checked || s.practice || s.answers.some((a) => a !== null)) ? "started" : "open";
 /** Where the last lesson opened is remembered, on this device only (the hub's "you are here"). */
 const LAST_KEY = "3d3d-academy-last-v1";
 /**
  * a lesson diagram on its own, for the hub and the aux pages that showed no picture.
  * Same file and alt text the lesson page uses; lazy, so a phone fetches only what it scrolls to.
  */
-function LessonPic({ lesson, className, width = 640, height = 480 }: { lesson: Lesson; className?: string; width?: number; height?: number }) {
+function LessonPic({ lesson, className, width = 640, height = 480 }: { lesson: CourseEntry; className?: string; width?: number; height?: number }) {
   const locale = useLocale();
   return (
     <img
@@ -122,15 +117,10 @@ function LessonPic({ lesson, className, width = 640, height = 480 }: { lesson: L
       width={width}
       height={height}
       loading="lazy"
-      alt={diagramAlt(lesson.id, locale)}
+      alt={lesson.alt}
     />
   );
 }
-const bySlug = (slug: string) => lessons.find((l) => l.slug === slug)!;
-/** For each glossary entry (same order in both languages), the first lesson whose own text uses it (2026-11-11). */
-const termLesson = glossary.map((entry) =>
-  lessons.find((l) => keyTerms([l.title, l.learn, l.summary, ...l.steps, ...l.mistakes].join(" "), [entry]).length),
-);
 /** The three failure lessons people come to /failed-print for. */
 const FAILURE_PICS = ["first-layer-not-sticking", "corners-lifting", "layers-shift-sideways"];
 /** One existing lesson picture near the top of each aux page, chosen for what the page is about. */
@@ -141,15 +131,15 @@ const AUX_PIC: Record<string, string> = {
   "/join": "keep-a-print-log",
   "/contributors": "inspect-scale-and-placement",
 };
-function AuxPic({ suffix }: { suffix: string }) {
+function AuxPic({ suffix, course }: { suffix: string; course: CourseEntry[] }) {
   const locale = useLocale();
-  const lesson = bySlug(AUX_PIC[suffix]);
+  const lesson = course.find((l) => l.slug === AUX_PIC[suffix])!;
   return (
     <figure className="concept aux-pic no-print">
       <LessonPic lesson={lesson} />
       <figcaption>
         {locale === "fr" ? "Schéma du cours : " : "From the course: "}
-        {academyCatalog[lesson.id - 1].title[locale]}
+        {lesson.title}
       </figcaption>
     </figure>
   );
@@ -165,6 +155,8 @@ function AuxPic({ suffix }: { suffix: string }) {
  */
 function LessonPage({
   lesson,
+  course,
+  keys,
   state,
   progress,
   update,
@@ -172,6 +164,9 @@ function LessonPage({
   submitCorrection,
 }: {
   lesson: Lesson;
+  /** This unit's lessons and the ones either side (view.ts). */
+  course: CourseEntry[];
+  keys: AnswerKeys;
   state: LessonProgress;
   progress: Progress;
   update: (v: LessonProgress) => void;
@@ -181,10 +176,13 @@ function LessonPage({
   const locale = useLocale(),
     link = useLocalLink(),
     t = useAcademyT();
-  const courseUnits = locale === "fr" ? frenchReference.units : units;
+  const courseUnits = locale === "fr" ? frenchReference().units : units;
   const [message, setMessage] = useState("");
   const answered = state.answers.every((a) => a !== null);
-  const result = score(lesson, state);
+  const result = score(
+    lesson.quiz.map((q) => q.answer),
+    state,
+  );
   useEffect(() => {
     try {
       localStorage.setItem(LAST_KEY, lesson.slug);
@@ -195,14 +193,18 @@ function LessonPage({
   const composed = composeReading(reading, { breaks: [1] });
   const terms = keyTerms(
     [lesson.title, lesson.learn, ...reading.flatMap((s) => s.paragraphs), ...lesson.steps, ...lesson.mistakes].join(" "),
-    (locale === "fr" ? frenchReference.glossary : glossary) as readonly (readonly string[])[],
+    (locale === "fr" ? frenchReference().glossary : glossary) as readonly (readonly string[])[],
   );
-  const unitLessons = lessons.filter((l) => l.unit === lesson.unit);
-  const unitDone = unitLessons.filter((l) => complete(l, progress.lessons[l.slug])).length;
-  const next = lessons[lesson.id] as Lesson | undefined;
-  const title = (l: Lesson) => academyCatalog[l.id - 1].title[locale];
+  const unitLessons = course.filter((l) => l.unit === lesson.unit);
+  const unitDone = unitLessons.filter((l) => complete(keys[l.slug], progress.lessons[l.slug])).length;
+  const next = course.find((l) => l.id === lesson.id + 1);
+  const prev = course.find((l) => l.id === lesson.id - 1);
+  const title = (l: CourseEntry) => l.title;
   const two = (n: number) => String(n).padStart(2, "0");
-  const done = complete(lesson, state);
+  const done = complete(
+    lesson.quiz.map((q) => q.answer),
+    state,
+  );
   return (
     <article className="lesson-page">
       <div className="academy-heading lesson-head">
@@ -212,7 +214,7 @@ function LessonPage({
         </p>
         <ol className="unit-track" aria-label={t("Lessons in this unit")}>
           {unitLessons.map((l) => {
-            const s = lessonState(l, progress.lessons[l.slug]);
+            const s = lessonState(keys[l.slug], progress.lessons[l.slug]);
             return (
               <li key={l.slug} className={`is-${s}`} aria-current={l.id === lesson.id ? "step" : undefined}>
                 <a href={link(lessonPath(l))} title={title(l)}>
@@ -236,7 +238,7 @@ function LessonPage({
       </div>
       <div className="lesson-body">
         <aside className="lesson-aside">
-          <Concept lesson={lesson} />
+          <Concept lesson={lesson} alt={course.find((l) => l.id === lesson.id)!.alt} />
           <nav className="lesson-rail" aria-label={t("In this lesson")} data-vb="rail">
             <p className="eyebrow">{t("In this lesson")}</p>
             <ol>
@@ -451,10 +453,10 @@ function LessonPage({
             <CorrectionForm lesson={lesson.slug} title={lesson.title} submit={submitCorrection} />
           </details>
           <nav className="lesson-navigation" aria-label={t("Lesson navigation")}>
-            {lesson.id > 1 && <a href={link(lessonPath(lessons[lesson.id - 2]))}>{t("← Previous lesson")}</a>}
+            {prev && <a href={link(lessonPath(prev))}>{t("← Previous lesson")}</a>}
             <a href={link(ACADEMY_PATH)}>{t("Course map")}</a>
-            {lesson.id < 40 ? (
-              <a href={link(lessonPath(lessons[lesson.id]))}>{t("Next lesson →")}</a>
+            {next ? (
+              <a href={link(lessonPath(next))}>{t("Next lesson →")}</a>
             ) : (
               <a href={link(`${ACADEMY_PATH}/certificate`)}>{t("Completion record →")}</a>
             )}
@@ -470,48 +472,52 @@ export default function AcademyPage({
   guide,
   reading = [],
   submitCorrection,
+  course,
+  keys,
+  taught: taughtIds,
+  jsonLd,
 }: {
   path: string;
   lesson?: Lesson;
   guide?: SupportGuide;
   reading?: ReadingSection[];
   submitCorrection?: CorrectionTransport;
-}) {
+} & AcademyView) {
   const locale = useLocale(),
     link = useLocalLink(),
     t = useAcademyT();
-  const courseUnits = locale === "fr" ? frenchReference.units : units;
-  const terms = locale === "fr" ? frenchReference.glossary : glossary;
-  const failures = locale === "fr" ? frenchReference.symptoms : symptoms;
+  const courseUnits = locale === "fr" ? frenchReference().units : units;
+  const terms = locale === "fr" ? frenchReference().glossary : glossary;
+  const failures = locale === "fr" ? frenchReference().symptoms : symptoms;
   const {
     value: progress,
     setValue: setProgress,
     storage,
     clear,
-  } = useLocalDraft(PROGRESS_KEY, EMPTY_PROGRESS, validProgress);
+  } = useLocalDraft(PROGRESS_KEY, EMPTY_PROGRESS, useCallback((v: unknown): v is Progress => validProgress(v, keys), [keys]));
   const [notice, setNotice] = useState(""),
     [name, setName] = useState("");
-  const total = completedCount(progress),
-    current = loadedLesson ?? (locale === "en" ? lessons.find((l) => lessonPath(l) === path) : undefined);
-  const next = lessons.find((l) => !complete(l, progress.lessons[l.slug]));
+  const total = completedCount(progress, keys),
+    current = loadedLesson;
+  const next = course.find((l) => !complete(keys[l.slug], progress.lessons[l.slug]));
   // The lesson last opened on this device, read after hydration so the first paint matches the server.
-  const [last, setLast] = useState<Lesson>();
+  const [last, setLast] = useState<CourseEntry>();
   useEffect(() => {
     try {
       const slug = localStorage.getItem(LAST_KEY);
-      setLast(lessons.find((l) => l.slug === slug));
+      setLast(course.find((l) => l.slug === slug));
     } catch {
       /* storage off */
     }
   }, []);
-  const here = last && !complete(last, progress.lessons[last.slug]) ? last : (next ?? lessons[lessons.length - 1]);
+  const here = last && !complete(keys[last.slug], progress.lessons[last.slug]) ? last : (next ?? course[course.length - 1]);
   const suffix = path.slice(ACADEMY_PATH.length);
   const restore = async (file: File | undefined) => {
     if (!file) return;
     try {
       if (file.size > 50_000) throw new Error(t("Choose a progress file smaller than 50 KB."));
       const v: unknown = JSON.parse(await file.text());
-      if (!validProgress(v)) throw new Error(t("This file does not match this course version."));
+      if (!validProgress(v, keys)) throw new Error(t("This file does not match this course version."));
       if (
         Object.keys(progress.lessons).length &&
         !window.confirm(t("Replace this device’s course progress with this file?"))
@@ -529,13 +535,7 @@ export default function AcademyPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(
-            academySchema(path, academyInfo(path, locale), reading, {
-              locale,
-              lesson: current,
-              faqs: current ? lessonFaq(current, locale) : guide?.faqs,
-            }),
-          ).replace(/</g, "\\u003c"),
+          __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
         }}
       />
       <noscript>
@@ -571,6 +571,8 @@ export default function AcademyPage({
         <LessonPage
           key={current.slug}
           lesson={current}
+          course={course}
+          keys={keys}
           reading={reading}
           submitCorrection={submitCorrection}
           state={progress.lessons[current.slug] ?? emptyLesson()}
@@ -610,7 +612,7 @@ export default function AcademyPage({
                 <small>
                   {t("Unit")} {here.unit} · {t("Lesson")} {here.id}
                 </small>
-                <strong id="here-title">{academyCatalog[here.id - 1].title[locale]}</strong>
+                <strong id="here-title">{here.title}</strong>
               </span>
               <span className="next-go" aria-hidden="true">
                 →
@@ -620,7 +622,7 @@ export default function AcademyPage({
           <nav className="unit-map" aria-label={t("Jump to unit")} data-vb="units">
             <ol>
               {courseUnits.map((u, i) => {
-                const unitDone = lessons.filter((l) => l.unit === i + 1 && complete(l, progress.lessons[l.slug])).length;
+                const unitDone = course.filter((l) => l.unit === i + 1 && complete(keys[l.slug], progress.lessons[l.slug])).length;
                 return (
                   <li key={u.title} className={here.unit === i + 1 ? "is-here" : undefined}>
                     <a href={`#unit-${i + 1}`}>
@@ -670,10 +672,10 @@ export default function AcademyPage({
                   <p>{u.description}</p>
                 </div>
                 <ol start={i * 5 + 1} className="lesson-map">
-                  {lessons
+                  {course
                     .filter((l) => l.unit === i + 1)
                     .map((l) => {
-                      const s = lessonState(l, progress.lessons[l.slug]);
+                      const s = lessonState(keys[l.slug], progress.lessons[l.slug]);
                       const at = l.id === here.id;
                       return (
                         <li key={l.slug} className={`is-${s}${at ? " is-here" : ""}`}>
@@ -683,7 +685,7 @@ export default function AcademyPage({
                               <small>
                                 {t("Lesson")} {l.id}
                               </small>
-                              <span>{academyCatalog[l.id - 1].title[locale]}</span>
+                              <span>{l.title}</span>
                             </span>
                             <span className="lesson-state">
                               {s === "done"
@@ -707,7 +709,7 @@ export default function AcademyPage({
         <ParticipationPage
           answer={guide?.answer}
           page={suffix === "/join" ? "join" : "contributors"}
-          pic={<AuxPic suffix={suffix} />}
+          pic={<AuxPic suffix={suffix} course={course} />}
           submitCorrection={submitCorrection}
         />
       ) : suffix === "/glossary" ? (
@@ -717,10 +719,10 @@ export default function AcademyPage({
             <h1>{t("A small printing glossary")}</h1>
             <p className="lede">{guide?.answer}</p>
           </div>
-          <AuxPic suffix="/glossary" />
+          <AuxPic suffix="/glossary" course={course} />
           <dl className="glossary">
             {terms.map(([term, definition, id], i) => {
-              const taught = termLesson[i];
+              const taught = course.find((l) => l.id === taughtIds[i]);
               return (
                 <div key={term}>
                   <dt>{term}</dt>
@@ -731,7 +733,7 @@ export default function AcademyPage({
                         <LessonPic lesson={taught} className="lesson-thumb" width={128} height={96} />
                         <span>
                           {t("Where the course uses it:")} {t("Lesson")} {taught.id},{" "}
-                          {academyCatalog[taught.id - 1].title[locale]}
+                          {taught.title}
                         </span>
                       </a>
                     )}
@@ -752,12 +754,12 @@ export default function AcademyPage({
               opening anything; each one opens its lesson. */}
           <ul className="failure-pics no-print">
             {FAILURE_PICS.map((slug) => {
-              const l = bySlug(slug);
+              const l = course.find((c) => c.slug === slug)!;
               return (
                 <li key={slug}>
                   <a href={link(lessonPath(l))}>
                     <LessonPic lesson={l} />
-                    <span>{academyCatalog[l.id - 1].title[locale]}</span>
+                    <span>{l.title}</span>
                   </a>
                 </li>
               );
@@ -769,12 +771,12 @@ export default function AcademyPage({
               <p>{s.advice}</p>
               <ul>
                 {s.slugs.map((slug) => {
-                  const l = lessons.find((l) => l.slug === slug)!;
+                  const l = course.find((l) => l.slug === slug)!;
                   return (
                     <li key={slug}>
                       <a href={link(lessonPath(l))}>
                         <LessonPic lesson={l} className="symptom-thumb" width={96} height={72} />
-                        <span>{academyCatalog[l.id - 1].title[locale]}</span>
+                        <span>{l.title}</span>
                       </a>
                     </li>
                   );
@@ -790,8 +792,8 @@ export default function AcademyPage({
             <h1>{t("A first chapter, completed.")}</h1>
             <p className="lede">{guide?.answer}</p>
           </div>
-          <AuxPic suffix="/certificate" />
-          {canPrintCertificate(progress) ? (
+          <AuxPic suffix="/certificate" course={course} />
+          {canPrintCertificate(progress, keys) ? (
             <>
               <div className="certificate-controls no-print">
                 <label>
@@ -853,7 +855,7 @@ export default function AcademyPage({
             <h1>{t("Sources, scope and authorship.")}</h1>
             <p className="lede">{guide?.answer}</p>
           </div>
-          <AuxPic suffix="/sources" />
+          <AuxPic suffix="/sources" course={course} />
           <h2>{t("How to use this course")}</h2>
           <p>
             {t(

@@ -1,5 +1,5 @@
 import { iconPaths } from "./icons";
-import { frContent } from "./content-fr";
+import { frContent } from "./i18n";
 import { COVERS } from "./covers";
 import {
   RATIOS,

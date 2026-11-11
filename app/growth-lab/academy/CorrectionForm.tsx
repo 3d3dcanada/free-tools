@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocale, useLocalLink } from "../shared/locale";
-import { ACADEMY_PATH } from "./curriculum";
+import { ACADEMY_PATH } from "./paths";
 import { readCorrection, type Correction } from "./correction-contract.mjs";
 import { enquiryTransport } from "../port/feedback";
 import Turnstile from "../../ui/Turnstile";

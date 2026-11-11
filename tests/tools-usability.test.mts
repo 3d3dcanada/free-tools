@@ -3,6 +3,8 @@ import { catalogFor } from "../app/growth-lab/tools/catalog";
 import { categories, categoryFor, matchesSearch } from "../app/growth-lab/tools/navigation";
 import { localizedPath } from "../app/growth-lab/seo/guide";
 import { dt } from "../app/growth-lab/tools/deck-studio/i18n";
+import "../app/growth-lab/shared/french"; // French routes register the dictionaries
+import "../app/growth-lab/tools/deck-studio/french";
 
 // People search with accents, spaces, punctuation or an English route name in French.
 assert.ok(matchesSearch("Créateur de présentations pitch-deck", "presentation"));

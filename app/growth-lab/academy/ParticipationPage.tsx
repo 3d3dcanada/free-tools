@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useLocale, useLocalLink } from "../shared/locale";
-import { ACADEMY_PATH } from "./curriculum";
+import { ACADEMY_PATH } from "./paths";
 import CorrectionForm, { type CorrectionTransport } from "./CorrectionForm";
 import { contributors } from "./contributors";
 

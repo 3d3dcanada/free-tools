@@ -19,6 +19,7 @@ import { safeSvg } from "../app/growth-lab/tools/image-toolkit/model";
 import { cleanSvgFragment } from "../app/growth-lab/shared/safe-markup";
 import { parseCsv } from "../app/growth-lab/shared/csv";
 import { validProgress } from "../app/growth-lab/academy/progress";
+import { answerKeys } from "../app/growth-lab/academy/curriculum";
 import { importModel } from "../app/growth-lab/tools/printing-tools/import-model";
 
 let checks = 0;
@@ -161,9 +162,9 @@ for (const [why, csv] of [
   checks++;
   assert.throws(() => parseCsv(csv), undefined, `accepted a hostile CSV: ${why}`);
 }
-refused(validProgress({ version: 1, courseVersion: -1, lessons: {} }), "progress from another course version");
-refused(validProgress({ version: 1, lessons: [] }), "progress with a list instead of a map");
-refused(validProgress(JSON.parse('{"version":1,"lessons":{"__proto__":{"x":1}}}')), "progress with a prototype key");
+refused(validProgress({ version: 1, courseVersion: -1, lessons: {} }, answerKeys()), "progress from another course version");
+refused(validProgress({ version: 1, lessons: [] }, answerKeys()), "progress with a list instead of a map");
+refused(validProgress(JSON.parse('{"version":1,"lessons":{"__proto__":{"x":1}}}'), answerKeys()), "progress with a prototype key");
 
 // ---- 3D models (STL and OBJ here; 3MF needs a DOM and is exercised in the browser) ----
 const file = (name: string, body: BlobPart) => new File([body], name);
