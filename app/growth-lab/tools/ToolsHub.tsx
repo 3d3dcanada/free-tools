@@ -1,16 +1,15 @@
 import { LocaleProvider, useT, useLocale, useLocalLink } from "../shared/locale";
-import { useEffect, useRef, useState } from "react";
-import { DataPromise, Pledge } from "../shared/kit";
+import { useEffect, useRef, useState, type ReactNode } from "react";
+import { DataPromise } from "../shared/kit";
 import { catalogFor } from "./catalog";
-import { categories, categoryFor, matchesSearch } from "./navigation";
+import { categories, categoryFor, matchesSearch, plainName } from "./navigation";
 import ToolGuide from "../seo/ToolGuide";
 import type { ToolGuide as Guide } from "../seo/guide";
 import { hubSchema } from "../seo/hub-schema";
 import { ToolIcon } from "../shared/toolIcons";
 import ToolPreview from "../shared/ToolPreview";
 import { TOOL_FAMILIES } from "../seo/tool-families";
-import QuickTools from "./QuickTools";
-import { SITE_BASE } from "../../lib/free-tools-host";
+import { readRecent } from "./recent";
 
 const CATEGORY_ACCENT: Record<string, string> = {
   "QR and Contacts": "#04D9C4",
@@ -30,49 +29,10 @@ const BLURB: Record<string, string> = {
   "3D Printing": "Open a model, check the fit and price the print.",
 };
 /**
- * what each shelf makes. The pictures are captures of the running tools, taken in the
- * browser on 2026-11-10 with each tool's own starter content (public/media/tools): nothing drawn,
- * nothing from a stock library. The line says what you walk away with, no more than the capture shows.
- */
-const SHELF: Record<string, { line: string; pics: { slug: string; file: string; alt: string; w: number; h: number }[] }> = {
-  "QR and Contacts": {
-    line: "A QR code that has already been scanned back to check it.",
-    pics: [{ slug: "qr-code", file: "qr-code", alt: "A finished QR code with a caption, made in QR Studio and decoded back to its exact content", w: 527, h: 658 }],
-  },
-  Design: {
-    line: "A flyer, a business card or a poster, ready to download as a print PDF.",
-    pics: [
-      { slug: "flyer-maker", file: "flyer-maker", alt: "A flyer made in Flyer Maker from its Night Market starter template", w: 494, h: 635 },
-      { slug: "business-card", file: "business-card", alt: "The front of a business card made in Business Card Maker from its Orbit template", w: 882, h: 505 },
-      { slug: "poster-maker", file: "poster-maker", alt: "A poster made in Poster Maker from its Summer Sessions starter template", w: 410, h: 632 },
-    ],
-  },
-  Images: {
-    line: "A smaller image, with the before and after file size shown.",
-    pics: [{ slug: "compress-image", file: "compress-image", alt: "A photograph in Image Compressor, split between the original at 349 KB and the compressed copy at 70 KB", w: 440, h: 700 }],
-  },
-  "PDF Documents": {
-    line: "One PDF from several, with every page in the order you chose.",
-    pics: [{ slug: "merge-pdf", file: "merge-pdf", alt: "Three sample pages laid out in Merge PDF Files, ready to reorder and download", w: 672, h: 288 }],
-  },
-  Business: {
-    line: "An invoice with your own details, ready to download as a PDF.",
-    pics: [{ slug: "invoice-generator", file: "invoice-generator", alt: "An invoice made in Invoice Generator, with its starter wording", w: 919, h: 597 }],
-  },
-  "3D Printing": {
-    line: "A rough print cost from your own volume and filament price.",
-    pics: [{ slug: "print-cost-calculator", file: "print-cost-calculator", alt: "The 3D Print Cost Calculator showing an estimate over a Prusa CORE One L build plate", w: 1200, h: 635 }],
-  },
-};
-/** The four captures that open the hub, under the search, so the first phone screen shows real output. */
-const LEAD = ["qr-code", "flyer-maker", "compress-image", "print-cost-calculator"];
-const leadPics = LEAD.map((slug) => Object.values(SHELF).flatMap((s) => s.pics).find((p) => p.slug === slug)!);
-
-/**
  * The long practical guide stays in the page (it is the hub's text for search and for answer
  * engines) but folds shut on a phone, where it was five screens by itself. Open from 651 px up.
  */
-function GuideFold({ guide, label }: { guide: Guide; label: string }) {
+function GuideFold({ guide, label, children }: { guide: Guide; label: string; children?: ReactNode }) {
   const ref = useRef<HTMLDetailsElement>(null);
   useEffect(() => {
     if (window.matchMedia("(min-width: 651px)").matches && ref.current) ref.current.open = true;
@@ -80,6 +40,7 @@ function GuideFold({ guide, label }: { guide: Guide; label: string }) {
   return (
     <details ref={ref} className="hub-guide">
       <summary>{label}</summary>
+      {children}
       <ToolGuide guide={guide} />
     </details>
   );
@@ -118,134 +79,79 @@ export default function ToolsHub({ guide }: { guide: Guide }) {
     </LocaleProvider>
   );
 }
+/**
+ * The hub is a launcher (2026-11-11, after Ken: "Nobody knows what's going on. Everything's
+ * repetitive."). One heading and one line, the search, the tools used last in this browser,
+ * then every tool exactly once in its family, then the other free resources. The guide and
+ * the data promise fold shut at the end, still in the server HTML.
+ */
 function Hub({ guide }: { guide: Guide }) {
   const tr = useT();
   const locale = useLocale();
   const localLink = useLocalLink();
   const toolCatalog = catalogFor(locale);
-
-  const [query, setQuery] = useState(""),
-    [category, setCategory] = useState(categories[0]);
-  const results = toolCatalog.filter(
-    (t) =>
-      (category === categories[0] || categoryFor(t.slug) === category) &&
-      matchesSearch(`${t.name} ${t.slug} ${t.summary}`, query),
-  );
+  const [query, setQuery] = useState("");
+  // Read after hydration only: the server has no history, and the first paint must match it.
+  const [recent, setRecent] = useState<string[]>([]);
+  useEffect(() => setRecent(readRecent()), []);
+  const results = toolCatalog.filter((t) => matchesSearch(`${t.name} ${t.slug} ${t.summary}`, query));
+  const recentTools = recent.map((slug) => toolCatalog.find((t) => t.slug === slug)).filter((t) => !!t);
   return (
-    <section aria-label={tr("Free browser tools")}>
+    <section className="hub-app" aria-label={tr("Free browser tools")}>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(hubSchema(guide)).replace(/</g, "\\u003c") }}
       />
-      <QuickTools locale={locale} />
-      <div className="hero hub-hero">
-        <p className="eyebrow">{tr("A workshop in your browser")}</p>
+      <header className="hub-head">
         <h1>{guide.headline}</h1>
-        <Pledge />
+        <p>{tr("Pick a tool. It opens ready to use, and nothing leaves your device.")}</p>
+      </header>
+      <div className="hub-find">
+        <span aria-hidden="true">⌕</span>
+        <input
+          type="search"
+          aria-label={tr("Find a Tool")}
+          placeholder={tr("Try Wi-Fi, image, invoice or STL")}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
       </div>
-      <div className="hub-search">
-        <label>
-          {tr("Find a Tool")}
-          <input
-            type="search"
-            aria-label={tr("Find a Tool")}
-            placeholder={tr("Try Wi-Fi, image, invoice or STL")}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-          />
-        </label>
-        <label>
-          {tr("Category")}
-          <select aria-label={tr("Category")} value={category} onChange={(e) => setCategory(e.target.value)}>
-            {categories.map((c) => (
-              <option key={c} value={c}>
-                {tr(c)}
-              </option>
-            ))}
-          </select>
-        </label>
-      </div>
-      {!query && category === categories[0] && (
-        <ul className="hub-lead" aria-label={tr("What the tools make")}>
-          {leadPics.map((p) => (
-            <li key={p.slug}>
-              <a href={localLink(`/tools/${p.slug}`)}>
-                <img src={`${SITE_BASE}/media/tools/${p.file}.webp`} width={p.w} height={p.h} alt={tr(p.alt)} />
-              </a>
-            </li>
-          ))}
-        </ul>
+      {query && (
+        <p role="status" className="fine hub-status">
+          {results.length} {results.length === 1 ? tr("tool") : tr("tools")}
+          {locale === "fr" ? ` pour « ${query} »` : ` matching “${query}”`}.
+        </p>
       )}
-      {/* The search comes first on a phone; the long answer reads below it (2026-10-11). */}
-      <p className="answer hub-intro">{guide.answer}</p>
-      {!query && category === categories[0] && (
-        <section className="hub-design" aria-label={tr("What Are You Making?")}>
-          <div><p className="eyebrow">{tr("Design and Download")}</p><h2>{tr("What Are You Making?")}</h2><p>{tr("Choose a format, make it yours, and export a real file.")}</p></div>
-          <nav aria-label={tr("Design studios")}>
-            {["business-card", "flyer-maker", "poster-maker", "social-image-maker", "pitch-deck"].map((slug) => {
-              const tool = toolCatalog.find((t) => t.slug === slug);
-              return tool && <a key={slug} href={localLink(`/tools/${slug}`)}><ToolIcon slug={slug} /><strong>{tool.short}</strong><span aria-hidden="true">→</span></a>;
-            })}
-          </nav>
+      {!query && recentTools.length > 0 && (
+        <section className="hub-recent" aria-label={tr("Recently Used")}>
+          <h2>{tr("Recently Used")}</h2>
+          <ul>
+            {recentTools.map((t) => (
+              <li key={t.slug} style={{ ["--accent" as string]: CATEGORY_ACCENT[categoryFor(t.slug)] }}>
+                <a href={localLink(`/tools/${t.slug}`)}>
+                  <ToolIcon slug={t.slug} />
+                  <span>{plainName(t.short)}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
         </section>
       )}
-      {!query && category === categories[0] && (
-        <div className="hub-featured" aria-label={tr("Most used")}>
-          {(
-            [
-              ["pitch-deck", "#FF2D92", "Deck Studio", "Design a presentation on a real canvas, then present it or export PowerPoint and PDF."],
-              ["qr-code", "#04D9C4", "QR Studio", "Twelve looks, custom shapes and your logo in the centre, checked by a scan."],
-              ["invoice-generator", "#18E36B", "Invoices and Quotes", "Five styles, your colours, six languages and Canadian tax presets."],
-              ["model-viewer", "#FF6A00", "3D Model Viewer", "Open STL, OBJ and 3MF files, measure them and check they fit your printer."],
-            ] as const
-          ).map(([slug, accent, name, line]) => (
-            <a key={slug} className="hub-feature" href={localLink(`/tools/${slug}`)} style={{ ["--accent" as string]: accent }}>
-              <ToolIcon slug={slug} />
-              <strong>{tr(name)}</strong>
-              <span>{tr(line)}</span>
-              <em aria-hidden="true">{tr("Open")} →</em>
-            </a>
-          ))}
-        </div>
-      )}
-      <p role="status" className="fine hub-status">
-        {results.length} {results.length === 1 ? tr("tool") : tr("tools")}
-        {query ? (locale === "fr" ? ` pour « ${query} »` : ` matching “${query}”`) : tr(" ready to use")}.
-      </p>
-      {(query || category !== categories[0]) && <button type="button" onClick={() => { setQuery(""); setCategory(categories[0]); }}>{tr("Clear Search")}</button>}
       {categories.slice(1).map((c) => {
         const group = results.filter((t) => categoryFor(t.slug) === c);
         return group.length ? (
-          <section key={c} id={TOOL_FAMILIES.find((f) => f.category === c)?.id} className="hub-category hub-cards" aria-label={tr(c)} style={{ ["--accent" as string]: CATEGORY_ACCENT[c] }}>
-            <header className="hub-category-head">
-              <h2>{tr(c)}</h2>
-              <p>{tr(BLURB[c] ?? "")}</p>
-              <span className="hub-count">
-                {group.length} {group.length === 1 ? tr("tool") : tr("tools")}
-              </span>
-            </header>
-            {SHELF[c] && !query && (
-              <div className="hub-shelf">
-                <p className="hub-walk">{tr(SHELF[c].line)}</p>
-                <ul className="hub-pics">
-                  {SHELF[c].pics.map((p) => (
-                    <li key={p.slug}>
-                      <a href={localLink(`/tools/${p.slug}`)}>
-                        <img src={`${SITE_BASE}/media/tools/${p.file}.webp`} width={p.w} height={p.h} loading="lazy" alt={tr(p.alt)} />
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            <ul className="hub-grid">
+          <section key={c} id={TOOL_FAMILIES.find((f) => f.category === c)?.id} className="hub-group" aria-label={tr(c)} style={{ ["--accent" as string]: CATEGORY_ACCENT[c] }}>
+            <h2>{tr(c)}</h2>
+            <p>{tr(BLURB[c] ?? "")}</p>
+            <ul className="hub-list">
               {group.map((t) => (
                 <li key={t.slug}>
-                  <a className="hub-tool" href={localLink(`/tools/${t.slug}`)}>
+                  <a className="hub-row" href={localLink(`/tools/${t.slug}`)}>
                     <ToolPreview slug={t.slug} />
-                    <strong>{t.short}</strong>
-                    <span>{t.summary}</span>
-                    <em aria-hidden="true">{tr("Open")} →</em>
+                    <span>
+                      <strong>{plainName(t.short)}</strong>
+                      <small>{t.summary}</small>
+                    </span>
                   </a>
                 </li>
               ))}
@@ -253,50 +159,34 @@ function Hub({ guide }: { guide: Guide }) {
           </section>
         ) : null;
       })}
-      {!results.length && <p>{tr("No matching tools. Try a shorter term or select all categories.")}</p>}
-      {!query && category === categories[0] &&
+      {!results.length && (
+        <p className="hub-none">
+          {tr("No matching tools. Try a shorter term or select all categories.")}{" "}
+          <button type="button" onClick={() => setQuery("")}>{tr("Clear Search")}</button>
+        </p>
+      )}
+      {!query &&
         MORE.map((group) => (
-          <section key={group.title} className="hub-category hub-cards" aria-label={tr(group.title)} style={{ ["--accent" as string]: group.accent }}>
-            <header className="hub-category-head">
-              <h2>{tr(group.title)}</h2>
-              <span className="hub-count">
-                {group.links.length} {tr("tools")}
-              </span>
-            </header>
-            <ul className="hub-grid">
+          <section key={group.title} className="hub-group" aria-label={tr(group.title)} style={{ ["--accent" as string]: group.accent }}>
+            <h2>{tr(group.title)}</h2>
+            <ul className="hub-list">
               {group.links.map(([label, href, line]) => (
                 <li key={href}>
-                  <a className="hub-tool hub-tool-link" href={href.startsWith("http") ? href : localLink(href)}>
-                    <strong>{tr(label)}</strong>
-                    <span>{tr(line)}</span>
-                    <em aria-hidden="true">{tr("Open")} →</em>
+                  <a className="hub-row hub-row-link" href={href.startsWith("http") ? href : localLink(href)}>
+                    <span>
+                      <strong>{tr(label)}</strong>
+                      <small>{tr(line)}</small>
+                    </span>
                   </a>
                 </li>
               ))}
             </ul>
           </section>
         ))}
-      {!query && category === categories[0] && <DataPromise />}
-      <aside className="hub-commission">
-        <p className="eyebrow">{tr("Built to order")}</p>
-        <h2>{tr("Need a tool for a different job?")}</h2>
-        <p>{tr("Describe the repetitive or private job and 3D3D will quote a tool that does exactly that.")}</p>
-        <div className="growth-made-links">
-          <a href={localLink("/built")}>{tr("Everything we build, on one page")}</a>
-          <a href={localLink("/quote?for=software&context=document-tool")}>{tr("Commission a tool")}</a>
-        </div>
-      </aside>
-      <aside className="reference">
-        <h2>{tr("Learn what makes a better print.")}</h2>
-        <p>
-          {tr("The public")} <a href={localLink("/learn/academy")}>{tr("3D Printing Academy")}</a>{" "}
-          {tr(
-            "takes you from first layers to your first considered product. To inspect or remove image metadata, use",
-          )}{" "}
-          <a href={localLink("/snitch")}>{tr("SNITCH")}</a>.
-        </p>
-      </aside>
-      <GuideFold guide={guide} label={tr("Read the practical guide")} />
+      <GuideFold guide={guide} label={tr("Read the practical guide")}>
+        <p className="answer">{guide.answer}</p>
+        <DataPromise />
+      </GuideFold>
     </section>
   );
 }

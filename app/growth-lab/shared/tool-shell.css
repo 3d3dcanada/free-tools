@@ -20,6 +20,12 @@
 .ground-paper:has(.tool-page) .content-header-spacer {
   display: none;
 }
+/* 2026-11-11: the app is the page. No marketing block and no site footer under a tool:
+   the site's bottom bar is the way out, and the guide lives in the How This Works sheet. */
+.ground-paper:has(.tool-page) > footer,
+.growth-shell:has(.tool-page) > .growth-made {
+  display: none;
+}
 
 .growth-lab.tool-page {
   .tool-app {
@@ -121,11 +127,6 @@
     line-height: 1.15;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-  .tool-bar .tool-bar-quick,
-  .tool-bar .tool-find,
-  .tool-bar .tool-panel-toggle {
-    display: none;
   }
   .tool-history,
   .tool-primary {
@@ -314,16 +315,6 @@
       radial-gradient(circle at 1px 1px, rgba(10, 10, 10, 0.09) 1px, transparent 0) 0 0 / 22px 22px,
       #f3f1ec;
   }
-  .tool-app[data-panel="closed"] .two-column,
-  .tool-app[data-panel="closed"] .two-column.qr-workspace {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .tool-app[data-panel="closed"] .two-column > .controls:not(.pw-panel) {
-    display: none;
-  }
-  .tool-app[data-panel="closed"] .pw .two-column > .controls {
-    display: none;
-  }
 
   /* Result columns that are not a dark stage: the work on top, one Download at the foot. */
   .tool-content .two-column > .output:not(.ws-stage) {
@@ -454,12 +445,33 @@
     display: none;
   }
 
-  /* ---------- Below the app ---------- */
-  .tool-below .tool-headline {
-    margin: 0 0 0.6rem;
-    font-size: clamp(1.6rem, 4vw, 2.4rem);
-    font-weight: 900;
-    letter-spacing: -0.03em;
+  /* ---------- The one Download, in the bar on every tool (2026-11-11) ---------- */
+  .tool-primary .exportbar .export-main,
+  .tool-primary .ws-export {
+    width: auto;
+    min-height: 40px;
+    margin: 0;
+    padding: 0 0.85rem;
+    border-radius: 10px;
+    font-size: 11px;
+  }
+  .tool-primary .export-menu {
+    top: calc(100% + 8px);
+    bottom: auto;
+    left: auto;
+    right: 0;
+    width: max-content;
+    min-width: 220px;
+    max-width: calc(100vw - 1.2rem);
+  }
+  /* "PNG: ready." stays for screen readers; the bar has no room to print it. */
+  .tool-primary .export-status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   /* The guide, feedback and finder sheets: no site header above them here. */
@@ -480,13 +492,6 @@
     .tool-bar a.tool-back {
       border-color: var(--line-strong);
     }
-    .tool-app:not(.tool-app-wide) .tool-bar .tool-panel-toggle,
-    .tool-bar .tool-find {
-      display: inline-flex;
-    }
-    .tool-panel-toggle[aria-pressed="true"] {
-      color: var(--accent-ink);
-    }
     .tool-bar > .tool-icon {
       display: grid;
     }
@@ -495,36 +500,7 @@
       margin-right: auto;
       font-size: 1.2rem;
     }
-    .tool-menu-find {
-      display: none !important;
-    }
   }
-  @media (min-width: 1280px) {
-    .tool-bar .tool-bar-quick {
-      display: flex;
-      flex: 0 1 auto;
-      gap: 0.1rem;
-      min-width: 0;
-      overflow: hidden;
-    }
-    .tool-bar-quick a {
-      display: inline-flex;
-      align-items: center;
-      min-height: 40px;
-      padding: 0 0.6rem;
-      border-radius: 8px;
-      color: var(--body);
-      font: 600 11px var(--mono);
-      text-decoration: none;
-      white-space: nowrap;
-    }
-    .tool-bar-quick a:hover,
-    .tool-bar-quick a[aria-current] {
-      background: color-mix(in srgb, var(--accent) 12%, #fff);
-      color: var(--ink);
-    }
-  }
-
   /* ---------- Phones and small tablets ---------- */
   @media (max-width: 900px) {
     .tool-app {
@@ -532,6 +508,13 @@
     }
     .tool-app:not(.tool-app-wide) {
       grid-template-rows: var(--bar-h) minmax(0, 1fr) auto;
+    }
+    /* "Did this help?" sits above Edit Settings (or the studios' tab row). */
+    .tool-help-dock {
+      bottom: calc(50px + 0.5rem);
+    }
+    .tool-app[data-view="edit"] .tool-help-dock {
+      display: none;
     }
     .tool-content .two-column,
     .tool-content .two-column.qr-workspace,
@@ -618,11 +601,17 @@
       min-width: 38px;
     }
     /* The Download in the bar is its icon on a phone, so the tool keeps its name. */
-    .tool-primary button {
+    .tool-primary > button,
+    .tool-primary .exportbar .export-main,
+    .tool-primary .ws-export {
       width: var(--hit);
+      min-width: var(--hit);
       padding: 0;
       font-size: 0;
       letter-spacing: 0;
+    }
+    .tool-primary .export-caret {
+      display: none;
     }
     .tool-name {
       display: -webkit-box;

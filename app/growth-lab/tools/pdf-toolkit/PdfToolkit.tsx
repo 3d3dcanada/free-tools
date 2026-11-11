@@ -29,6 +29,7 @@ import { composePdf, imagesPdf, readPdf } from "./process";
 import { pageRenderer, pdfImages } from "./render";
 import PageGrid from "./PageGrid";
 import ExampleButton from "../../shared/ExampleButton";
+import { ToolSlot } from "../../shared/chrome";
 import { exampleImage, examplePdf } from "../../shared/examples";
 
 type Photo = { id: number; file: File };
@@ -641,10 +642,6 @@ export default function PdfToolkit({
       <div className="two-column">
         <div className="controls pdfw-panel" inert={saving || loading}>
           <p className="panel-label">{tr(photos ? "Your Images" : "Files")}</p>
-          {!sources.length && !images.length && <ExampleButton onLoad={async () => {
-            if (photos) takeImages([exampleImage(locale), exampleImage(locale, 2)]);
-            else await takePdfs([await examplePdf(locale)]);
-          }} />}
           <p className="fine">{tr("Up to 10 PDFs or 50 images, 100 MB combined and 200 pages. Each PDF must be under 40 MB and unencrypted.")}</p>
           {!photos && sources.length > 0 && (
             <ul className="ws-filelist">
@@ -665,13 +662,15 @@ export default function PdfToolkit({
             </ul>
           )}
           <div className="ws-files">
-            <AddFiles
-              label={tr(photos ? (images.length ? "Add More Images" : "Choose Images") : sources.length ? "Add PDFs" : "Choose PDFs")}
-              accept={photos ? "image/*,.svg" : ".pdf,application/pdf"}
-              multiple
-              primary={empty}
-              onFiles={take}
-            />
+            {/* Before the first file the stage holds the one Add button and the sample (2026-11-11). */}
+            {!empty && (
+              <AddFiles
+                label={tr(photos ? "Add More Images" : "Add PDFs")}
+                accept={photos ? "image/*,.svg" : ".pdf,application/pdf"}
+                multiple
+                onFiles={take}
+              />
+            )}
             {!empty && (
               <button
                 type="button"
@@ -809,6 +808,7 @@ export default function PdfToolkit({
             </p>
           )}
           {empty ? (
+            <>
             <label className="ws-empty">
               <input
                 type="file"
@@ -828,6 +828,15 @@ export default function PdfToolkit({
                 {tr(loading ? "Opening files locally…" : photos ? "Add images to choose their order and paper size." : "Add PDFs to preview, arrange and export.")}
               </span>
             </label>
+            {!loading && (
+              <div className="ws-empty-sample">
+                <ExampleButton quiet onLoad={async () => {
+                  if (photos) takeImages([exampleImage(locale), exampleImage(locale, 2)]);
+                  else await takePdfs([await examplePdf(locale)]);
+                }} />
+              </div>
+            )}
+            </>
           ) : (
             <>
               <div className="pdfw-bar" inert={saving || loading}>
@@ -944,10 +953,13 @@ export default function PdfToolkit({
                   </span>
                 </div>
                 {saving && <button type="button" onClick={() => exportJob.current?.abort()}>{tr("Cancel Export")}</button>}
-                <button type="button" className="ws-export" disabled={saving || loading || !count || !!rangeError} onClick={() => void save()}>
-                  <Icon name="download" />
-                  {saving ? tr("Preparing…") : exportLabel}
-                </button>
+                {/* The one Download sits in the tool bar, as on every tool (2026-11-11). */}
+                <ToolSlot name="primary">
+                  <button type="button" className="ws-export" disabled={saving || loading || !count || !!rangeError} onClick={() => void save()}>
+                    <Icon name="download" />
+                    {saving ? tr("Preparing…") : exportLabel}
+                  </button>
+                </ToolSlot>
               </div>
             </>
           )}

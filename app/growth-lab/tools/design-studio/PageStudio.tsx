@@ -276,12 +276,7 @@ export default function PageStudio({ studio }: { studio: StudioId }) {
                     </button>
                   ))}
                 </div>
-              ) : (
-                <button type="button" className="ds-stage-foot ps-size-foot" onClick={() => ed.setModal("formats")}>
-                  {/* "11 × 17 in" already says "11 × 17". */}
-                  {fmt.note.startsWith(fmt.label) ? sizeNote(fmt.note, locale) : `${tt(fmt.label)} · ${sizeNote(fmt.note, locale)}`}
-                </button>
-              )
+              ) : undefined
             }
           />
 

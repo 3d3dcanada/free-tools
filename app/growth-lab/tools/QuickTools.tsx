@@ -5,30 +5,6 @@ import { useT } from "../shared/locale";
 import { catalogFor } from "./catalog";
 import { categories, categoryFor, matchesSearch } from "./navigation";
 
-const TOOLS = [
-  ["qr-code", "QR", "QR"],
-  ["merge-pdf", "Merge PDF", "Fusionner PDF"],
-  ["compress-image", "Compress Image", "Compresser Image"],
-  ["resize-image", "Resize", "Redimensionner"],
-  ["remove-background", "Remove Background", "Retirer le Fond"],
-  ["pitch-deck", "Deck Studio", "Présentations"],
-  ["business-card", "Business Card", "Carte de Visite"],
-  ["invoice-generator", "Invoice", "Facture"],
-] as const;
-
-/** The common tools as plain links (the hub strip, and the desktop tool bar). */
-export function QuickLinks({ locale, current, className = "tool-quick" }: { locale: Locale; current?: string; className?: string }) {
-  return (
-    <nav className={className} aria-label={locale === "fr" ? "Accès rapide aux outils" : "Quick tools"}>
-      {TOOLS.map(([slug, en, fr]) => (
-        <a key={slug} href={localizedPath("/tools/" + slug, locale)} aria-current={current === slug ? "page" : undefined}>
-          {locale === "fr" ? fr : en}
-        </a>
-      ))}
-    </nav>
-  );
-}
-
 /** Search every tool by name or job, grouped by family. */
 export function ToolFinder({ locale, current, open, onClose }: { locale: Locale; current?: string; open: boolean; onClose: () => void }) {
   const tr = useT();
@@ -60,22 +36,5 @@ export function ToolFinder({ locale, current, open, onClose }: { locale: Locale;
         </div>
       </div>
     </Dialog>
-  );
-}
-
-/** The hub strip: the finder button and the common tools. */
-export default function QuickTools({ locale, current }: { locale: Locale; current?: string }) {
-  const tr = useT();
-  const [open, setOpen] = useState(false);
-  return (
-    <>
-      <div className="tool-quick">
-        <button type="button" className="tool-finder-trigger" aria-haspopup="dialog" onClick={() => setOpen(true)}>
-          {tr("Find a Tool")} <span aria-hidden="true">⌕</span>
-        </button>
-        <QuickLinks locale={locale} current={current} className="tool-quick-links" />
-      </div>
-      <ToolFinder locale={locale} current={current} open={open} onClose={() => setOpen(false)} />
-    </>
   );
 }

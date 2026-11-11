@@ -13,7 +13,8 @@ import { nextStepFor } from "../tools/next-step";
 
 /**
  * "Did this help?" : a small inline card that appears only AFTER the first
- * export or run in this page load, under the result in the below-the-app block.
+ * export or run in this page load, docked as a slim strip at the foot of the app
+ * (2026-11-11: under the app a phone never saw it).
  * Never a modal, never over the work, never before use. Asked at most once per
  * tool per 30 days (localStorage); after an answer or a dismiss, only the one
  * quiet next-step link stays.
@@ -26,6 +27,7 @@ export default function DidThisHelp({ slug }: { slug: string }) {
   const [dismissed, setDismissed] = useState(false);
   const [noteOpen, setNoteOpen] = useState(false);
   const [note, setNote] = useState("");
+  const [closed, setClosed] = useState(false);
 
   useEffect(() => {
     const onUse = (e: Event) => {
@@ -45,29 +47,29 @@ export default function DidThisHelp({ slug }: { slug: string }) {
     if (ask === "ask") markAsked(slug);
   }, [ask, slug]);
 
-  if (!used) return null;
+  if (!used || closed) return null;
   const step = nextStepFor(slug, locale);
   const answer = (a: FeedbackAnswer) => {
     emitToolFeedback(slug, a, a === "no" && note ? note : undefined);
     setAnswered(a);
   };
 
+  // The next step, with its own close so the strip never stays in the way.
+  const next = (
+    <p className="tool-next">
+      <a href={step.href}>{tr(step.text)}</a>
+      <button type="button" className="tool-help-close" aria-label={tr("Dismiss")} onClick={() => setClosed(true)}>×</button>
+    </p>
+  );
   if (answered)
     return (
       <div className="tool-help" role="status">
         <p className="tool-help-thanks">{tr("Thanks. That goes straight to the person who builds these.")}</p>
-        <p className="tool-next">
-          <a href={step.href}>{tr(step.text)}</a>
-        </p>
+        {next}
       </div>
     );
 
-  if (ask !== "ask")
-    return (
-      <p className="tool-next">
-        <a href={step.href}>{tr(step.text)}</a>
-      </p>
-    );
+  if (ask !== "ask") return next;
 
   return (
     <div className="tool-help" role="group" aria-label={tr("Did this help?")}>

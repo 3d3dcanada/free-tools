@@ -209,7 +209,8 @@ export type ExportAction = (() => Promise<void> | void) | { run: () => Promise<v
 /**
  * One Download button. With a single format it saves at once; with several it
  * opens a short list of the formats (2026-10-11: a row of six buttons hid the
- * QR code on a phone).
+ * QR code on a phone). On a tool page it sits in the bar, the same place on
+ * every tool (2026-11-11); elsewhere it renders where it is.
  */
 export function ExportBar({
   actions,
@@ -259,6 +260,7 @@ export function ExportBar({
   }
   const single = list.length === 1 ? list[0] : null;
   return (
+    <ToolSlot name="primary">
     <div className="exportbar" ref={box}>
       <button
         type="button"
@@ -285,6 +287,7 @@ export function ExportBar({
         {tr(busy || message)}
       </p>
     </div>
+    </ToolSlot>
   );
 }
 

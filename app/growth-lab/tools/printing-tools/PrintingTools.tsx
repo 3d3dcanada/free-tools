@@ -836,6 +836,10 @@ export default function PrintingTools({ mode }: { mode: PrintingMode }) {
     ),
   };
 
+  // 2026-11-11: a calculator with no model open is a sum, not a 3D scene. No empty bed,
+  // no camera buttons, no viewer strip: the result card is the stage. The viewer comes
+  // back the moment a model is opened (and is always there on the Model Viewer).
+  const calc = tab !== "model" && !m.model;
   return (
     <section ref={workspaceRef} className="workspace pw" data-report={reportOpen ? "open" : "closed"} aria-label={tr("3D printing workspace")}>
       <History editor={editor} />
@@ -883,10 +887,11 @@ export default function PrintingTools({ mode }: { mode: PrintingMode }) {
         </div>
         <div
           ref={stageRef}
-          className={`output ws-stage pw-stage${drop.dragging ? " is-dropping" : ""}`}
+          className={`output ws-stage pw-stage${calc ? " pw-calc" : ""}${drop.dragging ? " is-dropping" : ""}`}
           style={{ ["--cover-left" as string]: `${cover[0]}px`, ["--cover-bottom" as string]: `${cover[1]}px` }}
           {...drop.bind}
         >
+          {!calc && <>
           <Suspense fallback={<div className="pw-viewport pw-wait">{tr("Loading the local 3D viewer…")}</div>}>
             <Viewport
               positions={m.positions}
@@ -931,7 +936,8 @@ export default function PrintingTools({ mode }: { mode: PrintingMode }) {
             {section < 100 && <label className="pw-section">{fr ? "Hauteur Z" : "Z Height"}<input type="range" min="0" max="100" value={section} aria-label={fr ? "Hauteur de coupe Z" : "Z section height"} onChange={(e) => setSection(Number(e.target.value))} /><output>{section}%</output></label>}
           </div>
           {viewError && <p className="pw-view-error" role="status">{viewError}</p>}
-          {!m.model && (
+          </>}
+          {!m.model && !calc && (
             <div className="pw-empty">
               <strong>{tr("Open an STL, 3MF or OBJ")}</strong>
               <span>{tr("Measured on this device, on the printer you pick. Nothing is uploaded.")}</span>

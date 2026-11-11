@@ -26,7 +26,6 @@ import {
   type QrStyle,
 } from "./model";
 import { saveQr, scanQr } from "./exports";
-import { SITE_BASE } from "../../../lib/free-tools-host";
 const names: Record<QrKind, string> = {
   url: "Website",
   text: "Text",
@@ -535,15 +534,6 @@ export default function QrCode({ intent }: { intent?: QrKind }) {
                 {w}
               </p>
             ))}
-            <p className="fine">
-              {tr(
-                "Static content. No redirect, no expiry, no scan tracking. NFC files need a compatible writing app and enough tag memory. Scan a printed sample with real phones.",
-              )}
-            </p>
-            <nav aria-label={tr("QR services")}>
-              <a href={`${SITE_BASE}/quote?for=printing`}>{tr("Printed Signs")}</a>
-              <a href={`${SITE_BASE}/nfc-tags`}>{tr("NFC Tags")}</a>
-            </nav>
           </div>
           <div className="output-actions">
             <ExportBar

@@ -20,6 +20,7 @@ import Compare from "./Compare";
 import CropEditor from "./CropEditor";
 import { correctBatch, settingsFor, type ImageBatch } from "./batch";
 import ExampleButton from "../../shared/ExampleButton";
+import { ToolSlot } from "../../shared/chrome";
 import { exampleImage } from "../../shared/examples";
 
 type State = ImageBatch;
@@ -130,6 +131,28 @@ function Favicon({ src }: { src: string }) {
       </ul>
     </div>
   );
+}
+
+/**
+ * The compressor's sample is a real PNG (2026-11-11): compressing the 0.5 KB SVG source
+ * showed a first result fourteen times bigger, which is the opposite of what the tool does.
+ */
+async function pngSample(svg: File): Promise<File> {
+  const url = URL.createObjectURL(svg);
+  try {
+    const img = new Image();
+    img.src = url;
+    await img.decode();
+    const canvas = document.createElement("canvas");
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+    canvas.getContext("2d")!.drawImage(img, 0, 0);
+    const blob = await new Promise<Blob | null>((done) => canvas.toBlob(done, "image/png"));
+    if (!blob) throw new Error("The sample image could not be prepared.");
+    return new File([blob], svg.name.replace(/\.svg$/, ".png"), { type: "image/png" });
+  } finally {
+    URL.revokeObjectURL(url);
+  }
 }
 
 export default function ImageToolkit({ mode, preset }: { mode: ImageMode; preset?: Partial<ImageSettings> }) {
@@ -383,13 +406,8 @@ export default function ImageToolkit({ mode, preset }: { mode: ImageMode; preset
         <History editor={editor} />
         <p className="panel-label">{tr("Your Images")}</p>
         <div className="ws-files">
-          <AddFiles
-            label={tr(files.length ? "Add More Images" : "Choose Images")}
-            accept={accept}
-            multiple
-            primary={!files.length}
-            onFiles={take}
-          />
+          {/* Before the first file the stage holds the one Add button and the sample (2026-11-11). */}
+          {files.length > 0 && <AddFiles label={tr("Add More Images")} accept={accept} multiple onFiles={take} />}
           {files.length > 0 && (
             <button
               type="button"
@@ -404,7 +422,6 @@ export default function ImageToolkit({ mode, preset }: { mode: ImageMode; preset
             </button>
           )}
         </div>
-        {!files.length && <ExampleButton onLoad={() => take([exampleImage(locale)])} />}
         <p className="fine">
           {files.length
             ? `${files.length} ${tr(one ? "image" : "images")} · ${formatBytes(total, locale)}`
@@ -578,6 +595,7 @@ export default function ImageToolkit({ mode, preset }: { mode: ImageMode; preset
           </p>
         )}
         {!current ? (
+          <>
           <label className="ws-empty">
             <input
               type="file"
@@ -595,6 +613,8 @@ export default function ImageToolkit({ mode, preset }: { mode: ImageMode; preset
             <strong>{tr("Add Images")}</strong>
             <span>{tr("Choose files from your device, or drop them here. Nothing leaves this browser.")}</span>
           </label>
+          <div className="ws-empty-sample"><ExampleButton quiet onLoad={async () => take([mode === "compress-image" ? await pngSample(exampleImage(locale)) : exampleImage(locale)])} /></div>
+          </>
         ) : (
           <>
             {mode === "crop-image" ? (
@@ -670,15 +690,18 @@ export default function ImageToolkit({ mode, preset }: { mode: ImageMode; preset
                   {tr(one ? "Remove Background" : "Remove Backgrounds")}
                 </button>
               ) : (
-                <button
-                  type="button"
-                  className="ws-export"
-                  disabled={saving || (!paused && finished < files.length) || !done.length}
-                  onClick={() => void save()}
-                >
-                  <Icon name="download" />
-                  {saving ? tr("Preparing…") : !paused && finished < files.length ? tr("Processing…") : exportLabel}
-                </button>
+                // The one Download sits in the tool bar, as on every tool (2026-11-11).
+                <ToolSlot name="primary">
+                  <button
+                    type="button"
+                    className="ws-export"
+                    disabled={saving || (!paused && finished < files.length) || !done.length}
+                    onClick={() => void save()}
+                  >
+                    <Icon name="download" />
+                    {saving ? tr("Preparing…") : !paused && finished < files.length ? tr("Processing…") : exportLabel}
+                  </button>
+                </ToolSlot>
               )}
             </div>
           </>

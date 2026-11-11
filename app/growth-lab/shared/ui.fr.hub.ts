@@ -33,4 +33,7 @@ export const hubUi: Record<string, string> = {
   "Three sample pages laid out in Merge PDF Files, ready to reorder and download": "Trois pages d’exemple disposées dans Merge PDF Files, prêtes à réorganiser et à télécharger",
   "An invoice made in Invoice Generator, with its starter wording": "Une facture créée dans Invoice Generator, avec son texte de départ",
   "The 3D Print Cost Calculator showing an estimate over a Prusa CORE One L build plate": "Le calculateur de coût d’impression 3D affichant une estimation au-dessus d’un plateau Prusa CORE One L",
+  // 2026-11-11: the hub as a launcher.
+  "Pick a tool. It opens ready to use, and nothing leaves your device.": "Choisissez un outil. Il s’ouvre prêt à servir, et rien ne quitte votre appareil.",
+  "Recently Used": "Utilisés récemment",
 };

@@ -496,20 +496,12 @@
   .share-menu button:hover {
     background: var(--accent-wash, #eefcf9);
   }
-  /* Below the app: the short answer, the pledge and related tools. */
-  .tool-below {
-    max-width: 58rem;
-    margin: 0 auto;
-    padding-top: 2.4rem;
-    text-align: center;
-  }
-  .tool-below .tool-answer {
-    margin: 0 auto 1rem;
-    font-size: clamp(1rem, 2.4vw, 1.12rem);
-    line-height: 1.6;
-  }
-  .tool-below .related-tools {
-    text-align: left;
+  /* The How This Works sheet: the headline and answer that used to sit under the app. */
+  .tool-guide-body .tool-headline {
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.4rem, 4vw, 1.9rem);
+    font-weight: 900;
+    letter-spacing: -0.03em;
   }
   /* "Did this help?" after the first real use, and the one quiet next-step link. */
   .tool-help {
@@ -591,8 +583,52 @@
     font-weight: 700;
   }
   .tool-next {
-    margin: 0 auto 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin: 0 auto;
     max-width: 34rem;
+  }
+  .tool-next .tool-help-close {
+    flex: none;
+    min-width: 36px;
+    min-height: 36px;
+    border: 0;
+    background: none;
+    font-size: 18px;
+    cursor: pointer;
+  }
+  /* 2026-11-11: the card docks at the foot of the app, a slim glass strip over the result. */
+  .tool-help-dock {
+    position: absolute;
+    right: 0.6rem;
+    bottom: 0.6rem;
+    left: 0.6rem;
+    z-index: 25;
+    pointer-events: none;
+  }
+  .tool-help-dock:empty {
+    display: none;
+  }
+  .tool-help-dock > * {
+    pointer-events: auto;
+    margin: 0 auto;
+  }
+  .tool-help-dock > .tool-help,
+  .tool-help-dock > .tool-next {
+    max-width: 30rem;
+    padding: 0.55rem 0.8rem;
+    border: 1px solid var(--accent-line, var(--accent));
+    border-radius: 12px;
+    background: rgba(250, 248, 245, 0.94);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 14px 34px -24px rgba(0, 0, 0, 0.6), 0 0 26px -18px var(--accent);
+    font-size: 14px;
+  }
+  .tool-help-dock .tool-help .tool-next {
+    margin-top: 0.35rem;
   }
   .tool-next a {
     color: var(--accent-ink);
@@ -2332,3 +2368,195 @@ dialog.library-layer[open] { display: grid; place-items: center; padding: 1rem; 
 .growth-lab .tool-start strong { display: flex; align-items: center; gap: 0.6rem; }
 .growth-lab .tool-start strong span { color: #276c60; font: 12px var(--mono); }
 .growth-lab .tool-start p { margin: 0.3rem 0; font-size: 13px; }
+.growth-lab .ws-empty-sample .example-input > button { justify-self: center; }
+
+/* 2026-11-11: the hub as a launcher. Heading, search, recent, then every tool once in its family:
+   rows on paper with a hairline, no card grid, no carousels. */
+.growth-lab .hub-app {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding-bottom: 2rem;
+}
+.growth-lab .hub-head {
+  padding: 1.4rem 0 0.9rem;
+  text-align: center;
+}
+.growth-lab .hub-head h1 {
+  margin: 0;
+  font-size: clamp(2rem, 6vw, 3.4rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+.growth-lab .hub-head p {
+  margin: 0.55rem auto 0;
+  max-width: 34rem;
+  color: var(--soft);
+}
+.growth-lab .hub-find {
+  position: sticky;
+  top: 0.5rem;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 40rem;
+  margin: 0 auto 1rem;
+  padding: 0 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, var(--line));
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 12px 30px -24px rgba(0, 0, 0, 0.5), 0 0 30px -22px var(--accent);
+}
+.growth-lab .hub-find > span {
+  color: var(--accent-ink);
+  font-size: 1.2rem;
+}
+.growth-lab .hub-find input {
+  flex: 1;
+  min-width: 0;
+  min-height: 50px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: 500 16px/1.2 var(--sans);
+  outline: none;
+  box-shadow: none;
+}
+.growth-lab .hub-status {
+  text-align: center;
+}
+.growth-lab .hub-recent,
+.growth-lab .hub-group {
+  margin: 0 0 1.4rem;
+}
+.growth-lab .hub-recent h2,
+.growth-lab .hub-group > h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin: 0 0 0.2rem;
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+}
+.growth-lab .hub-group > h2::before {
+  content: "";
+  width: 4px;
+  height: 1.05em;
+  border-radius: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent);
+}
+.growth-lab .hub-group > p {
+  margin: 0 0 0.4rem;
+  color: var(--soft);
+  font-size: 0.92rem;
+}
+.growth-lab .hub-recent ul {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(5.2rem, 1fr));
+  gap: 0.5rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.growth-lab .hub-recent a {
+  display: grid;
+  justify-items: center;
+  gap: 0.35rem;
+  padding: 0.55rem 0.3rem;
+  border-radius: 12px;
+  color: var(--ink);
+  font: 600 12px/1.2 var(--sans);
+  text-align: center;
+  text-decoration: none;
+}
+.growth-lab .hub-recent .tool-icon {
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  border: 1px solid color-mix(in srgb, var(--accent) 50%, var(--line));
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--accent) 12%, #fff);
+  color: var(--accent-ink);
+}
+.growth-lab .hub-recent .tool-icon svg {
+  width: 22px;
+  height: 22px;
+}
+.growth-lab .hub-recent a:hover,
+.growth-lab .hub-row:hover {
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+}
+.growth-lab .hub-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.growth-lab .hub-list li {
+  min-width: 0;
+  border-top: 1px solid var(--line);
+}
+.growth-lab .hub-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-height: 64px;
+  padding: 0.55rem 0.4rem;
+  border-radius: 10px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.growth-lab .hub-row .tool-preview {
+  flex: none;
+  width: 72px;
+  height: 45px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #0f1415;
+}
+.growth-lab .hub-row > span {
+  display: grid;
+  gap: 0.1rem;
+  min-width: 0;
+}
+.growth-lab .hub-row strong {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+.growth-lab .hub-row small {
+  overflow: hidden;
+  color: var(--soft);
+  font-size: 0.85rem;
+  line-height: 1.35;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.growth-lab .hub-row-link {
+  padding-left: 0.6rem;
+  border-left: 2px solid var(--accent);
+  border-radius: 0 10px 10px 0;
+}
+.growth-lab .hub-none {
+  text-align: center;
+}
+@media (min-width: 720px) {
+  .growth-lab .hub-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 1.6rem;
+  }
+}
+@media (min-width: 1100px) {
+  .growth-lab .hub-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

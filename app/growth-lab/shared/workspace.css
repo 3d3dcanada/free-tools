@@ -471,6 +471,39 @@
     max-width: 30rem;
     color: var(--stage-soft);
   }
+  /* 2026-11-11: the sample on the empty stage, under the one Add button, so a first visit is one tap. */
+  .ws-empty-sample {
+    position: absolute;
+    left: 50%;
+    bottom: clamp(1.8rem, 6vw, 3.4rem);
+    z-index: 2;
+    transform: translateX(-50%);
+  }
+  .ws-empty-sample .example-input {
+    justify-items: center;
+    margin: 0;
+  }
+  .ws-empty-sample button {
+    min-height: 44px;
+    padding: 0 1.1rem;
+    border: 1px solid rgba(255, 255, 255, 0.34);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #fff;
+    font: 700 12px/1 var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    box-shadow: none;
+    cursor: pointer;
+  }
+  .ws-empty-sample button:hover:not(:disabled) {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+  }
+  .ws-empty-sample .fine {
+    color: var(--stage-soft);
+  }
   .ws-toast {
     position: absolute;
     z-index: 9;
@@ -2103,5 +2136,38 @@
     .pw-result header { gap: 0.3rem; }
     .pw-empty { top: 48%; padding: 0.6rem; max-width: calc(100% - 1rem); }
     .pw-empty strong { font-size: 1.25rem; }
+  }
+}
+
+/* 2026-11-11: a calculator with no model is its result card, centred on the stage. */
+.growth-lab {
+  .tool-content .two-column > .output.ws-stage.pw-calc {
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    overflow: auto;
+  }
+  .tool-content .two-column > .output.ws-stage.pw-calc > .pw-result,
+  .tool-app[data-panel="open"] .pw .pw-calc > .pw-result {
+    position: relative;
+    inset: auto;
+    width: min(100%, 460px);
+    max-height: none;
+    margin: 0;
+    padding-bottom: 0.9rem;
+    overflow: visible;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  .pw-calc .pw-report-close {
+    display: none;
+  }
+  .pw[data-report="closed"] .pw-calc > .pw-result {
+    display: block;
+  }
+  @media (min-width: 901px) {
+    .tool-content .two-column > .output.ws-stage.pw-calc {
+      padding-left: calc(var(--panel) + 1rem);
+    }
   }
 }

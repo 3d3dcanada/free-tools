@@ -19,6 +19,8 @@ export function matchesSearch(text: string, query: string) {
   const value = fold(text);
   return query.trim().split(/\s+/).every((word) => value.includes(fold(word)));
 }
+/** A tool's name without the "Free" its search title carries: every tool here is free. */
+export const plainName = (name: string) => name.replace(/^Free\s+/, "").replace(/\s+gratuit(e|s|es)?\b/i, "").trim();
 export function categoryFor(slug: string) {
   slug = intentFor(slug)?.parent ?? slug;
   if (slug in imageModes) return "Images";

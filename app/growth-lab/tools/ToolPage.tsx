@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { DataPromise, Pledge } from "../shared/kit";
+import { DataPromise } from "../shared/kit";
 import RelatedTools from "../shared/RelatedTools";
 import { LocaleProvider } from "../shared/locale";
 import { guideSchema, localizedPath, type ToolGuide as Guide } from "../seo/guide";
@@ -11,12 +11,13 @@ import ShareButton from "../shared/ShareButton";
 import { ToolIcon } from "../shared/toolIcons";
 import { ToolChrome, type ToolSlots } from "../shared/chrome";
 import { intentFor } from "./intents";
-import { categoryFor } from "./navigation";
+import { categoryFor, plainName } from "./navigation";
 import { emitToolUse } from "../shared/tooluse";
 import DidThisHelp from "../shared/DidThisHelp";
-import { QuickLinks, ToolFinder } from "./QuickTools";
+import { ToolFinder } from "./QuickTools";
 import Dialog from "../shared/Dialog";
 import QuickStart from "./QuickStart";
+import { markRecent } from "./recent";
 
 /** One neon per family, so each tool reads as part of a set (teal leads). */
 const CATEGORY_ACCENT: Record<string, string> = {
@@ -29,15 +30,16 @@ const CATEGORY_ACCENT: Record<string, string> = {
 };
 
 /**
- * Every tool is an app (rebuilt 2026-10-11 for the phone first). One bar: back
- * to the tools, the tool's name, the editor's undo and redo, its primary export
- * when it has one, and a single menu holding everything else (guide, finder,
- * projects, brand, feedback, share, language). Below the bar the result owns
- * the screen. On desktop the controls sit in a panel on the left; up to 900 px
- * they open as a sheet from an Edit button at the foot, and the result stays
- * in view above them. The site header and the edge menu tab are not drawn on
- * tool pages: the site's bottom bar is the way out. The full guide stays in the
- * server HTML inside the guide sheet.
+ * Every tool is an app, and the app is the page (2026-11-11, after Ken: "It
+ * doesn't feel like a web app at all"). One bar: back to the tools, the tool's
+ * name, the editor's undo and redo, its one Download, and a single menu for
+ * everything else (How This Works, Find a Tool, projects, brand, feedback,
+ * share, language). Below the bar the result owns the screen. On desktop the
+ * controls sit in a panel on the left; up to 900 px they open as a sheet from
+ * Edit Settings at the foot. Nothing is drawn under the app: the headline, the
+ * answer, the guide, the data promise and related tools live in the How This
+ * Works sheet, still in the server HTML for search. "Did this help?" docks at
+ * the foot of the app after the first result.
  */
 export default function ToolPage({
   guide,
@@ -50,7 +52,6 @@ export default function ToolPage({
   wide?: boolean;
 }) {
   const [hydrated, setHydrated] = useState(false);
-  const [panel, setPanel] = useState(guide.slug !== "model-viewer");
   const [view, setView] = useState<"edit" | "result">("result");
   const [drawer, setDrawer] = useState<"guide" | "feedback" | "finder" | null>(null);
   const [menu, setMenu] = useState(false);
@@ -62,6 +63,7 @@ export default function ToolPage({
     if (opened.current) return;
     opened.current = true;
     emitToolUse(guide.slug, "open");
+    markRecent(guide.slug);
   }, [guide.slug]);
   // Stable ref callbacks: a new function each render would detach and reattach the slot forever.
   const slot = useMemo(() => {
@@ -93,13 +95,14 @@ export default function ToolPage({
   const accent = CATEGORY_ACCENT[categoryFor(guide.slug)] ?? "#04D9C4";
   const other = fr ? "en" : "fr";
   // The bar names the tool without the "Free" the page title carries for search.
-  const shortName = (fr ? guide.name.replace(/\s+gratuit(e|s|es)?\b/i, "") : guide.name.replace(/^Free\s+/, "")).trim();
+  const shortName = plainName(guide.name);
   const guideOpen = drawer === "guide";
   const setGuideOpen = (o: boolean) => setDrawer(o ? "guide" : null);
   const open = (d: typeof drawer) => {
     setMenu(false);
     setDrawer(d);
   };
+  const howLabel = fr ? "Comment ça marche" : "How This Works";
   return (
     <LocaleProvider locale={guide.locale}>
       <ToolChrome.Provider value={slots}>
@@ -108,34 +111,14 @@ export default function ToolPage({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(guideSchema(guide)).replace(/</g, "\\u003c") }}
         />
-        <div
-          className={`tool-app${wide ? " tool-app-wide" : ""}`}
-          data-panel={panel ? "open" : "closed"}
-          data-view={view}
-        >
+        <div className={`tool-app${wide ? " tool-app-wide" : ""}`} data-panel="open" data-view={view}>
           <header className="tool-bar">
             <a className="tool-back" href={localizedPath("/tools", guide.locale)} aria-label={fr ? "Tous les outils" : "All tools"}>
               <span aria-hidden="true">←</span>
               <span className="tool-back-label">{fr ? "Outils" : "Tools"}</span>
             </a>
-            {!wide && (
-              <button
-                type="button"
-                className="tool-panel-toggle"
-                aria-pressed={panel}
-                aria-label={panel ? (fr ? "Masquer les réglages" : "Hide settings") : fr ? "Afficher les réglages" : "Show settings"}
-                title={panel ? (fr ? "Masquer les réglages" : "Hide settings") : fr ? "Afficher les réglages" : "Show settings"}
-                onClick={() => setPanel((p) => !p)}
-              >
-                <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" /><path d="M9 4v16" /></svg>
-              </button>
-            )}
             <ToolIcon slug={guide.slug} />
             <h1 className="tool-name" title={guide.name}>{shortName}</h1>
-            <QuickLinks locale={guide.locale} current={guide.slug} className="tool-bar-quick" />
-            <button type="button" className="tool-find" aria-haspopup="dialog" onClick={() => open("finder")}>
-              <span aria-hidden="true">⌕</span> {fr ? "Trouver un outil" : "Find a Tool"}
-            </button>
             <div className="tool-history" ref={slot("history")} />
             <div className="tool-primary" ref={slot("primary")} />
             <div className="tool-more" ref={menuBox}>
@@ -158,8 +141,8 @@ export default function ToolPage({
                   if (hit && !hit.closest(".share-box > button")) setMenu(false);
                 }}
               >
-                <button type="button" onClick={() => open("guide")}>{fr ? "Démarrage et guide" : "Quick Start & Guide"}</button>
-                <button type="button" className="tool-menu-find" onClick={() => open("finder")}>{fr ? "Trouver un outil" : "Find a Tool"}</button>
+                <button type="button" onClick={() => open("guide")}>{howLabel}</button>
+                <button type="button" onClick={() => open("finder")}>{fr ? "Trouver un outil" : "Find a Tool"}</button>
                 <div className="tool-menu-slot" ref={slot("menu")} />
                 {FEEDBACK_ENDPOINT && (
                   <button type="button" onClick={() => open("feedback")}>{fr ? "Envoyer un commentaire" : "Send Feedback"}</button>
@@ -178,6 +161,8 @@ export default function ToolPage({
           <div className="tool-content" inert={!hydrated}>
             {children}
           </div>
+          {/* After the first result: a slim strip at the foot, above Edit Settings, never over the work's Download. */}
+          <div className="tool-help-dock">{hydrated && <DidThisHelp slug={guide.slug} />}</div>
           {!wide && (
             <button
               type="button"
@@ -194,26 +179,17 @@ export default function ToolPage({
           )}
         </div>
 
-        <div className="tool-below">
-          {hydrated && <DidThisHelp slug={guide.slug} />}
-          <h2 className="tool-headline">{guide.headline}</h2>
-          <p className="tool-answer">{guide.answer}</p>
-          <Pledge />
-          <DataPromise slug={guide.slug} />
-          <RelatedTools slug={guide.slug} />
-        </div>
-
         <Dialog
           className="tool-guide-layer"
           open={guideOpen}
-          title={fr ? "Guide de l’outil" : "Tool guide"}
+          title={howLabel}
           onClose={() => setGuideOpen(false)}
         >
           <aside
             className="tool-guide-panel"
           >
             <div className="tool-guide-head">
-              <p className="eyebrow">{fr ? "Guide pratique" : "Practical Guide"}</p>
+              <p className="eyebrow">{howLabel}</p>
               <button
                 type="button"
                 className="tool-guide-close"
@@ -225,9 +201,12 @@ export default function ToolPage({
               </button>
             </div>
             <div className="tool-guide-body" inert={!guideOpen}>
-              <QuickStart slug={guide.slug} />
+              <h2 className="tool-headline">{guide.headline}</h2>
               <p className="tool-answer">{guide.answer}</p>
+              <QuickStart slug={guide.slug} />
               <ToolGuide guide={guide} />
+              <DataPromise slug={guide.slug} />
+              <RelatedTools slug={guide.slug} />
               <nav className="reference" aria-label={fr ? "Services et outils associés" : "Related services and tools"}>
                 <a href={sitePath(guide.service.path, guide.locale)}>{guide.service.label}</a>
                 {intent && (

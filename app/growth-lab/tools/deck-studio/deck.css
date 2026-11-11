@@ -1392,3 +1392,19 @@
     top: 3.3rem;
   }
 }
+
+/* 2026-11-11: from 901 to 1439 px the insert labels and the save note pushed Zoom and Present past
+   the toolbar's edge (measured 300 to 354 px over at 1024, 12 px at 1366). Icons only there: the
+   title still names each insert, and the save note stays for screen readers. */
+@media (min-width: 901px) and (max-width: 1439px) {
+  .ds-root .ds-toolbar .ds-tool span { display: none; }
+  .ds-root .ds-toolbar .ds-title { width: 140px !important; }
+  .ds-root .ds-toolbar .ds-status {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+}
