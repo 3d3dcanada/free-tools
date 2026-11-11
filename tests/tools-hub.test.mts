@@ -7,7 +7,8 @@ import assert from "node:assert/strict";
 import { renderToStaticMarkup } from "react-dom/server";
 import jsQR from "jsqr";
 import { catalogs } from "../app/growth-lab/seo/catalog.generated";
-import { categoryFor } from "../app/growth-lab/tools/navigation";
+import { categoryFor, plainName } from "../app/growth-lab/tools/navigation";
+import { AppIcon, ICON_SLUGS, toolLabel } from "../app/growth-lab/shared/toolIcons";
 import { TOOL_COUNT, TOOL_FAMILIES } from "../app/growth-lab/seo/tool-families";
 import ToolPreview, { PREVIEW_SLUGS, QR_PREVIEW } from "../app/growth-lab/shared/ToolPreview";
 import { initialTag, payload } from "../app/growth-lab/tools/qr-code/model";
@@ -43,6 +44,28 @@ for (const s of slugs) {
   ok(html.startsWith("<svg"), `${s}: renders an svg`);
   ok(!/<script|<foreignObject|<image|\son[a-z]+=|href=|src=|url\(["']?https?:/i.test(html), `${s}: preview carries nothing active or external`);
   ok(html.length < 9000, `${s}: preview is ${html.length} bytes`);
+}
+
+// The launcher tiles (2026-11-11): one distinct lucide glyph per tool, and the short label under
+// each tile is a piece of the tool's own name in both languages, so the visible words stay inside
+// the link's accessible name (WCAG 2.5.3).
+ok(ICON_SLUGS.length === slugs.length && slugs.every((s) => ICON_SLUGS.includes(s)), "every tool has an icon and none is extra");
+{
+  const glyphs = new Set<string>();
+  for (const s of slugs) {
+    const html = renderToStaticMarkup(AppIcon({ slug: s }) as never);
+    ok(html.startsWith('<span class="app-icon" aria-hidden="true"><svg'), `${s}: renders an app tile`);
+    ok(!/<script|<foreignObject|<image|\son[a-z]+=|href=|src=/i.test(html), `${s}: tile carries nothing active or external`);
+    glyphs.add(html);
+  }
+  ok(glyphs.size === slugs.length, `every tool has its own glyph (${glyphs.size} of ${slugs.length})`);
+}
+for (const locale of ["en", "fr"] as const) {
+  for (const t of catalogs[locale]) {
+    const label = toolLabel(t.slug, locale);
+    ok(label !== t.slug && plainName(t.short).toLowerCase().includes(label.toLowerCase()), `${locale} ${t.slug}: label "${label}" is part of "${plainName(t.short)}"`);
+    ok(!label.includes("\u2014"), `${t.slug}: no em dash`);
+  }
 }
 
 // The QR preview is a real code: paint its path, quiet zone and all, and decode it.

@@ -6,19 +6,9 @@ import { categories, categoryFor, matchesSearch, plainName } from "./navigation"
 import ToolGuide from "../seo/ToolGuide";
 import type { ToolGuide as Guide } from "../seo/guide";
 import { hubSchema } from "../seo/hub-schema";
-import { ToolIcon } from "../shared/toolIcons";
-import ToolPreview from "../shared/ToolPreview";
+import { AppIcon, AppTile, CATEGORY_ACCENT, SearchGlyph } from "../shared/toolIcons";
 import { TOOL_FAMILIES } from "../seo/tool-families";
 import { readRecent } from "./recent";
-
-const CATEGORY_ACCENT: Record<string, string> = {
-  "QR and Contacts": "#04D9C4",
-  Design: "#FF2D92",
-  Images: "#04D9C4",
-  "PDF Documents": "#FF6A00",
-  Business: "#18E36B",
-  "3D Printing": "#FF6A00",
-};
 /** One line under each category title. */
 const BLURB: Record<string, string> = {
   "QR and Contacts": "Links, Wi-Fi, contacts and events as codes that scan.",
@@ -117,7 +107,9 @@ function Hub({ guide }: { guide: Guide }) {
         <p>{tr("Pick a tool. It opens ready to use, and nothing leaves your device.")}</p>
       </header>
       <div className="hub-find">
-        <span aria-hidden="true">⌕</span>
+        <span aria-hidden="true">
+          <SearchGlyph />
+        </span>
         <input
           type="search"
           aria-label={tr("Find a Tool")}
@@ -135,40 +127,45 @@ function Hub({ guide }: { guide: Guide }) {
       {!query && recentTools.length > 0 && (
         <section className="hub-recent" aria-label={tr("Recently Used")}>
           <h2>{tr("Recently Used")}</h2>
-          <ul>
-            {recentTools.map((t) => (
-              <li key={t.slug} style={{ ["--accent" as string]: CATEGORY_ACCENT[categoryFor(t.slug)] }}>
-                <a href={localLink(`/tools/${t.slug}`)}>
-                  <ToolIcon slug={t.slug} />
-                  <span>{plainName(t.short)}</span>
-                </a>
+          <ul className="hub-launch">
+            {recentTools.map((t, i) => (
+              <li key={t.slug} style={{ ["--accent" as string]: CATEGORY_ACCENT[categoryFor(t.slug)], ["--i" as string]: i }}>
+                <AppTile slug={t.slug} locale={locale} href={localLink(`/tools/${t.slug}`)} name={plainName(t.short)} />
               </li>
             ))}
           </ul>
         </section>
       )}
-      {categories.slice(1).map((c) => {
-        const group = results.filter((t) => categoryFor(t.slug) === c);
-        return group.length ? (
-          <section key={c} id={TOOL_FAMILIES.find((f) => f.category === c)?.id} className="hub-group" aria-label={tr(c)} style={{ ["--accent" as string]: CATEGORY_ACCENT[c] }}>
-            <h2>{tr(c)}</h2>
-            <p>{tr(BLURB[c] ?? "")}</p>
-            <ul className="hub-list">
-              {group.map((t) => (
-                <li key={t.slug}>
-                  <a className="hub-row" href={localLink(`/tools/${t.slug}`)}>
-                    <ToolPreview slug={t.slug} />
-                    <span>
-                      <strong>{plainName(t.short)}</strong>
-                      <small>{t.summary}</small>
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ) : null;
-      })}
+      {/* Each family is a titled group of app tiles. The grounds alternate between a hexagon
+          wash and a plain tint of the family colour, so no two neighbours are bare paper. */}
+      <div className="hub-groups">
+        {categories.slice(1).map((c) => {
+          const group = results.filter((t) => categoryFor(t.slug) === c);
+          return group.length ? (
+            <section
+              key={c}
+              id={TOOL_FAMILIES.find((f) => f.category === c)?.id}
+              className="hub-group hub-family"
+              data-wide={group.length > 6 || undefined}
+              aria-label={tr(c)}
+              style={{ ["--accent" as string]: CATEGORY_ACCENT[c] }}
+            >
+              <h2>
+                <AppIcon category={c} />
+                {tr(c)}
+              </h2>
+              <p>{tr(BLURB[c] ?? "")}</p>
+              <ul className="hub-launch">
+                {group.map((t, i) => (
+                  <li key={t.slug} style={{ ["--i" as string]: i }}>
+                    <AppTile slug={t.slug} locale={locale} href={localLink(`/tools/${t.slug}`)} name={plainName(t.short)} summary={t.summary} />
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : null;
+        })}
+      </div>
       {!results.length && (
         <p className="hub-none">
           {tr("No matching tools. Try a shorter term or select all categories.")}{" "}
@@ -177,8 +174,11 @@ function Hub({ guide }: { guide: Guide }) {
       )}
       {!query &&
         MORE.map((group) => (
-          <section key={group.title} className="hub-group" aria-label={tr(group.title)} style={{ ["--accent" as string]: group.accent }}>
-            <h2>{tr(group.title)}</h2>
+          <section key={group.title} className="hub-group hub-more" aria-label={tr(group.title)} style={{ ["--accent" as string]: group.accent }}>
+            <h2>
+              <AppIcon category={group.title} />
+              {tr(group.title)}
+            </h2>
             <ul className="hub-list">
               {group.links.map(([label, href, line]) => (
                 <li key={href}>

@@ -1297,17 +1297,6 @@
     text-align: center;
     text-transform: uppercase;
   }
-  .hub-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 15.5rem), 1fr));
-    gap: 0.9rem;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .hub-grid li {
-    margin: 0;
-  }
   details.hub-guide > summary {
     max-width: 88rem;
     margin: 1.6rem auto 0;
@@ -1319,73 +1308,6 @@
     letter-spacing: 0.12em;
     text-transform: uppercase;
     cursor: pointer;
-  }
-  .hub-tool {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-    height: 100%;
-    padding: 0.7rem 0.9rem 0.9rem;
-    overflow: hidden;
-    border: 1px solid var(--line-strong);
-    border-radius: 12px;
-    background: #faf8f5;
-    text-decoration: none;
-    transition:
-      border-color 160ms ease,
-      background-color 160ms ease;
-  }
-  .hub-tool::before {
-    content: "";
-    position: absolute;
-    inset: 0 0 auto;
-    height: 3px;
-    background: var(--accent);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 240ms ease;
-  }
-  .hub-tool:hover,
-  .hub-tool:focus-visible {
-    border-color: color-mix(in srgb, var(--accent) 55%, #737373);
-    background: color-mix(in srgb, var(--accent) 7%, #faf8f5);
-    color: inherit;
-  }
-  .hub-tool:hover::before,
-  .hub-tool:focus-visible::before {
-    transform: scaleX(1);
-  }
-  .hub-tool .tool-preview {
-    display: block;
-    width: 100%;
-    aspect-ratio: 16 / 10;
-    margin-bottom: 0.2rem;
-    border-radius: 8px;
-    background: color-mix(in srgb, var(--accent) 8%, #f1eee9);
-  }
-  .hub-tool strong {
-    color: var(--ink);
-    font-size: 1.02rem;
-    font-weight: 800;
-    letter-spacing: -0.01em;
-    line-height: 1.25;
-  }
-  .hub-tool > span {
-    color: var(--soft);
-    font-size: 0.9rem;
-    line-height: 1.4;
-  }
-  .hub-tool em {
-    margin-top: auto;
-    padding-top: 0.5rem;
-    color: var(--accent-ink);
-    font-family: var(--mono);
-    font-size: 11px;
-    font-style: normal;
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
   }
   .data-promise {
     max-width: 88rem;
@@ -1758,7 +1680,11 @@ dialog.library-layer[open] { display: grid; place-items: center; padding: 1rem; 
 }
 .growth-lab .hub-find > span {
   color: var(--accent-ink);
-  font-size: 1.2rem;
+}
+.growth-lab .hub-find > span svg {
+  display: block;
+  width: 20px;
+  height: 20px;
 }
 .growth-lab .hub-find input {
   flex: 1;
@@ -1790,55 +1716,176 @@ dialog.library-layer[open] { display: grid; place-items: center; padding: 1rem; 
   font-weight: 900;
   letter-spacing: -0.02em;
 }
-.growth-lab .hub-group > h2::before {
-  content: "";
-  width: 4px;
-  height: 1.05em;
-  border-radius: 2px;
-  background: var(--accent);
-  box-shadow: 0 0 12px var(--accent);
+.growth-lab .hub-group > h2 .app-icon {
+  --tile: 34px;
 }
 .growth-lab .hub-group > p {
   margin: 0 0 0.4rem;
   color: var(--soft);
   font-size: 0.92rem;
 }
-.growth-lab .hub-recent ul {
+.growth-lab .hub-row:hover {
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
+}
+
+/* 2026-11-11: the launcher. One tile per tool, the same tile everywhere: a rounded square of
+   solid family neon with an ink glyph (ink on the four neons: 5.7:1 on magenta, more on the rest), a soft glow
+   in its own colour, an inset highlight, a lift on a mouse and a press on a tap. */
+.growth-lab .app-icon {
+  --tile: 60px;
+  position: relative;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(5.2rem, 1fr));
-  gap: 0.5rem;
-  margin: 0.5rem 0 0;
+  flex: none;
+  place-items: center;
+  width: var(--tile);
+  height: var(--tile);
+  border-radius: calc(var(--tile) * 0.28);
+  background: var(--accent, #04d9c4);
+  color: #0a0a0a;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.6),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+    inset 0 -3px 8px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(10, 10, 10, 0.06),
+    0 10px 22px -12px var(--accent, #04d9c4);
+  transition:
+    transform 180ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 180ms ease;
+}
+.growth-lab .app-icon svg {
+  width: 46%;
+  height: 46%;
+}
+.growth-lab .hub-launch {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.9rem 0.25rem;
+  margin: 0.8rem 0 0;
   padding: 0;
   list-style: none;
 }
-.growth-lab .hub-recent a {
+.growth-lab .hub-launch li {
+  min-width: 0;
+  margin: 0;
+}
+.growth-lab .app-tile {
   display: grid;
   justify-items: center;
-  gap: 0.35rem;
-  padding: 0.55rem 0.3rem;
-  border-radius: 12px;
+  align-content: start;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0.35rem 0.1rem 0.3rem;
+  border-radius: 14px;
   color: var(--ink);
-  font: 600 12px/1.2 var(--sans);
   text-align: center;
   text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
 }
-.growth-lab .hub-recent .tool-icon {
+.growth-lab .app-tile-name {
+  font: 600 12px/1.25 var(--sans);
+  letter-spacing: -0.005em;
+  overflow-wrap: break-word;
+  hyphens: auto;
+}
+.growth-lab .app-tile:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.growth-lab .app-tile:active .app-icon {
+  transform: scale(0.92);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.22),
+    0 0 0 1px rgba(10, 10, 10, 0.08),
+    0 4px 12px -8px var(--accent, #04d9c4);
+}
+@media (hover: hover) and (pointer: fine) {
+  .growth-lab .app-tile:hover .app-icon {
+    transform: translateY(-3px);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.6),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.18),
+      inset 0 -3px 8px rgba(0, 0, 0, 0.12),
+      0 0 0 1px rgba(10, 10, 10, 0.06),
+      0 16px 30px -12px var(--accent, #04d9c4);
+  }
+}
+
+/* The groups. Every ground is a tint of the family colour; every other one adds the brand hexagon
+   as a faint line pattern (a mask, so it takes the family colour too). */
+.growth-lab .hub-group {
+  position: relative;
+  isolation: isolate;
+  padding: 1rem 0.75rem 0.9rem;
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--accent) 6%, #faf8f5);
+}
+.growth-lab .hub-family:nth-child(odd),
+.growth-lab .hub-more:not(.hub-more + .hub-more),
+.growth-lab .hub-more + .hub-more + .hub-more {
+  background: color-mix(in srgb, var(--accent) 11%, #faf8f5);
+}
+.growth-lab .hub-family:nth-child(odd)::before,
+.growth-lab .hub-more:not(.hub-more + .hub-more)::before,
+.growth-lab .hub-more + .hub-more + .hub-more::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--accent);
+  /* 0.14 keeps the grey line under each title at 4.6:1 even where it crosses a hexagon edge. */
+  opacity: 0.14;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20.78 36'%3E%3Cpath d='M10.39 0 20.78 6v12l-10.39 6L0 18V6ZM10.39 24v12' fill='none' stroke='%23000' stroke-width='.8'/%3E%3C/svg%3E") 0 0 / 31.2px 54px;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20.78 36'%3E%3Cpath d='M10.39 0 20.78 6v12l-10.39 6L0 18V6ZM10.39 24v12' fill='none' stroke='%23000' stroke-width='.8'/%3E%3C/svg%3E") 0 0 / 31.2px 54px;
+  pointer-events: none;
+}
+.growth-lab .hub-groups {
   display: grid;
-  place-items: center;
-  width: 46px;
-  height: 46px;
-  border: 1px solid color-mix(in srgb, var(--accent) 50%, var(--line));
-  border-radius: 13px;
-  background: color-mix(in srgb, var(--accent) 12%, #fff);
-  color: var(--accent-ink);
+  gap: 1rem;
+  margin: 0 0 1rem;
 }
-.growth-lab .hub-recent .tool-icon svg {
-  width: 22px;
-  height: 22px;
+.growth-lab .hub-groups > .hub-group {
+  margin: 0;
 }
-.growth-lab .hub-recent a:hover,
-.growth-lab .hub-row:hover {
-  background: color-mix(in srgb, var(--accent) 9%, transparent);
+.growth-lab .hub-recent {
+  padding: 0 0.75rem;
+}
+
+/* Tiles rise into place as their group scrolls in, scrubbed by the scroll itself, with a short
+   stagger by position. Browsers without scroll timelines, and anyone who asks for less motion,
+   get the tiles standing still. */
+@keyframes app-tile-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .growth-lab .hub-family,
+    .growth-lab .related-tools {
+      view-timeline: --hub-group block;
+    }
+    .growth-lab .hub-family .hub-launch li,
+    .growth-lab .related-tools .hub-launch li {
+      animation: app-tile-rise linear both;
+      animation-timeline: --hub-group;
+      animation-range: entry calc(min(var(--i, 0), 10) * 3%) entry calc(55% + min(var(--i, 0), 10) * 4%);
+    }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .growth-lab .app-icon {
+    transition: none;
+  }
+  .growth-lab .app-tile:active .app-icon,
+  .growth-lab .app-tile:hover .app-icon {
+    transform: none;
+  }
 }
 .growth-lab .hub-list {
   display: grid;
@@ -1859,14 +1906,6 @@ dialog.library-layer[open] { display: grid; place-items: center; padding: 1rem; 
   border-radius: 10px;
   color: var(--ink);
   text-decoration: none;
-}
-.growth-lab .hub-row .tool-preview {
-  flex: none;
-  width: 72px;
-  height: 45px;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: #0f1415;
 }
 .growth-lab .hub-row > span {
   display: grid;
@@ -1898,9 +1937,33 @@ dialog.library-layer[open] { display: grid; place-items: center; padding: 1rem; 
     grid-template-columns: repeat(2, minmax(0, 1fr));
     column-gap: 1.6rem;
   }
+  .growth-lab .hub-launch {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 1.1rem 0.5rem;
+  }
+  .growth-lab .hub-group {
+    padding: 1.3rem 1.3rem 1.2rem;
+  }
+  .growth-lab .app-icon {
+    --tile: 64px;
+  }
+  .growth-lab .related-tools .hub-launch {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
+/* Desktop: small families pair up side by side; the two big ones run the full width at eight. */
 @media (min-width: 1100px) {
   .growth-lab .hub-list {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .growth-lab .hub-groups {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .growth-lab .hub-groups > [data-wide] {
+    grid-column: 1 / -1;
+  }
+  .growth-lab .hub-groups > [data-wide] .hub-launch,
+  .growth-lab .hub-recent .hub-launch {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
   }
 }
