@@ -80,7 +80,7 @@ export default function ToolsHub({ guide }: { guide: Guide }) {
   );
 }
 /**
- * The hub is a launcher (2026-11-11, after Ken: "Nobody knows what's going on. Everything's
+ * The hub is a launcher (2026-11-11, after the owner: "Nobody knows what's going on. Everything's
  * repetitive."). One heading and one line, the search, the tools used last in this browser,
  * then every tool exactly once in its family, then the other free resources. The guide and
  * the data promise fold shut at the end, still in the server HTML.

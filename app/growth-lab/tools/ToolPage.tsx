@@ -30,7 +30,7 @@ const CATEGORY_ACCENT: Record<string, string> = {
 };
 
 /**
- * Every tool is an app, and the app is the page (2026-11-11, after Ken: "It
+ * Every tool is an app, and the app is the page (2026-11-11, after the owner: "It
  * doesn't feel like a web app at all"). One bar: back to the tools, the tool's
  * name, the editor's undo and redo, its one Download, and a single menu for
  * everything else (How This Works, Find a Tool, projects, brand, feedback,
