@@ -1967,3 +1967,200 @@ dialog.library-layer[open] { display: grid; place-items: center; padding: 1rem; 
     grid-template-columns: repeat(8, minmax(0, 1fr));
   }
 }
+
+/* 2026-11-11: the hub runs as full-width bands like the rest of the site. It opens on ink with the
+   tools' real screens moving past, then the families take turns: paper hexagon, neon tint, ink.
+   No two neighbours share a ground. On ink the text tokens flip; tile glyphs stay ink on neon. */
+.growth-main:has(.hub-app) {
+  padding-inline: 0;
+}
+.growth-lab .hub-app {
+  max-width: none;
+  padding-bottom: 0;
+}
+.growth-lab .hub-app > :is(.hub-groups, .hub-status, .hub-none, .hub-guide) {
+  padding-inline: max(1.25rem, calc(50% - 36rem));
+}
+.growth-lab .hub-app .hub-groups {
+  gap: 0;
+  margin: 0;
+  padding-inline: 0;
+}
+.growth-lab .hub-app .hub-group {
+  margin: 0;
+  border-radius: 0;
+  padding: clamp(2.2rem, 6vw, 3.6rem) max(1.25rem, calc(50% - 36rem));
+}
+.growth-lab .hub-ink {
+  --ink: #ffffff;
+  --body: #e6e6e6;
+  --soft: #cfcfcf;
+  --line: rgba(255, 255, 255, 0.16);
+  --line-strong: rgba(255, 255, 255, 0.28);
+  --accent-ink: var(--accent);
+  background: #0a0b0d;
+  color: #fff;
+}
+.growth-lab .hub-app .hub-family:nth-child(3n + 1),
+.growth-lab .hub-app .hub-more:nth-of-type(3n + 2) {
+  background: #f4f1ec;
+}
+.growth-lab .hub-app .hub-family:nth-child(3n + 2),
+.growth-lab .hub-app .hub-more:nth-of-type(3n) {
+  background: color-mix(in srgb, var(--accent) 22%, #f7f4ef);
+}
+.growth-lab .hub-app .hub-family:nth-child(3n),
+.growth-lab .hub-app .hub-more:nth-of-type(3n + 1) {
+  --ink: #ffffff;
+  --body: #e6e6e6;
+  --soft: #cfcfcf;
+  --line: rgba(255, 255, 255, 0.16);
+  --accent-ink: var(--accent);
+  background: #0a0b0d;
+  color: #fff;
+}
+.growth-lab .hub-app .hub-group::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 0;
+  background: var(--accent);
+  opacity: 0.14;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20.78 36'%3E%3Cpath d='M10.39 0 20.78 6v12l-10.39 6L0 18V6ZM10.39 24v12' fill='none' stroke='%23000' stroke-width='.8'/%3E%3C/svg%3E") 0 0 / 31.2px 54px;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20.78 36'%3E%3Cpath d='M10.39 0 20.78 6v12l-10.39 6L0 18V6ZM10.39 24v12' fill='none' stroke='%23000' stroke-width='.8'/%3E%3C/svg%3E") 0 0 / 31.2px 54px;
+  pointer-events: none;
+}
+.growth-lab .hub-app .hub-family:nth-child(3n + 2)::before,
+.growth-lab .hub-app .hub-more:nth-of-type(3n)::before {
+  opacity: 0;
+}
+.growth-lab .hub-app .hub-family:nth-child(3n)::before,
+.growth-lab .hub-app .hub-more:nth-of-type(3n + 1)::before {
+  opacity: 0.32;
+}
+
+/* The opening: ink, the heading, the search, then a moving row of real tool screens. */
+.growth-lab .hub-top {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(2rem, 6vw, 3.4rem) 0 clamp(1.6rem, 4vw, 2.6rem);
+}
+.growth-lab .hub-top::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: #04d9c4;
+  opacity: 0.3;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20.78 36'%3E%3Cpath d='M10.39 0 20.78 6v12l-10.39 6L0 18V6ZM10.39 24v12' fill='none' stroke='%23000' stroke-width='.8'/%3E%3C/svg%3E") 0 0 / 31.2px 54px;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20.78 36'%3E%3Cpath d='M10.39 0 20.78 6v12l-10.39 6L0 18V6ZM10.39 24v12' fill='none' stroke='%23000' stroke-width='.8'/%3E%3C/svg%3E") 0 0 / 31.2px 54px;
+}
+.growth-lab .hub-top::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  z-index: -1;
+  width: 70vw;
+  height: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(closest-side, color-mix(in srgb, #04d9c4 22%, transparent), transparent);
+}
+.growth-lab .hub-top > :is(.hub-head, .hub-find, .hub-recent) {
+  margin-inline: max(1.25rem, calc(50% - 36rem));
+}
+.growth-lab .hub-top .hub-find {
+  margin-inline: auto;
+  max-width: min(40rem, calc(100% - 2.5rem));
+  background: rgba(255, 255, 255, 0.95);
+  --ink: #0a0a0a;
+  border-color: #04d9c4;
+}
+.growth-lab .hub-top .hub-find > span {
+  color: #0a0a0a;
+}
+.growth-lab .hub-top .hub-head h1 {
+  color: #fff;
+}
+.growth-lab .hub-shots {
+  margin-top: 1.4rem;
+  overflow: hidden;
+  -webkit-mask: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.growth-lab .hub-shots ul {
+  display: flex;
+  gap: 0.9rem;
+  width: max-content;
+  margin: 0;
+  padding: 0.4rem 0;
+  list-style: none;
+}
+.growth-lab .hub-shots a {
+  display: block;
+  width: clamp(11rem, 42vw, 15rem);
+  border: 1px solid color-mix(in srgb, var(--accent) 60%, transparent);
+  border-radius: 12px;
+  overflow: hidden;
+  background: #16181b;
+  color: #fff;
+  text-decoration: none;
+  box-shadow: 0 18px 40px -26px var(--accent);
+  transition: transform 0.25s ease;
+}
+.growth-lab .hub-shots img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: top;
+}
+.growth-lab .hub-shots span {
+  display: block;
+  padding: 0.5rem 0.7rem;
+  font: 600 11px/1.2 var(--mono);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .growth-lab .hub-shots ul {
+    animation: hub-shots-run 48s linear infinite;
+  }
+  .growth-lab .hub-shots:is(:hover, :focus-within) ul {
+    animation-play-state: paused;
+  }
+  .growth-lab .hub-shots a:hover {
+    transform: translateY(-4px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .growth-lab .hub-shots {
+    overflow-x: auto;
+  }
+}
+@keyframes hub-shots-run {
+  to {
+    transform: translateX(-50%);
+  }
+}
+/* Tiles rise in everywhere, not only where scroll timelines exist. */
+@supports not (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .growth-lab .hub-family .hub-launch li {
+      animation: app-tile-rise 0.5s both;
+      animation-delay: calc(min(var(--i, 0), 10) * 40ms);
+    }
+  }
+}
+
+/* The closing ask on a tool page: a full-width band, not a pale card. */
+.growth-lab .growth-made {
+  max-width: none;
+  border-radius: 0;
+  border-inline: 0;
+  background: color-mix(in srgb, #04d9c4 18%, #f7f4ef);
+  box-shadow: none;
+}

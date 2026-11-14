@@ -1,4 +1,4 @@
-import { createContext, useContext, type CSSProperties } from "react";
+import { createContext, memo, useContext, type CSSProperties } from "react";
 import { qrSvg, defaultStyle } from "../qr-code/model";
 import { useLocale } from "../../shared/locale";
 import { cleanSvgFragment } from "../../shared/safe-markup";
@@ -626,8 +626,11 @@ export function SlideView({
   );
 }
 
-/** A slide scaled to a given width (thumbnails, previews, templates). */
-export function SlideThumb({ deck, slide, width }: { deck: Deck; slide: Slide; width: number }) {
+/** A slide scaled to a given width (thumbnails, previews, templates). Memoised (2026-11-14): the
+ * template rail redrew every thumbnail on each keystroke in the flyer, poster and card makers; the template designs
+ * do not change while you type, so their thumbnails no longer redraw. */
+export const SlideThumb = memo(SlideThumbView);
+function SlideThumbView({ deck, slide, width }: { deck: Deck; slide: Slide; width: number }) {
   const r = dims(deck);
   const s = width / r.w;
   return (

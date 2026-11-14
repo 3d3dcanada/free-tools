@@ -18,4 +18,7 @@ export const TURNSTILE_SITE_KEY: string | null = (import.meta.env.VITE_TURNSTILE
 export const SITE_BASE = "https://3d3d.ca";
 
 /** Seller mode photo picker: the 3D3D site fills this with its own published work; this copy has none, so the picker hides. */
+/** Academy unit photos: the 3D3D site supplies its own; this copy ships none. */
+export const ACADEMY_UNIT_PHOTOS: { src: string; alt: string; altFr: string }[] = [];
+
 export const SELLER_PHOTOS: { src: string; label: string }[] = [];

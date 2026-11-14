@@ -944,4 +944,20 @@ export const frenchUi: Record<string, string> = {
   "Want it printed or made in 3D?": "Voulez-vous l’imprimer ou le fabriquer en 3D?",
   "Want us to print it?": "Voulez-vous que nous l’imprimions?",
   "More free tools": "Plus d’outils gratuits",
+  // FX-31 (2026-11-14): the invoice tool's export checks reached French pages in English.
+  "The due or expiry date must not precede the issue date.": "La date d’échéance ou d’expiration ne peut pas précéder la date d’émission.",
+  "Describe every line item.": "Décrivez chaque ligne.",
+  "Name every tax line.": "Nommez chaque ligne de taxe.",
+  "Enter the amount, date and method of the payment actually received before creating a receipt.": "Entrez le montant, la date et le mode du paiement réellement reçu avant de créer un reçu.",
+  "The payment date must not be after the receipt's issue date.": "La date du paiement ne peut pas suivre la date d’émission du reçu.",
+  "8.5 × 11 in": "8,5 × 11 po",
+  // The moving row of tool screens at the top of /fr/tools.
+  "Business Cards": "Cartes d’affaires",
+  "Image Compressor": "Compresseur d’images",
+  Invoices: "Factures",
+  Flyers: "Dépliants",
+  "Merge PDF": "Fusionner des PDF",
+  "Print Cost": "Coût d’impression",
+  Posters: "Affiches",
+  "96 DPI": "96 ppp",
 };

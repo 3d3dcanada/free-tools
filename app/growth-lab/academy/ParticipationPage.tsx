@@ -44,22 +44,19 @@ export default function ParticipationPage({
       {pic}
       {page === "contributors" ? (
         <>
-          <h2>{t("Public acknowledgements", "Remerciements publics")}</h2>
-          {contributors.length ? (
-            <ul>
-              {contributors.map((c) => (
-                <li key={c.name + c.contribution}>
-                  <strong>{c.name}</strong>: {c.contribution}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p>
-              {t(
-                "No opt-in contributor credits have been published yet. Names will appear here only after the contribution is reviewed and permission to publish the name is confirmed.",
-                "Aucun remerciement nominatif n’a encore été publié. Un nom n’apparaîtra ici qu’après examen de la contribution et confirmation de l’autorisation de le publier.",
-              )}
-            </p>
+          {/* 2026-11-14: the heading shows only once there is a credit to list; an empty section read
+              as a page with nothing on it. */}
+          {contributors.length > 0 && (
+            <>
+              <h2>{t("Public acknowledgements", "Remerciements publics")}</h2>
+              <ul>
+                {contributors.map((c) => (
+                  <li key={c.name + c.contribution}>
+                    <strong>{c.name}</strong>: {c.contribution}
+                  </li>
+                ))}
+              </ul>
+            </>
           )}
           <h2>{t("What a credit means", "Ce qu’un remerciement signifie")}</h2>
           <p>

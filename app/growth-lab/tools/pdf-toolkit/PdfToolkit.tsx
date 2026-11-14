@@ -492,7 +492,7 @@ export default function PdfToolkit({
 
   const first = output[0] ? pageView(sources[output[0].source], output[0]) : null;
   const pixels = (dpi: number) =>
-    first ? `${Math.ceil((first.width * dpi) / 72)} × ${Math.ceil((first.height * dpi) / 72)} px` : `${dpi} DPI`;
+    first ? `${Math.ceil((first.width * dpi) / 72)} × ${Math.ceil((first.height * dpi) / 72)} px` : `${dpi} ${tr("DPI")}`;
   const count = photos ? images.length : output.length;
   const ext = state.format === "jpeg" ? "JPG" : "PNG";
   const exportLabel = photos
@@ -507,7 +507,7 @@ export default function PdfToolkit({
   const summary = photos
     ? `${images.length} ${tr(images.length === 1 ? "page" : "pages")} · ${state.size === "a4" ? "A4" : state.size === "letter" ? "US Letter" : tr("Image size")}`
     : mode === "pdf-to-image"
-      ? `${count} ${ext} · ${state.dpi} DPI${first ? ` · ${pixels(state.dpi)}` : ""}`
+      ? `${count} ${ext} · ${state.dpi} ${tr("DPI")}${first ? ` · ${pixels(state.dpi)}` : ""}`
       : `${count} ${tr(count === 1 ? "page" : "pages")}${sources.length > 1 ? ` ${tr("from")} ${sources.length} ${tr("files")}` : ""}`;
 
   const marksControls = (
@@ -702,8 +702,8 @@ export default function PdfToolkit({
                 onPick={(size) => patch({ size: size as State["size"] })}
                 items={[
                   { id: "a4", title: "A4", detail: "The international standard sheet.", meta: "210 × 297 mm" },
-                  { id: "letter", title: "US Letter", detail: "The North American standard sheet.", meta: "8.5 × 11 in" },
-                  { id: "image", title: "Match Each Image", detail: "Each page takes its image's size at 96 DPI. No margin.", meta: "96 DPI" },
+                  { id: "letter", title: "US Letter", detail: "The North American standard sheet.", meta: tr("8.5 × 11 in") },
+                  { id: "image", title: "Match Each Image", detail: "Each page takes its image's size at 96 DPI. No margin.", meta: tr("96 DPI") },
                 ]}
               />
               <label className="ws-range">

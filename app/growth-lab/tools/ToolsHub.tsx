@@ -9,6 +9,18 @@ import { hubSchema } from "../seo/hub-schema";
 import { AppIcon, AppTile, CATEGORY_ACCENT, SearchGlyph } from "../shared/toolIcons";
 import { TOOL_FAMILIES } from "../seo/tool-families";
 import { readRecent } from "./recent";
+import { SITE_BASE } from "../../lib/free-tools-host";
+/** Real screens of the tools, for the moving row at the top of the hub. */
+const SHOTS: [string, string, string][] = [
+  ["qr-code", "QR Studio", "#04D9C4"],
+  ["business-card", "Business Cards", "#FF2D92"],
+  ["compress-image", "Image Compressor", "#18E36B"],
+  ["invoice-generator", "Invoices", "#FF6A00"],
+  ["flyer-maker", "Flyers", "#FF2D92"],
+  ["merge-pdf", "Merge PDF", "#04D9C4"],
+  ["print-cost-calculator", "Print Cost", "#FF6A00"],
+  ["poster-maker", "Posters", "#18E36B"],
+];
 /** One line under each category title. */
 const BLURB: Record<string, string> = {
   "QR and Contacts": "Links, Wi-Fi, contacts and events as codes that scan.",
@@ -102,6 +114,7 @@ function Hub({ guide }: { guide: Guide }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(hubSchema(guide)).replace(/</g, "\\u003c") }}
       />
+      <div className="hub-top hub-ink">
       <header className="hub-head">
         <h1>{guide.headline}</h1>
         <p>{tr("Pick a tool. It opens ready to use, and nothing leaves your device.")}</p>
@@ -136,6 +149,21 @@ function Hub({ guide }: { guide: Guide }) {
           </ul>
         </section>
       )}
+      {!query && (
+        <div className="hub-shots" aria-label={tr("Free browser tools")}>
+          <ul>
+            {[...SHOTS, ...SHOTS].map(([slug, name, hex], k) => (
+              <li key={k} aria-hidden={k >= SHOTS.length || undefined} style={{ ["--accent" as string]: hex }}>
+                <a href={localLink(`/tools/${slug}`)} tabIndex={k >= SHOTS.length ? -1 : undefined}>
+                  <img src={`${SITE_BASE}/media/tools/${slug}-400.webp`} alt={k >= SHOTS.length ? "" : tr(name)} width={400} height={300} loading="lazy" decoding="async" />
+                  <span>{tr(name)}</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      </div>
       {/* Each family is a titled group of app tiles. The grounds alternate between a hexagon
           wash and a plain tint of the family colour, so no two neighbours are bare paper. */}
       <div className="hub-groups">

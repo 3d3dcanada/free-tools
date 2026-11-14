@@ -1,3 +1,5 @@
+import { DIAGRAM_LABELS_FR } from "./diagram-labels.fr";
+import { ACADEMY_UNIT_PHOTOS } from "../../lib/free-tools-host";
 import ShareButton from "../shared/ShareButton";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import { download, useLocalDraft } from "../shared/browser";
@@ -59,7 +61,7 @@ function Concept({ lesson, alt }: { lesson: Lesson; alt: string }) {
         {/* The three parts the diagram draws, named as it names them (lesson data). */}
         <ol className="diagram-keys">
           {lesson.diagram.labels.map((label) => (
-            <li key={label}>{label}</li>
+            <li key={label}>{locale === "fr" ? (DIAGRAM_LABELS_FR[label] ?? label) : label}</li>
           ))}
         </ol>
         {locale === "fr"
@@ -205,6 +207,7 @@ function LessonPage({
     lesson.quiz.map((q) => q.answer),
     state,
   );
+  const unitPhoto = ACADEMY_UNIT_PHOTOS[lesson.unit - 1];
   return (
     <article className="lesson-page">
       <div className="academy-heading lesson-head">
@@ -235,6 +238,11 @@ function LessonPage({
         <p className="outcome">
           <strong>{t("You will learn to:")}</strong> {lesson.learn}
         </p>
+        {unitPhoto && (
+          <figure className="lesson-photo">
+            <img src={unitPhoto.src} alt={locale === "fr" ? unitPhoto.altFr : unitPhoto.alt} width={1200} height={675} fetchPriority="high" />
+          </figure>
+        )}
       </div>
       <div className="lesson-body">
         <aside className="lesson-aside">

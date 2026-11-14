@@ -548,7 +548,7 @@ export default function PrintingTools({ mode }: { mode: PrintingMode }) {
         <div className="pw-file">
           <Icon name="box" />
           <span>
-            <strong>{m.model.name}</strong>
+            <strong>{tr(m.model.name)}</strong>
             <small>
               {r.triangles.toLocaleString(fr ? "fr-CA" : "en-CA")} {tr("triangles")} ·{" "}
               {volume === null ? tr("Mesh warnings found") : u.volume(volume)}
@@ -865,7 +865,7 @@ export default function PrintingTools({ mode }: { mode: PrintingMode }) {
             <p className="fine">{tr(inputTips[tab])}</p>
             {tab !== "model" && tab !== "unit-converter" && tab !== "tolerance-calculator" && m.model && (
               <p className="pw-using">
-                <Icon name="box" /> {m.model.name}
+                <Icon name="box" /> {tr(m.model.name)}
               </p>
             )}
             {panels[tab]}
