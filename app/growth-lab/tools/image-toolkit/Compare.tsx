@@ -74,7 +74,10 @@ export default function Compare({
             src={before}
             alt={tr("Original image")}
             draggable={false}
-            style={{ objectFit: cover ? "cover" : "fill" }}
+            // 2026-11-14: once a result exists the original stops at the divider. It used to run under the whole
+            // frame, so a transparent result (a removed background) showed the original through it and looked
+            // unchanged; now the frame's checkerboard shows where the result is clear.
+            style={{ objectFit: cover ? "cover" : "fill", clipPath: after ? `inset(0 ${100 - split}% 0 0)` : undefined }}
             onLoad={(e) => setNatural(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight || 0)}
           />
           {after ? (

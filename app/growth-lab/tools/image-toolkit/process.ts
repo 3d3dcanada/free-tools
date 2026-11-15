@@ -117,8 +117,10 @@ export async function processImage(file: File, mode: ImageMode, s: ImageSettings
       quality: 100,
     });
     const rgba = sc.createImageData(320, 320);
+    // 2026-11-14: the model's matte is soft; a busy background came back half there. Below a quarter it is
+    // background (clear), above three quarters it is the subject (solid), and the edge ramps in between.
     for (let i = 0; i < mask.length; i++) {
-      rgba.data[i * 4 + 3] = mask[i];
+      rgba.data[i * 4 + 3] = Math.max(0, Math.min(255, Math.round(((mask[i] - 64) * 255) / 128)));
     }
     sc.putImageData(rgba, 0, 0);
     ctx.globalCompositeOperation = "destination-in";
