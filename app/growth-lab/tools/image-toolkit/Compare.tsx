@@ -33,9 +33,26 @@ export default function Compare({
   const ratio = aspect || natural || 4 / 3;
   const width = Math.max(0, Math.min(size.width, size.height * ratio));
   const height = width / ratio;
+  // 2026-11-15: while the divider is dragged its position goes straight to a CSS variable on the frame, once a
+  // frame, and React hears about it only when the drag ends. Every pointer move used to set state, so each move
+  // re-rendered both full-size layers with a new clip; on a 1200 x 1600 result the moves queued faster than the
+  // page could paint and the tab stopped answering.
+  const live = useRef(50);
+  const queued = useRef(0);
+  const box = useRef<DOMRect | null>(null);
   const to = (clientX: number) => {
-    const r = frame.current?.getBoundingClientRect();
-    if (r?.width) setSplit(Math.min(100, Math.max(0, ((clientX - r.left) / r.width) * 100)));
+    const r = box.current ?? frame.current?.getBoundingClientRect();
+    if (!r?.width) return;
+    live.current = Math.min(100, Math.max(0, ((clientX - r.left) / r.width) * 100));
+    if (queued.current) return;
+    queued.current = requestAnimationFrame(() => {
+      queued.current = 0;
+      frame.current?.style.setProperty("--split", `${live.current}%`);
+    });
+  };
+  const settle = () => {
+    box.current = null;
+    setSplit(live.current);
   };
   const key = (e: KeyboardEvent) => {
     const step = e.shiftKey ? 10 : 2;
@@ -51,7 +68,8 @@ export default function Compare({
               : null;
     if (next === null) return;
     e.preventDefault();
-    setSplit(Math.min(100, Math.max(0, next)));
+    live.current = Math.min(100, Math.max(0, next));
+    setSplit(live.current);
   };
   return (
     <div className="iw-view" ref={host}>
@@ -59,15 +77,18 @@ export default function Compare({
         <div
           ref={frame}
           className="iw-compare"
-          style={{ width, height }}
+          style={{ width, height, ["--split" as string]: `${split}%` }}
           onPointerDown={(e) => {
             if (e.button) return;
             e.currentTarget.setPointerCapture(e.pointerId);
+            box.current = e.currentTarget.getBoundingClientRect();
             to(e.clientX);
           }}
           onPointerMove={(e) => {
             if (e.currentTarget.hasPointerCapture(e.pointerId)) to(e.clientX);
           }}
+          onPointerUp={settle}
+          onPointerCancel={settle}
         >
           <img
             className="iw-layer"
@@ -77,7 +98,7 @@ export default function Compare({
             // 2026-11-14: once a result exists the original stops at the divider. It used to run under the whole
             // frame, so a transparent result (a removed background) showed the original through it and looked
             // unchanged; now the frame's checkerboard shows where the result is clear.
-            style={{ objectFit: cover ? "cover" : "fill", clipPath: after ? `inset(0 ${100 - split}% 0 0)` : undefined }}
+            style={{ objectFit: cover ? "cover" : "fill", clipPath: after ? "inset(0 calc(100% - var(--split)) 0 0)" : undefined }}
             onLoad={(e) => setNatural(e.currentTarget.naturalWidth / e.currentTarget.naturalHeight || 0)}
           />
           {after ? (
@@ -86,10 +107,10 @@ export default function Compare({
               src={after}
               alt={tr("Processed image")}
               draggable={false}
-              style={{ clipPath: `inset(0 0 0 ${split}%)` }}
+              style={{ clipPath: "inset(0 0 0 var(--split))" }}
             />
           ) : (
-            <div className="iw-veil" style={{ left: `${split}%` }} />
+            <div className="iw-veil" style={{ left: "var(--split)" }} />
           )}
           <span className="iw-tag iw-tag-before">{labels[0]}</span>
           <span className="iw-tag iw-tag-after">{labels[1]}</span>
@@ -103,7 +124,7 @@ export default function Compare({
             aria-valuemax={100}
             aria-valuenow={Math.round(split)}
             aria-valuetext={`${Math.round(split)}%`}
-            style={{ left: `${split}%` }}
+            style={{ left: "var(--split)" }}
             onKeyDown={key}
           >
             <span aria-hidden="true" />

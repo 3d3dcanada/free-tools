@@ -1189,3 +1189,25 @@
   height: 100%;
   object-fit: cover;
 }
+
+/* Lesson grounds (2026-11-15). A lesson was one plain white page from top to bottom. The page now sits on the paper
+   hexagon wall, the heading block on a neon tint, and the lesson's steps take paper and tint by turn. The hexagon
+   is drawn here as a background image so this stylesheet stays self-contained. Text, quizzes and progress unchanged. */
+.growth-lab .lesson-page {
+  --hex: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100'%3E%3Cpath d='M28 66L0 50L0 16L28 0L56 16L56 50L28 66L28 100' fill='none' stroke='%230a0a0a' stroke-opacity='.07'/%3E%3C/svg%3E");
+  background: #f4f1ec var(--hex) 0 0 / 56px 100px;
+}
+.growth-lab .lesson-page .lesson-head {
+  background: color-mix(in srgb, var(--accent, #04d9c4) 13%, #f7f4ef) var(--hex) 0 0 / 56px 100px;
+  border-radius: 20px;
+  padding: clamp(1.1rem, 4vw, 2.5rem);
+}
+.growth-lab .lesson-page .lesson-step {
+  background: #faf8f5 var(--hex) 0 0 / 56px 100px;
+  border-radius: 18px;
+  padding: clamp(1rem, 3.5vw, 2rem);
+  margin-block: 1.25rem;
+}
+.growth-lab .lesson-page .lesson-step:nth-of-type(even) {
+  background-color: color-mix(in srgb, var(--accent, #04d9c4) 11%, #f7f4ef);
+}
